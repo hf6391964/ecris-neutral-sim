@@ -1,35 +1,54 @@
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <array>
+
 #include <CGAL/Simple_cartesian.h>
-typedef CGAL::Simple_cartesian<double> Kernel;
-typedef Kernel::Point_2 Point_2;
-typedef Kernel::Segment_2 Segment_2;
-int main()
-{
-    Point_2 p(1,1), q(10,10);
-    std::cout << "p = " << p << std::endl;
-    std::cout << "q = " << q.x() << " " << q.y() << std::endl;
-    std::cout << "sqdist(p,q) = " 
-	<< CGAL::squared_distance(p,q) << std::endl;
+#include <CGAL/Polyhedron_3.h>
+#include <CGAL/IO/STL_reader.h>
 
-    Segment_2 s(p,q);
-    Point_2 m(5, 9);
+#include <CGAL/Polygon_mesh_processing/orient_polygon_soup.h>
+#include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
 
-    std::cout << "m = " << m << std::endl;
-    std::cout << "sqdist(Segment_2(p,q), m) = "
-	<< CGAL::squared_distance(s,m) << std::endl;
-    std::cout << "p, q, and m ";
-    switch (CGAL::orientation(p,q,m)){
-	case CGAL::COLLINEAR: 
-	    std::cout << "are collinear\n";
-	    break;
-	case CGAL::LEFT_TURN:
-	    std::cout << "make a left turn\n";
-	    break;
-	case CGAL::RIGHT_TURN: 
-	    std::cout << "make a right turn\n";
-	    break;
+typedef CGAL::Simple_cartesian<double> K;
+typedef K::Point_3 Point_3;
+typedef CGAL::Polyhedron_3<K> Polyhedron;
+
+bool stlToPolyhedron(std::string filename, Polyhedron &mesh) {
+    std::ifstream ifs;
+
+    ifs.open(filename, std::ifstream::in);
+
+    if (!ifs.is_open()) return false;
+
+    std::vector<std::array<double, 3>> points;
+    std::vector<std::array<int, 3>> facets;
+
+    bool ret = CGAL::read_STL(ifs, points, facets, true);
+    if (ret) {
+        ret =
+            CGAL::Polygon_mesh_processing::orient_polygon_soup(points, facets);
     }
-    std::cout << " midpoint(p,q) = " << CGAL::midpoint(p,q) << std::endl;
+    if (ret) {
+        CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(points,
+            facets, mesh);
+        ret = mesh.is_valid() && !mesh.empty();
+    }
+
+    ifs.close();
+    return ret;
+}
+
+int main() {
+    Polyhedron cap1;
+
+    bool success = stlToPolyhedron("models/cylinder/cylinder_cap1.stl", cap1);
+
+    if (success) {
+        std::cout << "Great!" << std::endl;
+    }
+
     return 0;
 }
 
