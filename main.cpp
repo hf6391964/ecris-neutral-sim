@@ -35,19 +35,26 @@ bool stlToPolyhedron(std::string filename, Polyhedron &mesh) {
             facets, mesh);
         ret = mesh.is_valid() && !mesh.empty();
     }
+    if (ret) {
+        std::cout << "Loaded " << filename << " with " <<
+            mesh.size_of_facets() << " facets and " <<
+            mesh.size_of_vertices() << " vertices." << std::endl;
+    }
 
     ifs.close();
     return ret;
 }
 
 int main() {
-    Polyhedron cap1;
+    Polyhedron mesh_cap1;
+    Polyhedron mesh_cap2;
+    Polyhedron mesh_walls;
+    Polyhedron mesh_all;
 
-    bool success = stlToPolyhedron("models/cylinder/cylinder_cap1.stl", cap1);
-
-    if (success) {
-        std::cout << "Great!" << std::endl;
-    }
+    stlToPolyhedron("models/cylinder/cylinder_cap1.stl", mesh_cap1);
+    stlToPolyhedron("models/cylinder/cylinder_cap2.stl", mesh_cap2);
+    stlToPolyhedron("models/cylinder/cylinder_walls.stl", mesh_walls);
+    stlToPolyhedron("models/cylinder/cylinder_all.stl", mesh_all);
 
     return 0;
 }
