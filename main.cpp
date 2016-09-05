@@ -17,6 +17,7 @@
 #include <CGAL/IO/STL_reader.h>
 #include <CGAL/Polygon_mesh_processing/orient_polygon_soup.h>
 #include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
+#include <CGAL/Polygon_mesh_processing/refine.h>
 
 typedef CGAL::Simple_cartesian<double> K;
 typedef K::FT FT;
@@ -31,7 +32,8 @@ typedef Tree::Point_and_primitive_id Point_and_primitive_id;
 typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type>
     Ray_intersection;
 
-bool stlToPolyhedron(std::string filename, Polyhedron &mesh) {
+bool stlToPolyhedron(std::string filename, Polyhedron &mesh,
+    double density_control_factor=-1.0) {
     std::ifstream ifs;
 
     ifs.open(filename, std::ifstream::in);
@@ -52,6 +54,14 @@ bool stlToPolyhedron(std::string filename, Polyhedron &mesh) {
         ret = mesh.is_valid() && !mesh.empty();
     }
     if (ret) {
+        if (density_control_factor > 0.0) {
+            std::vector<Polyhedron::Facet_handle> new_facets;
+            std::vector<Polyhedron::Vertex_handle> new_vertex;
+            CGAL::Polygon_mesh_processing::refine(mesh, faces(mesh),
+                std::back_inserter(new_facets),
+                std::back_inserter(new_vertex),
+                CGAL::Polygon_mesh_processing::parameters::density_control_factor(density_control_factor));
+        }
         std::cout << "Loaded " << filename << " with " <<
             mesh.size_of_facets() << " facets and " <<
             mesh.size_of_vertices() << " vertices." << std::endl;
@@ -59,10 +69,6 @@ bool stlToPolyhedron(std::string filename, Polyhedron &mesh) {
 
     ifs.close();
     return ret;
-}
-
-void aabbForPolyhedron(Polyhedron &mesh) {
-    
 }
 
 static std::uniform_real_distribution<double> theta_dist(0, M_PI);
@@ -87,7 +93,7 @@ int main() {
 
     stlToPolyhedron("models/cylinder/cylinder_cap1.stl", mesh_cap1);
     stlToPolyhedron("models/cylinder/cylinder_cap2.stl", mesh_cap2);
-    stlToPolyhedron("models/cylinder/cylinder_walls.stl", mesh_walls);
+    stlToPolyhedron("models/cylinder/cylinder_walls.stl", mesh_walls, 50.0);
     stlToPolyhedron("models/cylinder/cylinder_all.stl", mesh_all);
     std::cout << std::endl;
 
