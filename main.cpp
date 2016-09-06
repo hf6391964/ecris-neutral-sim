@@ -8,29 +8,7 @@
 #include <cmath>
 #include <ctime>
 
-#include <CGAL/Simple_cartesian.h>
-#include <CGAL/Polyhedron_3.h>
-#include <CGAL/AABB_tree.h>
-#include <CGAL/AABB_traits.h>
-#include <CGAL/AABB_face_graph_triangle_primitive.h>
-
-#include <CGAL/IO/STL_reader.h>
-#include <CGAL/Polygon_mesh_processing/orient_polygon_soup.h>
-#include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
-#include <CGAL/Polygon_mesh_processing/refine.h>
-
-typedef CGAL::Simple_cartesian<double> K;
-typedef K::FT FT;
-typedef K::Point_3 Point;
-typedef K::Direction_3 Direction;
-typedef K::Ray_3 Ray;
-typedef CGAL::Polyhedron_3<K> Polyhedron;
-typedef CGAL::AABB_face_graph_triangle_primitive<Polyhedron> Primitive;
-typedef CGAL::AABB_traits<K, Primitive> Traits;
-typedef CGAL::AABB_tree<Traits> Tree;
-typedef Tree::Point_and_primitive_id Point_and_primitive_id;
-typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type>
-    Ray_intersection;
+#include "cgal_and_typedefs.h"
 
 bool stlToPolyhedron(std::string filename, Polyhedron &mesh,
     double density_control_factor=-1.0) {
@@ -93,30 +71,30 @@ int main() {
 
     stlToPolyhedron("models/cylinder/cylinder_cap1.stl", mesh_cap1);
     stlToPolyhedron("models/cylinder/cylinder_cap2.stl", mesh_cap2);
-    stlToPolyhedron("models/cylinder/cylinder_walls.stl", mesh_walls, 50.0);
+    stlToPolyhedron("models/cylinder/cylinder_walls.stl", mesh_walls, 20.0);
     stlToPolyhedron("models/cylinder/cylinder_all.stl", mesh_all);
     std::cout << std::endl;
 
-    const int N_RAYS = 20;
+    const int N_RAYS = 10000000;
     Tree tree(faces(mesh_walls).first, faces(mesh_walls).second, mesh_walls);
 
     for (int i = 0; i < N_RAYS; i++) {
         Ray r = randomRay();
         Direction d = r.direction();
-        std::cout << "Ray " << i << ": (" << d.dx() << ", " << d.dy() <<
-            ", " << d.dz() << ")" << std::endl;
-        std::cout << "do_intersect: " << tree.do_intersect(r) << std::endl;
+        /* std::cout << "Ray " << i << ": (" << d.dx() << ", " << d.dy() << */
+        /*     ", " << d.dz() << ")" << std::endl; */
+        /* std::cout << "do_intersect: " << tree.do_intersect(r) << std::endl; */
         Ray_intersection isect = tree.any_intersection(r);
         Point *p;
         if (isect && (p = boost::get<Point>(&(isect->first)))) {
-            std::cout << "Intersection detected at " << "(" << p->x() <<
-                ", " << p->y() << ", " << p->z() << ")" << std::endl;
-            std::cout << "xy radius: " <<
-                std::sqrt(p->x()*p->x() + p->y()*p->y()) << std::endl;
+            /* std::cout << "Intersection detected at " << "(" << p->x() << */
+            /*     ", " << p->y() << ", " << p->z() << ")" << std::endl; */
+            /* std::cout << "xy radius: " << */
+                /* std::sqrt(p->x()*p->x() + p->y()*p->y()) << std::endl; */
         } else {
-            std::cout << "No intersection" << std::endl;
+            /* std::cout << "No intersection" << std::endl; */
         }
-        std::cout << std::endl;
+        /* std::cout << std::endl; */
     }
 
     return 0;
