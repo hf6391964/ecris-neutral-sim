@@ -4,9 +4,7 @@
 #include <vector>
 #include <array>
 #include <random>
-#include <cstdlib>
 #include <cmath>
-#include <ctime>
 
 #include "cgal_and_typedefs.h"
 
@@ -62,8 +60,6 @@ Ray randomRay() {
 }
 
 int main() {
-    std::srand(std::time(NULL));
-
     Polyhedron mesh_cap1;
     Polyhedron mesh_cap2;
     Polyhedron mesh_walls;
