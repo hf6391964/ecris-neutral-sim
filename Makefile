@@ -1,9 +1,9 @@
 TARGET = sim
-INCDIRS = -I../CGAL-4.8.1/include
+INCDIRS = -I../CGAL-4.8.1/include -I../gsl-2.2.1
 LIBS = 
-STATIC_LIBS = ../CGAL-4.8.1/lib/libCGAL.a
+STATIC_LIBS = ../CGAL-4.8.1/lib/libCGAL.a ../gsl-2.2.1/.libs/libgsl.a
 CC = g++
-CFLAGS_COMMON = -Wall
+CFLAGS_COMMON = -Wall -std=c++11
 # CFLAGS = -g
 CFLAGS = -O2
 

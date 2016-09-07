@@ -71,7 +71,7 @@ int main() {
     stlToPolyhedron("models/cylinder/cylinder_all.stl", mesh_all);
     std::cout << std::endl;
 
-    const int N_RAYS = 10000000;
+    const int N_RAYS = 1000000;
     Tree tree(faces(mesh_walls).first, faces(mesh_walls).second, mesh_walls);
 
     for (int i = 0; i < N_RAYS; i++) {
