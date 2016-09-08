@@ -1,13 +1,99 @@
 #include "surface.h"
 
-Surface Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
+void Surface::buildAABBTree() {
+    if (!isLoaded()) return;
+
+    tree_.rebuild(faces(mesh_).first, faces(mesh_).second, mesh_);
+    tree_.build();
+    tree_.accelerate_distance_queries();
+    bbox_ = tree_.bbox();
+}
+
+void Surface::computeFaceNormals() {
+    if (!isLoaded()) return;
+
+    Surface_mesh::Property_map<face_descriptor, Vector> faceNormals =
+        mesh_.add_property_map<face_descriptor, Vector>
+        ("f:normals", CGAL::NULL_VECTOR).first;
+    CGAL::Polygon_mesh_processing::compute_face_normals(mesh_,
+        faceNormals,
+        CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()).
+        geom_traits(K()));
+}
+
+void Surface::computeFaceMidpoints() {
+    if (!isLoaded()) return;
+
+    Surface_mesh::Property_map<face_descriptor, Point> faceMidpoints =
+        mesh_.add_property_map<face_descriptor, Point>("f:midpoints").first;
+
+    // TODO if needed
+}
+
+void Surface::computeAreaCDF() {
+    if (!isLoaded()) return;
+
+    double meshArea = CGAL::Polygon_mesh_processing::area(mesh_,
+        CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()).
+        geom_traits(K()));
+
+    areaCDF_.resize(mesh_.number_of_faces());
+
+    double cdfValue = 0.0;
+    for (face_descriptor fd : mesh_.faces()) {
+        double faceArea = CGAL::Polygon_mesh_processing::face_area(fd, mesh_,
+            CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()));
+        cdfValue += faceArea / meshArea;
+        areaCDF_[fd] = cdfValue;
+    }
+}
+
+Point Surface::getRandomPoint(Rng &rng) {
+    size_t nFaces = areaCDF_.size();
+
+    double rnd = rng.uniform(0.0, 1.0);
+
+    std::cout << "Number of faces: " << nFaces << std::endl <<
+        "Random number given: " << rnd << std::endl;
+
+    size_t faceIndex = std::upper_bound(areaCDF_.begin(), areaCDF_.end(),
+        rnd) - areaCDF_.begin();
+
+    face_descriptor fd(faceIndex);
+    std::cout << "Found index: " << (int)fd << std::endl <<
+        "Corresponding areaCDF value: " << areaCDF_[fd] << std::endl;
+
+    halfedge_descriptor i = mesh_.halfedge(fd), i2 = mesh_.next(i);
+    Point v1 = mesh_.point(mesh_.source(i)),
+          v2 = mesh_.point(mesh_.source(i2)),
+          v3 = mesh_.point(mesh_.source(mesh_.next(i2)));
+
+    // TODO validate this
+    double a1 = rng.uniform(0.0, 1.0), a2 = rng.uniform(0.0, 1.0);
+    if (a1 + a2 > 1.0) {
+        a1 = 1.0 - a1;
+        a2 = 1.0 - a2;
+    }
+
+    double b = 1.0 - a1 - a2;
+    Point p(b*v1.x() + a1*v2.x() + a2*v3.x(),
+            b*v1.y() + a1*v2.y() + a2*v3.y(),
+            b*v1.z() + a1*v2.z() + a2*v3.z());
+
+    std::cout << "Found point: (" << p.x() << ", " << p.y() << ", " <<
+        p.z() << ")" << std::endl << std::endl;
+
+    return p;
+}
+
+bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
     std::ifstream ifs;
     Surface surf;
-    Polyhedron mesh;
+    Surface_mesh mesh;
 
     ifs.open(filename, std::ifstream::in);
 
-    if (!ifs.is_open()) return surf;
+    if (!ifs.is_open()) return false;
 
     std::vector<std::array<double, 3>> points;
     std::vector<std::array<int, 3>> facets;
@@ -20,31 +106,34 @@ Surface Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
     if (ret) {
         CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(points,
             facets, mesh);
-        ret = mesh.is_valid() && !mesh.empty();
+        ret = mesh.is_valid() && !mesh.is_empty();
     }
     if (ret) {
         if (avgTriangleArea > 0.0) {
-            double totalArea = CGAL::Polygon_mesh_processing::area(mesh);
-            double avgArea = totalArea / mesh.size_of_facets();
+            double totalArea = CGAL::Polygon_mesh_processing::area(mesh,
+                CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh.points()).
+                geom_traits(K()));
+            double avgArea = totalArea / mesh.number_of_faces();
             double densityControlFactor = avgArea / avgTriangleArea;
 
-            std::vector<Polyhedron::Facet_handle> new_facets;
-            std::vector<Polyhedron::Vertex_handle> new_vertex;
+            std::vector<Surface_mesh::Face_index> new_facets;
+            std::vector<Surface_mesh::Vertex_index> new_vertex;
 
             CGAL::Polygon_mesh_processing::refine(mesh, faces(mesh),
                 std::back_inserter(new_facets),
                 std::back_inserter(new_vertex),
-                CGAL::Polygon_mesh_processing::parameters::density_control_factor(densityControlFactor));
+                CGAL::Polygon_mesh_processing::parameters::density_control_factor(densityControlFactor).
+                vertex_point_map(mesh.points()));
         }
         std::cout << "Loaded " << filename << " with " <<
-            mesh.size_of_facets() << " facets and " <<
-            mesh.size_of_vertices() << " vertices." << std::endl;
+            mesh.number_of_faces() << " faces and " <<
+            mesh.number_of_vertices() << " vertices." << std::endl;
 
-        surf.mesh_ = mesh;
+        mesh_ = mesh;
     }
 
     ifs.close();
-    return surf;
+    return false;
 }
 
 bool Surface::isLoaded() {

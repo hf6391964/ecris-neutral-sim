@@ -3,10 +3,11 @@
 #include <string>
 #include <vector>
 #include <array>
-#include <random>
 #include <cmath>
 
+#include "randutils.hpp"
 #include "cgal_and_typedefs.h"
+#include "surface.h"
 
 bool stlToPolyhedron(std::string filename, Polyhedron &mesh,
     double density_control_factor=-1.0) {
@@ -15,9 +16,7 @@ bool stlToPolyhedron(std::string filename, Polyhedron &mesh,
     ifs.open(filename, std::ifstream::in);
 
     if (!ifs.is_open()) return false;
-
-    std::vector<std::array<double, 3>> points;
-    std::vector<std::array<int, 3>> facets;
+std::vector<std::array<double, 3>> points; std::vector<std::array<int, 3>> facets;
 
     bool ret = CGAL::read_STL(ifs, points, facets, true);
     if (ret) {
@@ -47,19 +46,15 @@ bool stlToPolyhedron(std::string filename, Polyhedron &mesh,
     return ret;
 }
 
-static std::uniform_real_distribution<double> theta_dist(0, M_PI);
-static std::uniform_real_distribution<double> phi_dist(0, 2.0*M_PI);
-static std::default_random_engine re;
-Ray randomRay() {
-    double theta = theta_dist(re);
-    double phi = phi_dist(re);
-
-    return Ray(Point(0, 0, 0), Direction(std::sin(theta)*std::cos(phi),
-                                         std::sin(theta)*std::sin(phi),
-                                         std::cos(theta)));
-}
-
+Rng rng;
 int main() {
+    Surface surf_walls("models/cylinder/cylinder_walls.stl", 0.1);
+    Surface surf_walls1("models/cylinder/cylinder_walls.stl");
+
+    for (int i = 0; i < 10; i++) {
+        surf_walls.getRandomPoint(rng);
+    }
+#if 0
     Polyhedron mesh_cap1;
     Polyhedron mesh_cap2;
     Polyhedron mesh_walls;
@@ -92,6 +87,7 @@ int main() {
         }
         /* std::cout << std::endl; */
     }
+#endif
 
     return 0;
 }
