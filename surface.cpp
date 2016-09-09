@@ -12,11 +12,10 @@ void Surface::buildAABBTree() {
 void Surface::computeFaceNormals() {
     if (!isLoaded()) return;
 
-    Surface_mesh::Property_map<face_descriptor, Vector> faceNormals =
-        mesh_.add_property_map<face_descriptor, Vector>
+    faceNormals_ = mesh_.add_property_map<face_descriptor, Vector>
         ("f:normals", CGAL::NULL_VECTOR).first;
     CGAL::Polygon_mesh_processing::compute_face_normals(mesh_,
-        faceNormals,
+        faceNormals_,
         CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()).
         geom_traits(K()));
 }
@@ -134,6 +133,40 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
 
     ifs.close();
     return false;
+}
+
+void Surface::computeIntersection(Ray r) {
+    Point source = r.source();
+
+    std::list<Ray_intersection> intersections;
+    tree_.all_intersections(r, std::back_inserter(intersections));
+
+    bool found = false;
+    double nearestDistance = 0.0;
+    Point *nearestPoint;
+    face_descriptor nearestFaceId;
+    Point *p = NULL;
+    for (Ray_intersection intersection : intersections) {
+        if (intersection && (p = boost::get<Point>(&(intersection->first)))) {
+            double distance = CGAL::squared_distance(source, *p);
+            if (!found || distance < nearestDistance) {
+                found = true;
+                nearestPoint = p;
+                nearestDistance = distance;
+                nearestFaceId = intersection->second;
+            }
+        }
+    }
+
+    if (found) {
+        std::cout << "Found intersection at point (" << nearestPoint->x() <<
+            ", " << nearestPoint->y() << ", " << nearestPoint->z() << ")" <<
+            std::endl;
+        std::cout << "Face id: " << nearestFaceId << std::endl;
+        Vector n = faceNormals_[nearestFaceId];
+        std::cout << "Face normal: (" << n.x() << ", " << n.y() <<
+            ", " << n.z() << ")" << std::endl << std::endl;
+    }
 }
 
 bool Surface::isLoaded() {

@@ -8,6 +8,7 @@
 
 class Surface {
     Surface_mesh mesh_;
+    Surface_mesh::Property_map<face_descriptor, Vector> faceNormals_;
     double stickingFactor_;
     double sojournTime_;
     double temperature_;
@@ -24,6 +25,7 @@ class Surface {
         void computeFaceNormals();
         void computeFaceMidpoints();
         Point getRandomPoint(Rng &rng);
+        void computeIntersection(Ray r);
 
         Surface() {};
         Surface(std::string filename, double avgTriangleArea = -1.0) {

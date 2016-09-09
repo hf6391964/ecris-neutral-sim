@@ -2,7 +2,7 @@
 #define CGAL_AND_TYPEDEFS_H
 
 #include <CGAL/Simple_cartesian.h>
-#include <CGAL/Polyhedron_3.h>
+#include <CGAL/squared_distance_3.h>
 #include <CGAL/Surface_mesh.h>
 #include <CGAL/AABB_tree.h>
 #include <CGAL/AABB_traits.h>
@@ -24,7 +24,6 @@ typedef K::Vector_3 Vector;
 typedef K::Direction_3 Direction;
 typedef K::Ray_3 Ray;
 typedef CGAL::Bbox_3 Bbox;
-typedef CGAL::Polyhedron_3<K> Polyhedron;
 typedef CGAL::Surface_mesh<Point> Surface_mesh;
 typedef Surface_mesh::Face_index face_descriptor;
 typedef Surface_mesh::Vertex_index vertex_descriptor;
