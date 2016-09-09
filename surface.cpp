@@ -135,7 +135,11 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
     return false;
 }
 
-void Surface::computeIntersection(Ray r) {
+bool Surface::isLoaded() {
+    return mesh_.is_valid() && !mesh_.is_empty();
+}
+
+bool Surface::computeIntersection(Ray r) {
     Point source = r.source();
 
     std::list<Ray_intersection> intersections;
@@ -167,8 +171,6 @@ void Surface::computeIntersection(Ray r) {
         std::cout << "Face normal: (" << n.x() << ", " << n.y() <<
             ", " << n.z() << ")" << std::endl << std::endl;
     }
-}
 
-bool Surface::isLoaded() {
-    return mesh_.is_valid() && !mesh_.is_empty();
+    return found;
 }

@@ -25,7 +25,7 @@ class Surface {
         void computeFaceNormals();
         void computeFaceMidpoints();
         Point getRandomPoint(Rng &rng);
-        void computeIntersection(Ray r);
+        bool computeIntersection(Ray r);
 
         Surface() {};
         Surface(std::string filename, double avgTriangleArea = -1.0) {
