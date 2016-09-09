@@ -5,7 +5,8 @@ void Surface::buildAABBTree() {
 
     tree_.rebuild(faces(mesh_).first, faces(mesh_).second, mesh_);
     tree_.build();
-    tree_.accelerate_distance_queries();
+    // This is not probably needed as we do only intersection queries ATM
+    // tree_.accelerate_distance_queries();
     bbox_ = tree_.bbox();
 }
 
