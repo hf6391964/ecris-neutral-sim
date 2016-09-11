@@ -1,15 +1,17 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
-#include "cgal_end_typedefs.h"
+#include "cgal_and_typedefs.h"
 
 class Particle {
     Point position;
     Direction direction;
-    double velocity;
+    double speed;
 
     public:
         enum State { Free, OnWall, Colliding };
+
+        void updateVelocity(double speed, Direction direction);
 };
 
 #endif
