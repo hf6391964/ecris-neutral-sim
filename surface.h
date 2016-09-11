@@ -28,14 +28,14 @@ class Surface {
 
     public:
         bool loadFromSTL(std::string filename, double avgTriangleArea = -1.0);
-        bool isLoaded();
+        bool isLoaded() const;
         void buildAABBTree();
         void computeAreaCDF();
         void computeFaceNormals();
         void computeFaceRotations();
-        Point getRandomPoint(Rng& rng);
-        bool computeIntersection(const Ray& r);
-        Direction generateCosineLawDirection(face_descriptor fd, Rng& rng);
+        Point getRandomPoint(Rng& rng) const;
+        bool computeIntersection(const Ray& r) const;
+        Direction generateCosineLawDirection(face_descriptor fd, Rng& rng) const;
 
         Surface() {};
         Surface(std::string filename, double avgTriangleArea = -1.0) {

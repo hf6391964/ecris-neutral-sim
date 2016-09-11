@@ -65,44 +65,6 @@ void Surface::computeAreaCDF() {
     }
 }
 
-Point Surface::getRandomPoint(Rng& rng) {
-    size_t nFaces = areaCDF_.size();
-
-    double rnd = rng.uniform(0.0, 1.0);
-
-    std::cout << "Number of faces: " << nFaces << std::endl <<
-        "Random number given: " << rnd << std::endl;
-
-    size_t faceIndex = std::upper_bound(areaCDF_.begin(), areaCDF_.end(),
-        rnd) - areaCDF_.begin();
-
-    face_descriptor fd(faceIndex);
-    std::cout << "Found index: " << (int)fd << std::endl <<
-        "Corresponding areaCDF value: " << areaCDF_[fd] << std::endl;
-
-    halfedge_descriptor i = mesh_.halfedge(fd), i2 = mesh_.next(i);
-    Point v1 = mesh_.point(mesh_.source(i)),
-          v2 = mesh_.point(mesh_.source(i2)),
-          v3 = mesh_.point(mesh_.source(mesh_.next(i2)));
-
-    // TODO validate this
-    double a1 = rng.uniform(0.0, 1.0), a2 = rng.uniform(0.0, 1.0);
-    if (a1 + a2 > 1.0) {
-        a1 = 1.0 - a1;
-        a2 = 1.0 - a2;
-    }
-
-    double b = 1.0 - a1 - a2;
-    Point p(b*v1.x() + a1*v2.x() + a2*v3.x(),
-            b*v1.y() + a1*v2.y() + a2*v3.y(),
-            b*v1.z() + a1*v2.z() + a2*v3.z());
-
-    std::cout << "Found point: (" << p.x() << ", " << p.y() << ", " <<
-        p.z() << ")" << std::endl << std::endl;
-
-    return p;
-}
-
 bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
     std::ifstream ifs;
     Surface surf;
@@ -153,11 +115,11 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
     return false;
 }
 
-bool Surface::isLoaded() {
+bool Surface::isLoaded() const {
     return mesh_.is_valid() && !mesh_.is_empty();
 }
 
-bool Surface::computeIntersection(const Ray &r) {
+bool Surface::computeIntersection(const Ray &r) const {
     Point source = r.source();
 
     std::list<Ray_intersection> intersections;
@@ -193,7 +155,45 @@ bool Surface::computeIntersection(const Ray &r) {
     return found;
 }
 
-Direction Surface::generateCosineLawDirection(face_descriptor fd, Rng& rng) {
+Point Surface::getRandomPoint(Rng& rng) const {
+    size_t nFaces = areaCDF_.size();
+
+    double rnd = rng.uniform(0.0, 1.0);
+
+    std::cout << "Number of faces: " << nFaces << std::endl <<
+        "Random number given: " << rnd << std::endl;
+
+    size_t faceIndex = std::upper_bound(areaCDF_.begin(), areaCDF_.end(),
+        rnd) - areaCDF_.begin();
+
+    face_descriptor fd(faceIndex);
+    std::cout << "Found index: " << (int)fd << std::endl <<
+        "Corresponding areaCDF value: " << areaCDF_[fd] << std::endl;
+
+    halfedge_descriptor i = mesh_.halfedge(fd), i2 = mesh_.next(i);
+    Point v1 = mesh_.point(mesh_.source(i)),
+          v2 = mesh_.point(mesh_.source(i2)),
+          v3 = mesh_.point(mesh_.source(mesh_.next(i2)));
+
+    // TODO validate this
+    double a1 = rng.uniform(0.0, 1.0), a2 = rng.uniform(0.0, 1.0);
+    if (a1 + a2 > 1.0) {
+        a1 = 1.0 - a1;
+        a2 = 1.0 - a2;
+    }
+
+    double b = 1.0 - a1 - a2;
+    Point p(b*v1.x() + a1*v2.x() + a2*v3.x(),
+            b*v1.y() + a1*v2.y() + a2*v3.y(),
+            b*v1.z() + a1*v2.z() + a2*v3.z());
+
+    std::cout << "Found point: (" << p.x() << ", " << p.y() << ", " <<
+        p.z() << ")" << std::endl << std::endl;
+
+    return p;
+}
+
+Direction Surface::generateCosineLawDirection(face_descriptor fd, Rng& rng) const {
     double phi = rng.uniform(0.0, 2.0*M_PI);
     double theta = std::asin(std::sqrt(rng.uniform(0.0, 1.0)));
     double st = std::sin(theta);
