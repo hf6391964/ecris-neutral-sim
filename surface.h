@@ -26,7 +26,6 @@ class Surface {
         void computeAreaCDF();
         void computeFaceNormals();
         void computeFaceRotations();
-        void computeFaceMidpoints();
         Point getRandomPoint(Rng& rng);
         bool computeIntersection(const Ray& r);
         Direction generateCosineLawDirection(face_descriptor fd, Rng& rng);

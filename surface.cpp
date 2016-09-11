@@ -49,15 +49,6 @@ void Surface::computeFaceRotations() {
     }
 }
 
-void Surface::computeFaceMidpoints() {
-    if (!isLoaded()) return;
-
-    Surface_mesh::Property_map<face_descriptor, Point> faceMidpoints =
-        mesh_.add_property_map<face_descriptor, Point>("f:midpoints").first;
-
-    // TODO if needed
-}
-
 void Surface::computeAreaCDF() {
     if (!isLoaded()) return;
 
