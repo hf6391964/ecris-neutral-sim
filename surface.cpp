@@ -204,3 +204,15 @@ bool Surface::computeIntersection(Ray r) {
     return found;
 }
 
+Direction Surface::generateCosineLawDirection(face_descriptor fd, Rng &rng) {
+    double phi = rng.uniform(0.0, 2.0*M_PI);
+    double theta = std::asin(std::sqrt(rng.uniform(0.0, 1.0)));
+    double st = std::sin(theta);
+
+    Direction d(st * std::cos(phi),
+                st * std::sin(phi),
+                std::cos(theta));
+
+    return faceRotations_[fd].transform(d);
+}
+

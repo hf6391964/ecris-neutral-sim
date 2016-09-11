@@ -29,6 +29,7 @@ class Surface {
         void computeFaceMidpoints();
         Point getRandomPoint(Rng &rng);
         bool computeIntersection(Ray r);
+        Direction generateCosineLawDirection(face_descriptor fd, Rng &rng);
 
         Surface() {};
         Surface(std::string filename, double avgTriangleArea = -1.0) {
