@@ -9,6 +9,8 @@
 class Surface {
     Surface_mesh mesh_;
     Surface_mesh::Property_map<face_descriptor, Vector> faceNormals_;
+    Surface_mesh::Property_map<face_descriptor, K::Aff_transformation_3>
+        faceRotations_;
     double stickingFactor_;
     double sojournTime_;
     double temperature_;
@@ -23,6 +25,7 @@ class Surface {
         void buildAABBTree();
         void computeAreaCDF();
         void computeFaceNormals();
+        void computeFaceRotations();
         void computeFaceMidpoints();
         Point getRandomPoint(Rng &rng);
         bool computeIntersection(Ray r);
@@ -33,6 +36,7 @@ class Surface {
             buildAABBTree();
             computeAreaCDF();
             computeFaceNormals();
+            computeFaceRotations();
         }
 };
 

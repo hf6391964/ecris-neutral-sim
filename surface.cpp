@@ -21,6 +21,34 @@ void Surface::computeFaceNormals() {
         geom_traits(K()));
 }
 
+void Surface::computeFaceRotations() {
+    if (!isLoaded()) return;
+
+    K::Aff_transformation_3 ident;
+    faceRotations_ = mesh_.add_property_map<face_descriptor, K::Aff_transformation_3>
+        ("f:rotations", ident).first;
+
+    for (face_descriptor fd : mesh_.faces()) {
+        halfedge_descriptor i = mesh_.halfedge(fd), i2 = mesh_.next(i);
+        Point v1 = mesh_.point(mesh_.source(i)),
+              v2 = mesh_.point(mesh_.source(i2)),
+              v3 = mesh_.point(mesh_.source(mesh_.next(i2)));
+
+        Vector t1 = v2 - v1;
+        Vector t2 = v3 - v1;
+        t1 = t1 / std::sqrt(t1.squared_length());
+        t2 = t2 / std::sqrt(t2.squared_length());
+        Vector n = CGAL::cross_product(t2, t1);
+        n = n / -std::sqrt(n.squared_length());
+
+        faceRotations_[fd] = K::Aff_transformation_3(
+            t1.x(), t2.x(), n.x(),
+            t1.y(), t2.y(), n.y(),
+            t1.z(), t2.z(), n.z()
+        );
+    }
+}
+
 void Surface::computeFaceMidpoints() {
     if (!isLoaded()) return;
 
@@ -175,3 +203,4 @@ bool Surface::computeIntersection(Ray r) {
 
     return found;
 }
+
