@@ -76,7 +76,7 @@ void Surface::computeAreaCDF() {
     }
 }
 
-Point Surface::getRandomPoint(Rng &rng) {
+Point Surface::getRandomPoint(Rng& rng) {
     size_t nFaces = areaCDF_.size();
 
     double rnd = rng.uniform(0.0, 1.0);
@@ -168,7 +168,7 @@ bool Surface::isLoaded() {
     return mesh_.is_valid() && !mesh_.is_empty();
 }
 
-bool Surface::computeIntersection(Ray r) {
+bool Surface::computeIntersection(const Ray &r) {
     Point source = r.source();
 
     std::list<Ray_intersection> intersections;
@@ -204,7 +204,7 @@ bool Surface::computeIntersection(Ray r) {
     return found;
 }
 
-Direction Surface::generateCosineLawDirection(face_descriptor fd, Rng &rng) {
+Direction Surface::generateCosineLawDirection(face_descriptor fd, Rng& rng) {
     double phi = rng.uniform(0.0, 2.0*M_PI);
     double theta = std::asin(std::sqrt(rng.uniform(0.0, 1.0)));
     double st = std::sin(theta);
