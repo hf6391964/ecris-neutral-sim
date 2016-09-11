@@ -29,17 +29,15 @@ void Surface::computeFaceRotations() {
         ("f:rotations", ident).first;
 
     for (face_descriptor fd : mesh_.faces()) {
-        halfedge_descriptor i = mesh_.halfedge(fd), i2 = mesh_.next(i);
+        halfedge_descriptor i = mesh_.halfedge(fd);
         Point v1 = mesh_.point(mesh_.source(i)),
-              v2 = mesh_.point(mesh_.source(i2)),
-              v3 = mesh_.point(mesh_.source(mesh_.next(i2)));
+              v2 = mesh_.point(mesh_.source(mesh_.next(i)));
 
         Vector t1 = v2 - v1;
-        Vector t2 = v3 - v1;
         t1 = t1 / std::sqrt(t1.squared_length());
+        Vector n = -faceNormals_[fd];
+        Vector t2 = CGAL::cross_product(n, t1);
         t2 = t2 / std::sqrt(t2.squared_length());
-        Vector n = CGAL::cross_product(t2, t1);
-        n = n / -std::sqrt(n.squared_length());
 
         faceRotations_[fd] = K::Aff_transformation_3(
             t1.x(), t2.x(), n.x(),
