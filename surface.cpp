@@ -115,10 +115,6 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
     return false;
 }
 
-bool Surface::isLoaded() const {
-    return mesh_.is_valid() && !mesh_.is_empty();
-}
-
 bool Surface::computeIntersection(const Ray &r) const {
     Point source = r.source();
 
@@ -175,7 +171,6 @@ Point Surface::getRandomPoint(Rng& rng) const {
           v2 = mesh_.point(mesh_.source(i2)),
           v3 = mesh_.point(mesh_.source(mesh_.next(i2)));
 
-    // TODO validate this
     double a1 = rng.uniform(0.0, 1.0), a2 = rng.uniform(0.0, 1.0);
     if (a1 + a2 > 1.0) {
         a1 = 1.0 - a1;

@@ -1,4 +1,4 @@
 #include "particle.h"
 
-void Particle::updateVelocity(double speed, Direction d) {
+void Particle::setVelocity(double speed, Direction d) {
 }
