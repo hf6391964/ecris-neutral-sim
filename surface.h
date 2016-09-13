@@ -61,6 +61,10 @@ class Surface {
             return isEmissive() ? emissionRate_ : 0.0;
         }
 
+        double getTemperature() const {
+            return temperature_;
+        }
+
         Bbox bbox() const {
             return CGAL::Polygon_mesh_processing::bbox_3(mesh_,
                 CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()));
