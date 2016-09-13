@@ -151,7 +151,7 @@ bool Surface::computeIntersection(const Ray &r) const {
     return found;
 }
 
-Point Surface::getRandomPoint(Rng& rng) const {
+std::tuple<Point, face_descriptor> Surface::getRandomPoint(Rng& rng) const {
     size_t nFaces = areaCDF_.size();
 
     double rnd = rng.uniform(0.0, 1.0);
@@ -185,7 +185,7 @@ Point Surface::getRandomPoint(Rng& rng) const {
     std::cout << "Found point: (" << p.x() << ", " << p.y() << ", " <<
         p.z() << ")" << std::endl << std::endl;
 
-    return p;
+    return std::make_tuple(p, fd);
 }
 
 Direction Surface::generateCosineLawDirection(face_descriptor fd, Rng& rng) const {

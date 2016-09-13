@@ -19,7 +19,27 @@ void SimulationModel::runSimulation(long nParticles, double timestep,
 
         for (long i = 0; i < nParticles; i++) {
             Particle particle;
+
+            Point p;
+            face_descriptor fd;
+            std::tie(p, fd) = pSurf->getRandomPoint(rng);
+            Direction d = pSurf->generateCosineLawDirection(fd, rng);
+            double v = getMBSpeed(rng, particle.getTemperature(),
+                particle.getMolarMass());
+            particle.setVelocity(v, d);
         }
     }
 }
 
+double SimulationModel::getMBSpeed(Rng& rng, double T, double molarMass) {
+    const int N_DIM = 3;
+    const double a = std::sqrt(BOLTZMANN_CONSTANT * AVOGADRO_CONSTANT /
+        (2.0 * 1e-3) * (T / molarMass));
+    double v = 0.0;
+    std::normal_distribution<double> d(0.0, a);
+    for (int i = 0; i < N_DIM; i++) {
+        double tmp = d(rng.engine());
+        v += tmp*tmp;
+    }
+    return std::sqrt(v);
+}

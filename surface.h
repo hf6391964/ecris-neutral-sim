@@ -45,7 +45,7 @@ class Surface {
         void computeFaceNormals();
         void computeFaceRotations();
 
-        Point getRandomPoint(Rng& rng) const;
+        std::tuple<Point, face_descriptor> getRandomPoint(Rng& rng) const;
         bool computeIntersection(const Ray& r) const;
         Direction generateCosineLawDirection(face_descriptor fd, Rng& rng) const;
 
