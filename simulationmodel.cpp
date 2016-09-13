@@ -1,7 +1,7 @@
 #include "simulationmodel.h"
 
-void SimulationModel::runSimulation(long nParticles, double timestep,
-    double gridSize, int nThreads) {
+void SimulationModel::runSimulation(long nParticles, double gridSize,
+    int nThreads) {
     if (nThreads <= 0) {
         nThreads = std::thread::hardware_concurrency();
         if (nThreads == 0) {
@@ -42,31 +42,20 @@ void SimulationModel::runSimulation(long nParticles, double timestep,
             Particle particle;
             Point p;
             face_descriptor fd;
+
             std::tie(p, fd) = pSurf->getRandomPoint(rng);
             Direction d = pSurf->generateCosineLawDirection(fd, rng);
             double v = getMBSpeed(rng, particle.getTemperature(),
                 particle.getMolarMass());
             particle.setVelocity(v, d);
 
-            IntersectionPoint ip;
-            double distance = 0.0;
-            for (Surface* pTargetSurf : surfaces_) {
-                IntersectionPoint curIp;
-                double curDistance;
-                if (pTargetSurf->computeIntersection(particle.getRay(), curIp,
-                    curDistance)) {
-                    if (ip.pSurface == NULL || curDistance < distance) {
-                        distance = curDistance;
-                        ip.pSurface = pTargetSurf;
-                        ip.point = curIp.point;
-                        ip.faceId = curIp.faceId;
-                    }
-                }
+            if (!particle.findNextIntersection(surfaces_.begin(),
+                surfaces_.end())) {
+                std::cout << "Something wrong with intersections" << std::endl;
+                continue;
             }
 
-            unsigned long step = 0;
-            while (step < maxSteps) {
-            }
+            for (unsigned long step = 0; step < maxSteps; step++) {}
         }
     }
 }

@@ -25,6 +25,8 @@ int main() {
     model.addSurface(surf_source);
     model.addSurface(surf_sink);
 
+    model.runSimulation(100, 1e-5);
+
     delete surf_walls;
     delete surf_source;
     delete surf_sink;

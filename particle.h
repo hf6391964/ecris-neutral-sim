@@ -3,6 +3,7 @@
 
 #include "cgal_and_typedefs.h"
 #include "surface.h"
+#include "util.h"
 
 class Particle {
     public:
@@ -10,9 +11,66 @@ class Particle {
 
         enum State { Free };
 
-        void setVelocity(double speed, Direction direction);
+        void setPosition(Point position) {
+            position_ = position;
+        };
 
-        void setNextIntersection(IntersectionPoint& ip);
+        void setVelocity(double speed, Direction direction) {
+            speed_ = speed;
+            direction_ = direction;
+        };
+
+        template<typename InputIterator>
+        bool findNextIntersection(InputIterator itSurface,
+            InputIterator itEnd) {
+            Ray r = getRay();
+
+            bool found = false;
+            double nearestDistance = 0.0;
+            Point* nearestPoint;
+            face_descriptor nearestFaceId;
+            Point* p = NULL;
+            Surface* pSurface = NULL;
+
+            while (itSurface != itEnd) {
+                std::list<Ray_intersection> intersections;
+                (*itSurface)->computeIntersections(r,
+                    std::back_inserter(intersections));
+
+                for (Ray_intersection intersection : intersections) {
+                    if (intersection &&
+                        (p = boost::get<Point>(&(intersection->first)))) {
+                        double distance = CGAL::squared_distance(position_, *p);
+                        if (!found || distance < nearestDistance) {
+                            found = true;
+                            nearestPoint = p;
+#ifdef DEBUG
+                            std::cout << "Next intersection: ";
+                            printPoint(*p);
+                            std::cout << std::endl;
+#endif
+                            nearestDistance = distance;
+                            nearestFaceId = intersection->second;
+                            pSurface = *itSurface;
+                        }
+                    }
+                }
+
+                itSurface++;
+            }
+
+            if (found) {
+                nextIntersection_.pSurface = pSurface;
+                nextIntersection_.faceId = nearestFaceId;
+                nextIntersection_.point = Point(
+                    nearestPoint->x(),
+                    nearestPoint->y(),
+                    nearestPoint->z()
+                );
+            }
+
+            return found;
+        }
 
         const Point& getPosition() const {
             return position_;

@@ -115,63 +115,24 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
     return false;
 }
 
-bool Surface::computeIntersection(const Ray& r, IntersectionPoint& ip,
-    double& squaredDistance) const {
-    Point source = r.source();
-
-    std::list<Ray_intersection> intersections;
-    tree_.all_intersections(r, std::back_inserter(intersections));
-
-    bool found = false;
-    double nearestDistance = 0.0;
-    Point *nearestPoint;
-    face_descriptor nearestFaceId;
-    Point *p = NULL;
-    for (Ray_intersection intersection : intersections) {
-        if (intersection && (p = boost::get<Point>(&(intersection->first)))) {
-            double distance = CGAL::squared_distance(source, *p);
-            if (!found || distance < nearestDistance) {
-                found = true;
-                nearestPoint = p;
-                nearestDistance = distance;
-                nearestFaceId = intersection->second;
-            }
-        }
-    }
-
-    if (found) {
-        ip.faceId = nearestFaceId;
-        ip.point = Point(nearestPoint->x(), nearestPoint->y(),
-            nearestPoint->z());
-        squaredDistance = nearestDistance;
-#if 0
-        std::cout << "Found intersection at point (" << nearestPoint->x() <<
-            ", " << nearestPoint->y() << ", " << nearestPoint->z() << ")" <<
-            std::endl;
-        std::cout << "Face id: " << nearestFaceId << std::endl;
-        Vector n = faceNormals_[nearestFaceId];
-        std::cout << "Face normal: (" << n.x() << ", " << n.y() <<
-            ", " << n.z() << ")" << std::endl << std::endl;
-#endif
-    }
-
-    return found;
-}
-
 std::tuple<Point, face_descriptor> Surface::getRandomPoint(Rng& rng) const {
-    size_t nFaces = areaCDF_.size();
 
     double rnd = rng.uniform(0.0, 1.0);
 
+#ifdef DEBUG
+    size_t nFaces = areaCDF_.size();
     std::cout << "Number of faces: " << nFaces << std::endl <<
         "Random number given: " << rnd << std::endl;
+#endif
 
     size_t faceIndex = std::upper_bound(areaCDF_.begin(), areaCDF_.end(),
         rnd) - areaCDF_.begin();
 
     face_descriptor fd(faceIndex);
+#ifdef DEBUG
     std::cout << "Found index: " << (int)fd << std::endl <<
         "Corresponding areaCDF value: " << areaCDF_[fd] << std::endl;
+#endif
 
     halfedge_descriptor i = mesh_.halfedge(fd), i2 = mesh_.next(i);
     Point v1 = mesh_.point(mesh_.source(i)),
@@ -189,8 +150,10 @@ std::tuple<Point, face_descriptor> Surface::getRandomPoint(Rng& rng) const {
             b*v1.y() + a1*v2.y() + a2*v3.y(),
             b*v1.z() + a1*v2.z() + a2*v3.z());
 
+#ifdef DEBUG
     std::cout << "Found point: (" << p.x() << ", " << p.y() << ", " <<
         p.z() << ")" << std::endl << std::endl;
+#endif
 
     return std::make_tuple(p, fd);
 }

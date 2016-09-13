@@ -19,8 +19,7 @@ class SimulationModel {
             bbox_ += surface->bbox();
         }
 
-        void runSimulation(long nParticles, double timestep, double gridSize,
-            int nThreads = -1);
+        void runSimulation(long nParticles, double gridSize, int nThreads = -1);
 
         static double getMBSpeed(Rng& rng, double T, double molarMass);
         static double getMBAverage(double T, double molarMass);
