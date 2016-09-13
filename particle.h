@@ -12,6 +12,20 @@ class Particle {
 
         void setVelocity(double speed, Direction direction);
 
+        void setNextIntersection(IntersectionPoint& ip);
+
+        const Point& getPosition() const {
+            return position_;
+        }
+
+        const Direction& getDirection() const {
+            return direction_;
+        }
+
+        const Ray getRay() const {
+            return Ray(position_, direction_);
+        }
+
         double getMolarMass() const {
             return molarMass_;
         }
@@ -27,6 +41,7 @@ class Particle {
         double temperature_ = 0.0;  // K
         double molarMass_ = 1.0;  // g/mol
         State state_ = Free;
+        IntersectionPoint nextIntersection_;
 };
 
 #endif

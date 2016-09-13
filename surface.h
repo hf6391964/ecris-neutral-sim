@@ -9,7 +9,7 @@
 class Surface;
 
 struct IntersectionPoint {
-    Surface& surface;
+    Surface* pSurface = NULL;
     face_descriptor faceId;
     Point point;
 };
@@ -46,7 +46,8 @@ class Surface {
         void computeFaceRotations();
 
         std::tuple<Point, face_descriptor> getRandomPoint(Rng& rng) const;
-        bool computeIntersection(const Ray& r) const;
+        bool computeIntersection(const Ray& r, IntersectionPoint& ip,
+            double& squaredDistance) const;
         Direction generateCosineLawDirection(face_descriptor fd, Rng& rng) const;
 
         bool isLoaded() const {

@@ -47,6 +47,26 @@ void SimulationModel::runSimulation(long nParticles, double timestep,
             double v = getMBSpeed(rng, particle.getTemperature(),
                 particle.getMolarMass());
             particle.setVelocity(v, d);
+
+            IntersectionPoint ip;
+            double distance = 0.0;
+            for (Surface* pTargetSurf : surfaces_) {
+                IntersectionPoint curIp;
+                double curDistance;
+                if (pTargetSurf->computeIntersection(particle.getRay(), curIp,
+                    curDistance)) {
+                    if (ip.pSurface == NULL || curDistance < distance) {
+                        distance = curDistance;
+                        ip.pSurface = pTargetSurf;
+                        ip.point = curIp.point;
+                        ip.faceId = curIp.faceId;
+                    }
+                }
+            }
+
+            unsigned long step = 0;
+            while (step < maxSteps) {
+            }
         }
     }
 }

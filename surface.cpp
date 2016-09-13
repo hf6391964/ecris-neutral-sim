@@ -115,7 +115,8 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
     return false;
 }
 
-bool Surface::computeIntersection(const Ray &r) const {
+bool Surface::computeIntersection(const Ray& r, IntersectionPoint& ip,
+    double& squaredDistance) const {
     Point source = r.source();
 
     std::list<Ray_intersection> intersections;
@@ -139,6 +140,11 @@ bool Surface::computeIntersection(const Ray &r) const {
     }
 
     if (found) {
+        ip.faceId = nearestFaceId;
+        ip.point = Point(nearestPoint->x(), nearestPoint->y(),
+            nearestPoint->z());
+        squaredDistance = nearestDistance;
+#if 0
         std::cout << "Found intersection at point (" << nearestPoint->x() <<
             ", " << nearestPoint->y() << ", " << nearestPoint->z() << ")" <<
             std::endl;
@@ -146,6 +152,7 @@ bool Surface::computeIntersection(const Ray &r) const {
         Vector n = faceNormals_[nearestFaceId];
         std::cout << "Face normal: (" << n.x() << ", " << n.y() <<
             ", " << n.z() << ")" << std::endl << std::endl;
+#endif
     }
 
     return found;
