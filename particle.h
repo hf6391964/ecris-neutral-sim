@@ -9,16 +9,53 @@ class Particle {
     public:
         Particle() {};
 
-        enum State { Free };
+        enum State { Free, Pumped };
+
+        const Point& getPosition() const {
+            return position_;
+        }
+
+        const Direction& getDirection() const {
+            return direction_;
+        }
+
+        const Ray getRay() const {
+            return Ray(position_, direction_);
+        }
+
+        double getMolarMass() const {
+            return molarMass_;
+        }
+
+        double getTemperature() const {
+            return temperature_;
+        }
+
+        State getState() const {
+            return state_;
+        }
+
+        double getSpeed() const {
+            return speed_;
+        }
 
         void setPosition(Point position) {
             position_ = position;
-        };
+        }
 
         void setVelocity(double speed, Direction direction) {
             speed_ = speed;
             direction_ = direction;
-        };
+        }
+
+        bool hasNextIntersection() {
+            return nextIntersection_.pSurface != NULL;
+        }
+
+        double distanceToIntersection() {
+            return std::sqrt(CGAL::squared_distance(position_,
+                nextIntersection_.point));
+        }
 
         template<typename InputIterator>
         bool findNextIntersection(InputIterator itSurface,
@@ -31,6 +68,7 @@ class Particle {
             face_descriptor nearestFaceId;
             Point* p = NULL;
             Surface* pSurface = NULL;
+            nextIntersection_.pSurface = NULL;
 
             while (itSurface != itEnd) {
                 std::list<Ray_intersection> intersections;
@@ -72,25 +110,21 @@ class Particle {
             return found;
         }
 
-        const Point& getPosition() const {
-            return position_;
+        void goToIntersection(Rng& rng) {
+            if (nextIntersection_.pSurface == NULL) return;
+
+            position_ = nextIntersection_.point;
+            // TODO accommodation!
+            speed_ = Util::getMBSpeed(rng,
+                nextIntersection_.pSurface->getTemperature(), molarMass_);
+            direction_ = nextIntersection_.pSurface->
+                generateCosineLawDirection(nextIntersection_.faceId, rng);
         }
 
-        const Direction& getDirection() const {
-            return direction_;
+        void goForward(double dt) {
+            double stepLength = dt * speed_;
+            position_ = position_ + stepLength * direction_.vector();
         }
-
-        const Ray getRay() const {
-            return Ray(position_, direction_);
-        }
-
-        double getMolarMass() const {
-            return molarMass_;
-        }
-
-        double getTemperature() const {
-            return temperature_;
-        };
 
     private:
         Point position_;

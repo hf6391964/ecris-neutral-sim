@@ -26,7 +26,7 @@ void SimulationModel::runSimulation(long nParticles, double gridSize,
     double timeStepFactor = 2.0;
     // TODO figure out typical particle parameters (e.g. average of present
     // particle masses and surface temperatures)
-    double averageSpeed = getMBAverage(273.0, 44.0);
+    double averageSpeed = Util::getMBAverage(273.0, 44.0);
     double dt = timeStepFactor * gridSize / averageSpeed;
     unsigned long maxSteps = maxTime / dt;
 
@@ -45,8 +45,9 @@ void SimulationModel::runSimulation(long nParticles, double gridSize,
 
             std::tie(p, fd) = pSurf->getRandomPoint(rng);
             Direction d = pSurf->generateCosineLawDirection(fd, rng);
-            double v = getMBSpeed(rng, particle.getTemperature(),
+            double v = Util::getMBSpeed(rng, particle.getTemperature(),
                 particle.getMolarMass());
+            particle.setPosition(p);
             particle.setVelocity(v, d);
 
             if (!particle.findNextIntersection(surfaces_.begin(),
@@ -55,26 +56,34 @@ void SimulationModel::runSimulation(long nParticles, double gridSize,
                 continue;
             }
 
-            for (unsigned long step = 0; step < maxSteps; step++) {}
+            for (unsigned long step = 0; step < maxSteps; step++) {
+                double timeRemainder = dt;
+
+                bool moving = true;
+                while (moving) {
+                    if (!particle.hasNextIntersection() ||
+                        particle.getState() == Particle::Pumped) {
+                        moving = false;
+                    } else {
+                        double isectDistance = particle.distanceToIntersection();
+                        double speed = particle.getSpeed();
+                        if (isectDistance <= speed*timeRemainder) {
+                            timeRemainder -= isectDistance / particle.getSpeed();
+                            particle.goToIntersection(rng);
+                            particle.findNextIntersection(surfaces_.begin(),
+                                surfaces_.end());
+                        } else {
+                            moving = false;
+                            particle.goForward(timeRemainder);
+                        }
+                    }
+                }
+
+                if (particle.getState() == Particle::Pumped) {
+                    break;
+                }
+            }
         }
     }
 }
 
-double SimulationModel::getMBSpeed(Rng& rng, double T, double molarMass) {
-    // Maxwell-Boltzmann distribution implemented by drawing the three velocity
-    // components from normal distribution and taking the resulting magnitude
-    const int N_DIM = 3;
-    const double a = std::sqrt(GAS_CONSTANT * (T / molarMass));
-    std::normal_distribution<double> d(0.0, a);
-
-    double v = 0.0;
-    for (int i = 0; i < N_DIM; i++) {
-        double tmp = d(rng.engine());
-        v += tmp*tmp;
-    }
-    return std::sqrt(v);
-}
-
-double SimulationModel::getMBAverage(double T, double molarMass) {
-    return std::sqrt(8.0 * GAS_CONSTANT / M_PI * (T / molarMass));
-}

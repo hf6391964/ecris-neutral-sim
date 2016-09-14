@@ -6,6 +6,7 @@
 #include "surface.h"
 #include "particle.h"
 #include "constants.h"
+#include "util.h"
 
 class SimulationModel {
     std::vector<Surface*> surfaces_;
@@ -20,9 +21,6 @@ class SimulationModel {
         }
 
         void runSimulation(long nParticles, double gridSize, int nThreads = -1);
-
-        static double getMBSpeed(Rng& rng, double T, double molarMass);
-        static double getMBAverage(double T, double molarMass);
 };
 
 #endif
