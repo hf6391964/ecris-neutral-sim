@@ -3,9 +3,9 @@ INCDIRS = -I../CGAL-4.8.1/include #-I../gsl-2.2.1
 LIBS = -lpthread
 STATIC_LIBS = ../CGAL-4.8.1/lib/libCGAL.a #../gsl-2.2.1/.libs/libgsl.a
 CC = g++
-CFLAGS_COMMON = -Wall -std=c++11
+CFLAGS_COMMON = -Wall -std=c++11 -O3 #-flto
 # CFLAGS = -g
-CFLAGS = -O2
+CFLAGS = #-O3
 
 .PHONY: default all clean
 
@@ -21,7 +21,7 @@ HEADERS = $(wildcard *.h)
 .PRECIOUS: $(TARGET) $(OBJECTS)
 
 $(TARGET): $(OBJECTS)
-	$(CC) $(OBJECTS) $(STATIC_LIBS) -Wall $(LIBS) -o $@
+	$(CC) $(CFLAGS_COMMON) -o $@ $(LIBS) $(OBJECTS) $(STATIC_LIBS) 
 
 clean:
 	rm -f *.o
