@@ -43,12 +43,19 @@ void SimulationModel::runSimulation(long nParticles, double gridSize,
             Point p;
             face_descriptor fd;
 
+            std::cout << "Particle " << i << std::endl;
+
             std::tie(p, fd) = pSurf->getRandomPoint(rng);
             Direction d = pSurf->generateCosineLawDirection(fd, rng);
             double v = Util::getMBSpeed(rng, particle.getTemperature(),
                 particle.getMolarMass());
             particle.setPosition(p);
             particle.setVelocity(v, d);
+            std::cout << "Position: ";
+            Util::printPoint(p);
+            std::cout << ", direction: ";
+            Util::printVector(d.vector());
+            std::cout << std::endl;
 
             if (!particle.findNextIntersection(surfaces_.begin(),
                 surfaces_.end())) {
@@ -77,6 +84,9 @@ void SimulationModel::runSimulation(long nParticles, double gridSize,
                             particle.goForward(timeRemainder);
                         }
                     }
+
+                    /* Util::printPoint(particle.getPosition()); */
+                    /* std::cout << std::endl; */
                 }
 
                 if (particle.getState() == Particle::Pumped) {

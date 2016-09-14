@@ -22,15 +22,16 @@ class Surface {
     Surface_mesh::Property_map<face_descriptor, Vector> faceNormals_;
     Surface_mesh::Property_map<face_descriptor, K::Aff_transformation_3>
         faceRotations_;
-    double stickingFactor_;
+    double pumpingFactor_;
     double temperature_;
     double emissionRate_;
+    unsigned long pumpedParticles_ = 0;
 
     public:
         Surface() {};
-        Surface(std::string filename, double stickingFactor, double temperature,
+        Surface(std::string filename, double pumpingFactor, double temperature,
             double emissionRate, double avgTriangleArea = -1.0)
-            : stickingFactor_(stickingFactor), temperature_(temperature),
+            : pumpingFactor_(pumpingFactor), temperature_(temperature),
               emissionRate_(emissionRate) {
             loadFromSTL(filename, avgTriangleArea);
             buildAABBTree();
@@ -56,7 +57,7 @@ class Surface {
 
         bool isLoaded() const {
             return mesh_.is_valid() && !mesh_.is_empty();
-        };
+        }
 
         bool isEmissive() const {
             return emissionRate_ > 0.0;
@@ -70,9 +71,21 @@ class Surface {
             return temperature_;
         }
 
+        unsigned long getPumpedParticles() const {
+            return pumpedParticles_;
+        }
+
         Bbox bbox() const {
             return CGAL::Polygon_mesh_processing::bbox_3(mesh_,
                 CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()));
+        }
+
+        bool checkIfPumped(Rng& rng) const {
+            return rng.uniform(0.0, 1.0) < pumpingFactor_;
+        }
+
+        void addPumpedParticle() {
+            pumpedParticles_ += 1;
         }
 };
 

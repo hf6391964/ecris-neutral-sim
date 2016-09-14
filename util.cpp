@@ -1,7 +1,11 @@
 #include "util.h"
 
-void Util::printPoint(Point& p) {
+void Util::printPoint(Point p) {
     std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z() << ")";
+}
+
+void Util::printVector(Vector v) {
+    std::cout << "(" << v.x() << ", " << v.y() << ", " << v.z() << ")";
 }
 
 double Util::getMBSpeed(Rng& rng, double T, double molarMass) {

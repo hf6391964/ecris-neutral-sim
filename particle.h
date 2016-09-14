@@ -11,7 +11,7 @@ class Particle {
 
         enum State { Free, Pumped };
 
-        const Point& getPosition() const {
+        const Point getPosition() const {
             return position_;
         }
 
@@ -119,6 +119,11 @@ class Particle {
                 nextIntersection_.pSurface->getTemperature(), molarMass_);
             direction_ = nextIntersection_.pSurface->
                 generateCosineLawDirection(nextIntersection_.faceId, rng);
+
+            if (nextIntersection_.pSurface->checkIfPumped(rng)) {
+                nextIntersection_.pSurface->addPumpedParticle();
+                state_ = Pumped;
+            }
         }
 
         void goForward(double dt) {
