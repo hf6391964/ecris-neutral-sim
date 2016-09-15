@@ -5,6 +5,8 @@
 #include "surface.h"
 #include "util.h"
 
+/* #define DEBUG */
+
 class Particle {
     public:
         Particle() {};
@@ -64,7 +66,7 @@ class Particle {
 
             bool found = false;
             double nearestDistance = 0.0;
-            Point* nearestPoint;
+            Point nearestPoint;
             face_descriptor nearestFaceId;
             Point* p = NULL;
             Surface* pSurface = NULL;
@@ -79,12 +81,13 @@ class Particle {
                     if (intersection &&
                         (p = boost::get<Point>(&(intersection->first)))) {
                         double distance = CGAL::squared_distance(position_, *p);
-                        if (!found || distance < nearestDistance) {
+                        if (distance > 1e-24 &&
+                            (!found || distance < nearestDistance)) {
                             found = true;
-                            nearestPoint = p;
+                            nearestPoint = *p;
 #ifdef DEBUG
                             std::cout << "Next intersection: ";
-                            printPoint(*p);
+                            Util::printPoint(*p);
                             std::cout << std::endl;
 #endif
                             nearestDistance = distance;
@@ -100,11 +103,7 @@ class Particle {
             if (found) {
                 nextIntersection_.pSurface = pSurface;
                 nextIntersection_.faceId = nearestFaceId;
-                nextIntersection_.point = Point(
-                    nearestPoint->x(),
-                    nearestPoint->y(),
-                    nearestPoint->z()
-                );
+                nextIntersection_.point = nearestPoint;
             }
 
             return found;
@@ -135,7 +134,7 @@ class Particle {
         Point position_;
         Direction direction_;
         double speed_ = 0.0;  // m/s
-        double temperature_ = 0.0;  // K
+        double temperature_ = 273.0;  // K
         double molarMass_ = 1.0;  // g/mol
         State state_ = Free;
         IntersectionPoint nextIntersection_;

@@ -17,7 +17,7 @@ double Util::getMBSpeed(Rng& rng, double T, double molarMass) {
 
     double v = 0.0;
     for (int i = 0; i < N_DIM; i++) {
-        double tmp = d(rng.engine());
+        double tmp = d(rng);
         v += tmp*tmp;
     }
     return std::sqrt(v);

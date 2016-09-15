@@ -81,7 +81,7 @@ class Surface {
         }
 
         bool checkIfPumped(Rng& rng) const {
-            return rng.uniform(0.0, 1.0) < pumpingFactor_;
+            return uni01(rng) < pumpingFactor_;
         }
 
         void addPumpedParticle() {

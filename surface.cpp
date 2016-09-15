@@ -117,7 +117,7 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
 
 std::tuple<Point, face_descriptor> Surface::getRandomPoint(Rng& rng) const {
 
-    double rnd = rng.uniform(0.0, 1.0);
+    double rnd = uni01(rng);
 
 #ifdef DEBUG
     size_t nFaces = areaCDF_.size();
@@ -139,7 +139,7 @@ std::tuple<Point, face_descriptor> Surface::getRandomPoint(Rng& rng) const {
           v2 = mesh_.point(mesh_.source(i2)),
           v3 = mesh_.point(mesh_.source(mesh_.next(i2)));
 
-    double a1 = rng.uniform(0.0, 1.0), a2 = rng.uniform(0.0, 1.0);
+    double a1 = uni01(rng), a2 = uni01(rng);
     if (a1 + a2 > 1.0) {
         a1 = 1.0 - a1;
         a2 = 1.0 - a2;
@@ -159,8 +159,8 @@ std::tuple<Point, face_descriptor> Surface::getRandomPoint(Rng& rng) const {
 }
 
 Direction Surface::generateCosineLawDirection(face_descriptor fd, Rng& rng) const {
-    double phi = rng.uniform(0.0, 2.0*M_PI);
-    double theta = std::asin(std::sqrt(rng.uniform(0.0, 1.0)));
+    double phi = 2.0*M_PI * uni01(rng);
+    double theta = std::asin(std::sqrt(uni01(rng)));
     double st = std::sin(theta);
 
     Direction d(st * std::cos(phi),

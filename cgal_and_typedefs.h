@@ -1,6 +1,8 @@
 #ifndef CGAL_AND_TYPEDEFS_H
 #define CGAL_AND_TYPEDEFS_H
 
+#include <random>
+
 #include <CGAL/Simple_cartesian.h>
 #include <CGAL/squared_distance_3.h>
 #include <CGAL/Surface_mesh.h>
@@ -15,8 +17,6 @@
 #include <CGAL/Polygon_mesh_processing/measure.h>
 #include <CGAL/Polygon_mesh_processing/compute_normal.h>
 #include <CGAL/Polygon_mesh_processing/bbox.h>
-
-#include "randutils.hpp"
 
 typedef CGAL::Simple_cartesian<double> K;
 typedef K::FT FT;
@@ -36,7 +36,8 @@ typedef Tree::Point_and_primitive_id Point_and_primitive_id;
 typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type>
     Ray_intersection;
 
-typedef randutils::mt19937_rng Rng;
+typedef std::mt19937 Rng;
+static std::uniform_real_distribution<double> uni01(0.0, 1.0);
 
 #endif
 
