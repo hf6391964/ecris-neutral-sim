@@ -1,15 +1,9 @@
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <array>
-#include <cmath>
 
 #include "cgal_and_typedefs.h"
 #include "surface.h"
 #include "simulationmodel.h"
 
-Rng rng;
 int main() {
     SimulationModel model;
 
@@ -24,7 +18,7 @@ int main() {
     model.addSurface(surf_source);
     model.addSurface(surf_sink);
 
-    unsigned long nParticles = 500000;
+    unsigned long nParticles = 1000000;
     model.runSimulation(nParticles, 1e-1);
 
     std::cout << "% of particles pumped to source: " <<
