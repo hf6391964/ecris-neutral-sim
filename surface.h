@@ -3,6 +3,7 @@
 
 #include <string>
 #include <algorithm>
+#include <atomic>
 
 #include "cgal_and_typedefs.h"
 
@@ -25,14 +26,17 @@ class Surface {
     double pumpingFactor_;
     double temperature_;
     double emissionRate_;
-    unsigned long pumpedParticles_ = 0;
+    std::atomic_ulong pumpedParticles_;
 
     public:
-        Surface() {};
+        Surface() {
+            pumpedParticles_ = 0;
+        }
         Surface(std::string filename, double pumpingFactor, double temperature,
             double emissionRate, double avgTriangleArea = -1.0)
             : pumpingFactor_(pumpingFactor), temperature_(temperature),
               emissionRate_(emissionRate) {
+            pumpedParticles_ = 0;
             loadFromSTL(filename, avgTriangleArea);
             buildAABBTree();
             computeAreaCDF();

@@ -1,6 +1,6 @@
 #include "simulationmodel.h"
 
-void SimulationModel::runSimulation(long nParticles, double gridSize,
+void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
     int nThreads) {
     if (nThreads <= 0) {
         nThreads = std::thread::hardware_concurrency();
@@ -31,7 +31,21 @@ void SimulationModel::runSimulation(long nParticles, double gridSize,
     unsigned long maxSteps = maxTime / dt;
 
     std::cout << "Timestep: " << dt << std::endl;
+    std::cout << "Running with " << nThreads << " thread(s)..." << std::endl;
 
+    std::vector<std::thread> threads;
+    for (int i = 0; i < nThreads; i++) {
+        threads.push_back(std::thread(&SimulationModel::simulationThread,
+            this, particlesInChunk, maxSteps, dt, simBbox));
+    }
+
+    for (auto it = threads.begin(); it != threads.end(); ++it) {
+        it->join();
+    }
+}
+
+void SimulationModel::simulationThread(unsigned long nParticles,
+    unsigned long maxSteps, double dt, Bbox bbox) {
     for (Surface* pSurf : surfaces_) {
         if (!pSurf->isEmissive()) continue;
 
@@ -41,7 +55,7 @@ void SimulationModel::runSimulation(long nParticles, double gridSize,
         // TODO run simulation separately for each particle species in the
         // spectrum
 
-        for (long i = 0; i < nParticles; i++) {
+        for (unsigned long i = 0; i < nParticles; i++) {
             Particle particle;
             Point p;
             face_descriptor fd;
@@ -104,4 +118,3 @@ void SimulationModel::runSimulation(long nParticles, double gridSize,
         }
     }
 }
-

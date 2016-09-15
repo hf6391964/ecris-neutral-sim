@@ -14,13 +14,17 @@ class SimulationModel {
     double timestep_;
     Bbox bbox_;
 
+    void simulationThread(unsigned long nParticles, unsigned long maxSteps,
+        double dt, Bbox bbox);
+
     public:
         void addSurface(Surface* surface) {
             surfaces_.push_back(surface);
             bbox_ += surface->bbox();
         }
 
-        void runSimulation(long nParticles, double gridSize, int nThreads = -1);
+        void runSimulation(unsigned long nParticles, double gridSize,
+            int nThreads = -1);
 };
 
 #endif
