@@ -12,16 +12,6 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
 
     long particlesInChunk = nParticles / nThreads;
 
-    double xlen = bbox_.xmax() - bbox_.xmin(),
-           ylen = bbox_.ymax() - bbox_.ymin(),
-           zlen = bbox_.zmax() - bbox_.zmin();
-
-    Bbox simBbox = bbox_ + Point(
-        bbox_.xmin() + std::ceil(xlen / gridSize) * gridSize,
-        bbox_.ymin() + std::ceil(ylen / gridSize) * gridSize,
-        bbox_.zmin() + std::ceil(zlen / gridSize) * gridSize
-    ).bbox();
-
     double maxTime = 50.0;
     double timeStepFactor = 2.0;
     // TODO figure out typical particle parameters (e.g. average of present
@@ -30,13 +20,17 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
     double dt = timeStepFactor * gridSize / averageSpeed;
     unsigned long maxSteps = maxTime / dt;
 
+    Grid grid(bbox_, gridSize);
+
+    size_t arraySize = grid.arraySize();
+
     std::cout << "Timestep: " << dt << std::endl;
     std::cout << "Running with " << nThreads << " thread(s)..." << std::endl;
 
     std::vector<std::thread> threads;
     for (int i = 0; i < nThreads; i++) {
         threads.push_back(std::thread(&SimulationModel::simulationThread,
-            this, particlesInChunk, maxSteps, dt, simBbox));
+            this, particlesInChunk, maxSteps, dt, grid));
     }
 
     for (auto it = threads.begin(); it != threads.end(); ++it) {
@@ -45,7 +39,7 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
 }
 
 void SimulationModel::simulationThread(unsigned long nParticles,
-    unsigned long maxSteps, double dt, Bbox bbox) {
+    unsigned long maxSteps, double dt, Grid grid) {
     for (Surface* pSurf : surfaces_) {
         if (!pSurf->isEmissive()) continue;
 

@@ -6,6 +6,7 @@
 #include "surface.h"
 #include "particle.h"
 #include "constants.h"
+#include "grid.h"
 #include "util.h"
 
 class SimulationModel {
@@ -15,7 +16,7 @@ class SimulationModel {
     Bbox bbox_;
 
     void simulationThread(unsigned long nParticles, unsigned long maxSteps,
-        double dt, Bbox bbox);
+        double dt, Grid grid);
 
     public:
         void addSurface(Surface* surface) {
