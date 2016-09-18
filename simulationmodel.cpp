@@ -22,7 +22,9 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
 
     Grid grid(bbox_, gridSize);
 
-    size_t arraySize = grid.arraySize();
+    size_t arraySize = (nThreads + 1) * grid.arraySize();
+    Vector* velocity = new Vector[arraySize];
+    unsigned long* count = new unsigned long[arraySize];
 
     std::cout << "Timestep: " << dt << std::endl;
     std::cout << "Running with " << nThreads << " thread(s)..." << std::endl;
@@ -39,6 +41,9 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
     for (auto it = threads.begin(); it != threads.end(); ++it) {
         it->join();
     }
+
+    delete[] velocity;
+    delete[] count;
 }
 
 void SimulationModel::simulationThread(unsigned long nParticles,
