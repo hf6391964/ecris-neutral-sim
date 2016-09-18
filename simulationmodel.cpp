@@ -27,10 +27,13 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
     std::cout << "Timestep: " << dt << std::endl;
     std::cout << "Running with " << nThreads << " thread(s)..." << std::endl;
 
+    std::seed_seq sseq = {2016, 9, 19};
     std::vector<std::thread> threads;
+    std::vector<uint_least32_t> seeds(nThreads);
+    sseq.generate(seeds.begin(), seeds.end());
     for (int i = 0; i < nThreads; i++) {
         threads.push_back(std::thread(&SimulationModel::simulationThread,
-            this, particlesInChunk, maxSteps, dt, grid));
+            this, particlesInChunk, maxSteps, dt, grid, seeds[i]));
     }
 
     for (auto it = threads.begin(); it != threads.end(); ++it) {
@@ -39,12 +42,11 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
 }
 
 void SimulationModel::simulationThread(unsigned long nParticles,
-    unsigned long maxSteps, double dt, Grid grid) {
+    unsigned long maxSteps, double dt, Grid grid, uint_least32_t seed) {
     for (Surface* pSurf : surfaces_) {
         if (!pSurf->isEmissive()) continue;
 
-        Rng rng;
-        rng.seed(2016u);
+        Rng rng(seed);
 
         // TODO run simulation separately for each particle species in the
         // spectrum
@@ -54,19 +56,12 @@ void SimulationModel::simulationThread(unsigned long nParticles,
             Point p;
             face_descriptor fd;
 
-            /* std::cout << "Particle " << i << std::endl; */
-
             std::tie(p, fd) = pSurf->getRandomPoint(rng);
             Direction d = pSurf->generateCosineLawDirection(fd, rng);
             double v = Util::getMBSpeed(rng, particle.getTemperature(),
                 particle.getMolarMass());
             particle.setPosition(p);
             particle.setVelocity(v, d);
-            /* std::cout << "Position: "; */
-            /* Util::printPoint(p); */
-            /* std::cout << ", direction: "; */
-            /* Util::printVector(d.vector()); */
-            /* std::cout << ", speed: " << v << std::endl; */
 
             if (!particle.findNextIntersection(surfaces_.begin(),
                 surfaces_.end())) {
@@ -79,11 +74,6 @@ void SimulationModel::simulationThread(unsigned long nParticles,
 
                 bool moving = true;
                 while (moving) {
-                    /* Util::printPoint(particle.getPosition()); */
-                    /* Util::printVector(particle.getDirection().vector()); */
-                    /* std::cout << ", " << particle.getSpeed(); */
-                    /* std::cout << std::endl; */
-
                     if (!particle.hasNextIntersection() ||
                         particle.getState() == Particle::Pumped) {
                         moving = false;
@@ -95,11 +85,9 @@ void SimulationModel::simulationThread(unsigned long nParticles,
                             particle.goToIntersection(rng);
                             particle.findNextIntersection(surfaces_.begin(),
                                 surfaces_.end());
-                            /* std::cout << "Collision" << std::endl; */
                         } else {
                             moving = false;
                             particle.goForward(timeRemainder);
-                            /* std::cout << "Finished timestep" << std::endl; */
                         }
                     }
                 }

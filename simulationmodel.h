@@ -2,6 +2,7 @@
 #define SIMULATIONMODEL_H
 
 #include <thread>
+#include <random>
 
 #include "surface.h"
 #include "particle.h"
@@ -16,7 +17,7 @@ class SimulationModel {
     Bbox bbox_;
 
     void simulationThread(unsigned long nParticles, unsigned long maxSteps,
-        double dt, Grid grid);
+        double dt, Grid grid, uint_least32_t seed);
 
     public:
         void addSurface(Surface* surface) {
