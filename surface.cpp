@@ -62,7 +62,6 @@ void Surface::computeAreaCDF() {
 
     for (face_descriptor fd : mesh_.faces()) {
         areaCDF_[fd] /= cdfValue;
-        std::cout << areaCDF_[fd] << std::endl;
     }
 }
 

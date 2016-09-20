@@ -66,7 +66,9 @@ class Particle {
         template<typename InputIterator>
         bool findNextIntersection(InputIterator itSurface,
             InputIterator itEnd) {
-            Ray r = getRay();
+            Direction direction = getDirection();
+            Point position = getPosition() + 1e-12 * direction.vector();
+            Ray r(position, direction);
 
             bool found = false;
             double nearestDistance = 0.0;
@@ -77,27 +79,24 @@ class Particle {
             nextIntersection_.pSurface = NULL;
 
             while (itSurface != itEnd) {
-                std::list<Ray_intersection> intersections;
-                (*itSurface)->computeIntersections(r,
-                    std::back_inserter(intersections));
+                Ray_intersection intersection;
+                (*itSurface)->computeFirstIntersection(r, intersection);
 
-                for (Ray_intersection intersection : intersections) {
-                    if (intersection &&
-                        (p = boost::get<Point>(&(intersection->first)))) {
-                        double distance = CGAL::squared_distance(position_, *p);
-                        if (distance > 1e-24 &&
-                            (!found || distance < nearestDistance)) {
-                            found = true;
-                            nearestPoint = *p;
+                if (intersection &&
+                    (p = boost::get<Point>(&(intersection->first)))) {
+                    double distance = CGAL::squared_distance(position_, *p);
+                    if (distance > 1e-24 &&
+                        (!found || distance < nearestDistance)) {
+                        found = true;
+                        nearestPoint = *p;
 #ifdef DEBUG
-                            std::cout << "Next intersection: ";
-                            Util::printPoint(*p);
-                            std::cout << std::endl;
+                        std::cout << "Next intersection: ";
+                        Util::printPoint(*p);
+                        std::cout << std::endl;
 #endif
-                            nearestDistance = distance;
-                            nearestFaceId = intersection->second;
-                            pSurface = *itSurface;
-                        }
+                        nearestDistance = distance;
+                        nearestFaceId = intersection->second;
+                        pSurface = *itSurface;
                     }
                 }
 

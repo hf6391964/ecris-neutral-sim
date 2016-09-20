@@ -52,9 +52,9 @@ class Surface {
 
         std::tuple<Point, face_descriptor> getRandomPoint(Rng& rng) const;
 
-        template<typename OutputIterator>
-        void computeIntersections(const Ray& r, OutputIterator out) const {
-            tree_.all_intersections(r, out);
+        void computeFirstIntersection(const Ray& r,
+            Ray_intersection& isect) const {
+            isect = tree_.first_intersection(r);
         }
 
         Direction generateCosineLawDirection(face_descriptor fd, Rng& rng) const;
