@@ -50,18 +50,19 @@ void Surface::computeFaceRotations() {
 void Surface::computeAreaCDF() {
     if (!isLoaded()) return;
 
-    double meshArea = CGAL::Polygon_mesh_processing::area(mesh_,
-        CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()).
-        geom_traits(K()));
-
     areaCDF_.resize(mesh_.number_of_faces());
 
     double cdfValue = 0.0;
     for (face_descriptor fd : mesh_.faces()) {
         double faceArea = CGAL::Polygon_mesh_processing::face_area(fd, mesh_,
             CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()));
-        cdfValue += faceArea / meshArea;
+        cdfValue += faceArea;
         areaCDF_[fd] = cdfValue;
+    }
+
+    for (face_descriptor fd : mesh_.faces()) {
+        areaCDF_[fd] /= cdfValue;
+        std::cout << areaCDF_[fd] << std::endl;
     }
 }
 
@@ -89,9 +90,11 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
     }
     if (ret) {
         if (avgTriangleArea > 0.0) {
-            double totalArea = CGAL::Polygon_mesh_processing::area(mesh,
-                CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh.points()).
-                geom_traits(K()));
+            double totalArea = 0.0;
+            for (face_descriptor fd : mesh.faces()) {
+                totalArea += CGAL::Polygon_mesh_processing::face_area(fd, mesh,
+                    CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh.points()));
+            }
             double avgArea = totalArea / mesh.number_of_faces();
             double densityControlFactor = avgArea / avgTriangleArea;
 
