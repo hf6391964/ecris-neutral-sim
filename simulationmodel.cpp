@@ -19,6 +19,7 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
     double averageSpeed = Util::getMBAverage(273.0, 1.0);
     double dt = timeStepFactor * gridSize / averageSpeed;
     unsigned long maxSteps = maxTime / dt;
+    std::cout << "max steps: " << maxSteps << std::endl;
 
     Grid grid(bbox_, gridSize);
 
@@ -36,6 +37,10 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
     for (int i = 0; i < nThreads; i++) {
         Vector* velocity = new Vector[arraySize];
         unsigned long* count = new unsigned long[arraySize];
+        for (size_t k = 0; k < arraySize; k++) {
+            velocity[k] = Vector(0.0, 0.0, 0.0);
+            count[k] = 0;
+        }
         velocityPointers.push_back(velocity);
         countPointers.push_back(count);
         threads.push_back(std::thread(&SimulationModel::simulationThread,
@@ -50,13 +55,15 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
     Vector* velocity = new Vector[arraySize];
     unsigned long* count = new unsigned long[arraySize];
     for (size_t j = 0; j < arraySize; j++) {
-        Vector v = CGAL::NULL_VECTOR;
+        Vector v(0.0, 0.0, 0.0);
         unsigned long c = 0;
         for (int n = 0; n < nThreads; n++) {
             v = v + velocityPointers[n][j];
             c += countPointers[n][j];
         }
-        velocity[j] = v / c;
+        if (c > 0) {
+            velocity[j] = v / c;
+        }
         count[j] = c;
     }
 
@@ -141,8 +148,25 @@ void SimulationModel::simulationThread(unsigned long nParticles,
 }
 
 void SimulationModel::writeResults(std::string prefix, Vector* velocity,
-    unsigned long* count, Grid grid) const {
+    unsigned long* count, Grid& grid) const {
     std::ofstream dim(prefix + "_dimensions.csv");
     grid.writeDimensions(dim);
     dim.close();
+
+    size_t nx, ny, nz;
+    std::tie(nx, ny, nz) = grid.dimensions();
+    for (size_t iz = 0; iz < nz; iz++) {
+        std::ofstream f(prefix + "_" + std::to_string(iz) + ".csv");
+        f << "# Z = " << grid.getZatIndex(iz) << std::endl;
+        f << "# vx, vy, vz, count" << std::endl;
+
+        size_t nxy = nx*ny;
+        for (size_t j = 0; j < nxy; j++) {
+            Vector v = velocity[iz*nxy + j];
+            f << v.x() << "," << v.y() << "," << v.z() << "," <<
+                count[iz*nxy + j] << std::endl;
+        }
+
+        f.close();
+    }
 }

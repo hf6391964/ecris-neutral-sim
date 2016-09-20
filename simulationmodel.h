@@ -20,7 +20,7 @@ class SimulationModel {
         unsigned long* count) const;
 
     void writeResults(std::string prefix, Vector* velocity,
-        unsigned long* count, Grid grid) const;
+        unsigned long* count, Grid& grid) const;
 
     public:
         void addSurface(Surface* surface) {

@@ -77,26 +77,25 @@ class Particle {
             Point* p = NULL;
             Surface* pSurface = NULL;
             nextIntersection_.pSurface = NULL;
+            Ray_intersection intersection;
 
             while (itSurface != itEnd) {
-                Ray_intersection intersection;
                 (*itSurface)->computeFirstIntersection(r, intersection);
 
                 if (intersection &&
                     (p = boost::get<Point>(&(intersection->first)))) {
                     double distance = CGAL::squared_distance(position_, *p);
-                    if (distance > 1e-24 &&
-                        (!found || distance < nearestDistance)) {
+                    if (!found || distance < nearestDistance) {
                         found = true;
                         nearestPoint = *p;
+                        nearestDistance = distance;
+                        nearestFaceId = intersection->second;
+                        pSurface = *itSurface;
 #ifdef DEBUG
                         std::cout << "Next intersection: ";
                         Util::printPoint(*p);
                         std::cout << std::endl;
 #endif
-                        nearestDistance = distance;
-                        nearestFaceId = intersection->second;
-                        pSurface = *itSurface;
                     }
                 }
 
