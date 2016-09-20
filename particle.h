@@ -50,6 +50,10 @@ class Particle {
             direction_ = direction;
         }
 
+        Vector getVelocity() const {
+            return speed_ * direction_.vector();
+        }
+
         bool hasNextIntersection() {
             return nextIntersection_.pSurface != NULL;
         }

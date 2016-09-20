@@ -13,11 +13,14 @@
 class SimulationModel {
     std::vector<Surface*> surfaces_;
     long nParticles_;
-    double timestep_;
     Bbox bbox_;
 
     void simulationThread(unsigned long nParticles, unsigned long maxSteps,
-        double dt, Grid grid, uint_least32_t seed);
+        double dt, Grid grid, uint_least32_t seed, Vector* velocity,
+        unsigned long* count) const;
+
+    void writeResults(std::string prefix, Vector* velocity,
+        unsigned long* count, Grid grid) const;
 
     public:
         void addSurface(Surface* surface) {

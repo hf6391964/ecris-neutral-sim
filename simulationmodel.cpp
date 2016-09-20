@@ -22,9 +22,7 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
 
     Grid grid(bbox_, gridSize);
 
-    size_t arraySize = (nThreads + 1) * grid.arraySize();
-    Vector* velocity = new Vector[arraySize];
-    unsigned long* count = new unsigned long[arraySize];
+    size_t arraySize = grid.arraySize();
 
     std::cout << "Timestep: " << dt << std::endl;
     std::cout << "Running with " << nThreads << " thread(s)..." << std::endl;
@@ -32,22 +30,51 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
     std::seed_seq sseq = {2016, 9, 19};
     std::vector<std::thread> threads;
     std::vector<uint_least32_t> seeds(nThreads);
+    std::vector<Vector*> velocityPointers;
+    std::vector<unsigned long*> countPointers;
     sseq.generate(seeds.begin(), seeds.end());
     for (int i = 0; i < nThreads; i++) {
+        Vector* velocity = new Vector[arraySize];
+        unsigned long* count = new unsigned long[arraySize];
+        velocityPointers.push_back(velocity);
+        countPointers.push_back(count);
         threads.push_back(std::thread(&SimulationModel::simulationThread,
-            this, particlesInChunk, maxSteps, dt, grid, seeds[i]));
+            this, particlesInChunk, maxSteps, dt, grid, seeds[i],
+            velocity, count));
     }
 
     for (auto it = threads.begin(); it != threads.end(); ++it) {
         it->join();
     }
 
+    Vector* velocity = new Vector[arraySize];
+    unsigned long* count = new unsigned long[arraySize];
+    for (size_t j = 0; j < arraySize; j++) {
+        Vector v = CGAL::NULL_VECTOR;
+        unsigned long c = 0;
+        for (int n = 0; n < nThreads; n++) {
+            v = v + velocityPointers[n][j];
+            c += countPointers[n][j];
+        }
+        velocity[j] = v / c;
+        count[j] = c;
+    }
+
+    writeResults("test", velocity, count, grid);
+
+    for (auto p : velocityPointers) {
+        delete[] p;
+    }
+    for (auto p : countPointers) {
+        delete[] p;
+    }
     delete[] velocity;
     delete[] count;
 }
 
 void SimulationModel::simulationThread(unsigned long nParticles,
-    unsigned long maxSteps, double dt, Grid grid, uint_least32_t seed) {
+    unsigned long maxSteps, double dt, Grid grid, uint_least32_t seed,
+    Vector* velocity, unsigned long* count) const {
     for (Surface* pSurf : surfaces_) {
         if (!pSurf->isEmissive()) continue;
 
@@ -97,6 +124,13 @@ void SimulationModel::simulationThread(unsigned long nParticles,
                     }
                 }
 
+                size_t arrIndex;
+                if (grid.arrayIndex(particle.getPosition(), arrIndex)) {
+                    count[arrIndex] += 1;
+                    velocity[arrIndex] = velocity[arrIndex] +
+                        particle.getVelocity();
+                }
+
                 if (!particle.hasNextIntersection() ||
                     particle.getState() == Particle::Pumped) {
                     break;
@@ -104,4 +138,11 @@ void SimulationModel::simulationThread(unsigned long nParticles,
             }
         }
     }
+}
+
+void SimulationModel::writeResults(std::string prefix, Vector* velocity,
+    unsigned long* count, Grid grid) const {
+    std::ofstream dim(prefix + "_dimensions.csv");
+    grid.writeDimensions(dim);
+    dim.close();
 }
