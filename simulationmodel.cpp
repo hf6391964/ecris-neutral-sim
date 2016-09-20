@@ -155,8 +155,12 @@ void SimulationModel::writeResults(std::string prefix, Vector* velocity,
 
     size_t nx, ny, nz;
     std::tie(nx, ny, nz) = grid.dimensions();
+    int nDigits = std::log10(nz) + 1;
     for (size_t iz = 0; iz < nz; iz++) {
-        std::ofstream f(prefix + "_" + std::to_string(iz) + ".csv");
+        std::stringstream filename;
+        filename << prefix << '_' << std::setw(nDigits) << std::setfill('0') <<
+            iz << ".csv";
+        std::ofstream f(filename.str());
         f << "# Z = " << grid.getZatIndex(iz) << std::endl;
         f << "# vx, vy, vz, count" << std::endl;
 

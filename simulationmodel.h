@@ -3,6 +3,7 @@
 
 #include <thread>
 #include <random>
+#include <iomanip>
 
 #include "surface.h"
 #include "particle.h"
