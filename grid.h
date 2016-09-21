@@ -61,15 +61,17 @@ class Grid {
         }
 
         void writeDimensions(std::ostream& os) const {
-            os << "# No. of X intervals, Y intervals, Z intervals" << std::endl;
-            os << intervalsX_ << "," << intervalsY_ << "," << intervalsZ_ <<
+            os << "# No. of X intervals" << CSV_SEP << " Y intervals" <<
+                CSV_SEP << " Z intervals" << std::endl;
+            os << intervalsX_ << CSV_SEP << intervalsY_ << CSV_SEP <<
+                intervalsZ_ << std::endl;
+            os << "# Xmin" << CSV_SEP << " Ymin" << CSV_SEP << " Zmin" <<
                 std::endl;
-            os << "# Xmin, Ymin, Zmin" << std::endl;
-            os << bbox_.xmin() << "," << bbox_.ymin() << "," << bbox_.zmin() <<
-                std::endl;
-            os << "# Xmax, Ymax, Zmax" << std::endl;
-            os << bbox_.xmax() << "," << bbox_.ymax() << "," << bbox_.zmax() <<
-                std::endl;
+            os << bbox_.xmin() << CSV_SEP << bbox_.ymin() << CSV_SEP <<
+                bbox_.zmin() << std::endl;
+            os << "# Xmax" << CSV_SEP << " Ymax" << CSV_SEP << " Zmax" << std::endl;
+            os << bbox_.xmax() << CSV_SEP << bbox_.ymax() << CSV_SEP <<
+                bbox_.zmax() << std::endl;
         }
 };
 

@@ -161,13 +161,14 @@ void SimulationModel::writeResults(std::string prefix, Vector* velocity,
         filename << prefix << '_' << std::setw(nDigits) << std::setfill('0') <<
             iz << ".csv";
         std::ofstream f(filename.str());
-        f << "# Z = " << grid.getZatIndex(iz) << std::endl;
-        f << "# vx, vy, vz, count" << std::endl;
+        f << "# Z=" << grid.getZatIndex(iz) << std::endl;
+        f << "# vx" << CSV_SEP << "vy" << CSV_SEP << "vz" << CSV_SEP <<
+            "count" << std::endl;
 
         size_t nxy = nx*ny;
         for (size_t j = 0; j < nxy; j++) {
             Vector v = velocity[iz*nxy + j];
-            f << v.x() << "," << v.y() << "," << v.z() << "," <<
+            f << v.x() << CSV_SEP << v.y() << CSV_SEP << v.z() << CSV_SEP <<
                 count[iz*nxy + j] << std::endl;
         }
 
