@@ -33,7 +33,8 @@ class Surface {
             pumpedParticles_ = 0;
         }
         Surface(std::string filename, double pumpingFactor, double temperature,
-            double emissionRate, double avgTriangleArea = -1.0)
+            double emissionRate, bool flipNormals = false,
+            double avgTriangleArea = -1.0)
             : pumpingFactor_(pumpingFactor), temperature_(temperature),
               emissionRate_(emissionRate) {
             pumpedParticles_ = 0;
@@ -41,14 +42,14 @@ class Surface {
             buildAABBTree();
             computeAreaCDF();
             computeFaceNormals();
-            computeFaceRotations();
+            computeFaceRotations(flipNormals);
         }
 
         bool loadFromSTL(std::string filename, double avgTriangleArea = -1.0);
         void buildAABBTree();
         void computeAreaCDF();
         void computeFaceNormals();
-        void computeFaceRotations();
+        void computeFaceRotations(bool flipNormals);
 
         std::tuple<Point, face_descriptor> getRandomPoint(Rng& rng) const;
 

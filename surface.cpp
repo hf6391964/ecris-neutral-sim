@@ -21,7 +21,7 @@ void Surface::computeFaceNormals() {
         geom_traits(K()));
 }
 
-void Surface::computeFaceRotations() {
+void Surface::computeFaceRotations(bool flipNormals) {
     if (!isLoaded()) return;
 
     K::Aff_transformation_3 ident;
@@ -35,7 +35,8 @@ void Surface::computeFaceRotations() {
 
         Vector t1 = v2 - v1;
         t1 = t1 / std::sqrt(t1.squared_length());
-        Vector n = -faceNormals_[fd];
+        Vector n = faceNormals_[fd];
+        if (flipNormals) n = n * -1.0;
         Vector t2 = CGAL::cross_product(n, t1);
         t2 = t2 / std::sqrt(t2.squared_length());
 

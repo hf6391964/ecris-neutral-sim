@@ -104,7 +104,7 @@ void SimulationModel::simulationThread(unsigned long nParticles,
 
             if (!particle.findNextIntersection(surfaces_.begin(),
                 surfaces_.end())) {
-                std::cout << "Something wrong with intersections" << std::endl;
+                /* std::cout << "Something wrong with intersections" << std::endl; */
                 continue;
             }
 
