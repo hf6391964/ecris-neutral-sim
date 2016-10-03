@@ -1,0 +1,11 @@
+#!/bin/sh
+
+a=$1
+b=$2
+name="elbow_${1}_${2}"
+defs="-DA=${a} -DB=${b} -DPARTNO="
+
+openscad -o "${name}_body.stl" ${defs}0 elbow.scad
+openscad -o "${name}_cap1.stl" ${defs}1 elbow.scad
+openscad -o "${name}_cap2.stl" ${defs}2 elbow.scad
+
