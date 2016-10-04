@@ -3,7 +3,7 @@ INCDIRS = -I../CGAL-4.9/include #-I../gsl-2.2.1
 LIBS = -lpthread
 STATIC_LIBS = ../CGAL-4.9/lib/libCGAL.a #../gsl-2.2.1/.libs/libgsl.a
 CC = g++
-CFLAGS_COMMON = -Wall -std=c++11 -O3 #-flto
+CFLAGS_COMMON = -Wall -Wextra -std=c++11 -O3 #-flto
 # CFLAGS = -g
 CFLAGS = #-O3
 
