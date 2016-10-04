@@ -25,10 +25,7 @@ bool Particle::findNextIntersection(
 
     bool found = false;
     double nearestDistance = 0.0;
-    Point nearestPoint;
-    face_descriptor nearestFaceId;
     Point* p = NULL;
-    Surface* pSurface = NULL;
     nextIntersection_.pSurface = NULL;
     Ray_intersection intersection;
 
@@ -40,10 +37,10 @@ bool Particle::findNextIntersection(
             double distance = CGAL::squared_distance(position_, *p);
             if (!found || distance < nearestDistance) {
                 found = true;
-                nearestPoint = *p;
+                nextIntersection_.point = *p;
+                nextIntersection_.faceId = intersection->second;
+                nextIntersection_.pSurface = *itSurface;
                 nearestDistance = distance;
-                nearestFaceId = intersection->second;
-                pSurface = *itSurface;
 #ifdef DEBUG
                 std::cout << "Next intersection: ";
                 Util::printPoint(*p);
@@ -53,12 +50,6 @@ bool Particle::findNextIntersection(
         }
 
         itSurface++;
-    }
-
-    if (found) {
-        nextIntersection_.pSurface = pSurface;
-        nextIntersection_.faceId = nearestFaceId;
-        nextIntersection_.point = nearestPoint;
     }
 
     return found;
