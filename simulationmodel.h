@@ -4,6 +4,7 @@
 #include <thread>
 #include <random>
 #include <iomanip>
+#include <fstream>
 
 #include "surface.h"
 #include "particle.h"

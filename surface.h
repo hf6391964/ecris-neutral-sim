@@ -80,11 +80,6 @@ class Surface {
             return pumpedParticles_;
         }
 
-        Bbox bbox() const {
-            return CGAL::Polygon_mesh_processing::bbox_3(mesh_,
-                CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()));
-        }
-
         bool checkIfPumped(Rng& rng) const {
             return uni01(rng) < pumpingFactor_;
         }
@@ -92,6 +87,8 @@ class Surface {
         void addPumpedParticle() {
             pumpedParticles_ += 1;
         }
+
+        Bbox bbox() const;
 };
 
 #endif

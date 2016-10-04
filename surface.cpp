@@ -1,4 +1,12 @@
 #include "surface.h"
+#include "STL_reader.h"
+
+#include <CGAL/Polygon_mesh_processing/orient_polygon_soup.h>
+#include <CGAL/Polygon_mesh_processing/polygon_soup_to_polygon_mesh.h>
+#include <CGAL/Polygon_mesh_processing/refine.h>
+#include <CGAL/Polygon_mesh_processing/measure.h>
+#include <CGAL/Polygon_mesh_processing/compute_normal.h>
+#include <CGAL/Polygon_mesh_processing/bbox.h>
 
 void Surface::buildAABBTree() {
     if (!isLoaded()) return;
@@ -171,5 +179,10 @@ Direction Surface::generateCosineLawDirection(face_descriptor fd, Rng& rng) cons
                 std::cos(theta));
 
     return faceRotations_[fd].transform(d);
+}
+
+Bbox Surface::bbox() const {
+    return CGAL::Polygon_mesh_processing::bbox_3(mesh_,
+        CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()));
 }
 
