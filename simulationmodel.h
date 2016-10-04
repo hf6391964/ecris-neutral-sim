@@ -31,7 +31,7 @@ class SimulationModel {
         }
 
         void runSimulation(unsigned long nParticles, double gridSize,
-            int nThreads = -1);
+            std::string prefix, int nThreads = -1);
 };
 
 #endif

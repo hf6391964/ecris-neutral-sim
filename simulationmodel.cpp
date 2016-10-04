@@ -1,7 +1,7 @@
 #include "simulationmodel.h"
 
 void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
-    int nThreads) {
+    std::string prefix, int nThreads) {
     if (nThreads <= 0) {
         nThreads = std::thread::hardware_concurrency();
         if (nThreads == 0) {
@@ -67,7 +67,7 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
         count[j] = c;
     }
 
-    writeResults("test", velocity, count, grid);
+    writeResults(prefix, velocity, count, grid);
 
     for (auto p : velocityPointers) {
         delete[] p;
