@@ -58,6 +58,11 @@ class Surface {
             isect = tree_.first_intersection(r);
         }
 
+        void computeAllIntersections(const Ray& r,
+            std::back_insert_iterator<std::vector<Ray_intersection>> it) const {
+            tree_.all_intersections(r, it);
+        }
+
         Direction generateCosineLawDirection(face_descriptor fd, Rng& rng) const;
 
         bool isLoaded() const {

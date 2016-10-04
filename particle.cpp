@@ -1,5 +1,7 @@
 #include "particle.h"
 
+#define USE_ALL_INTERSECTIONS
+
 void Particle::goToIntersection(Rng& rng) {
     if (nextIntersection_.pSurface == NULL) return;
 
@@ -30,24 +32,28 @@ bool Particle::findNextIntersection(
     Ray_intersection intersection;
 
     while (itSurface != itEnd) {
+#ifdef USE_ALL_INTERSECTIONS
+        std::vector<Ray_intersection> intersections;
+        (*itSurface)->computeAllIntersections(r,
+            std::back_inserter(intersections));
+        for (Ray_intersection intersection : intersections) {
+#else
         (*itSurface)->computeFirstIntersection(r, intersection);
-
-        if (intersection &&
-            (p = boost::get<Point>(&(intersection->first)))) {
-            double distance = CGAL::squared_distance(position_, *p);
-            if (!found || distance < nearestDistance) {
-                found = true;
-                nextIntersection_.point = *p;
-                nextIntersection_.faceId = intersection->second;
-                nextIntersection_.pSurface = *itSurface;
-                nearestDistance = distance;
-#ifdef DEBUG
-                std::cout << "Next intersection: ";
-                Util::printPoint(*p);
-                std::cout << std::endl;
 #endif
+            if (intersection &&
+                (p = boost::get<Point>(&(intersection->first)))) {
+                double distance = CGAL::squared_distance(position_, *p);
+                if (!found || distance < nearestDistance) {
+                    found = true;
+                    nextIntersection_.point = *p;
+                    nextIntersection_.faceId = intersection->second;
+                    nextIntersection_.pSurface = *itSurface;
+                    nearestDistance = distance;
+                }
             }
+#ifdef USE_ALL_INTERSECTIONS
         }
+#endif
 
         itSurface++;
     }
