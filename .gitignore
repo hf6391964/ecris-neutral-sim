@@ -4,3 +4,4 @@
 sim
 *.csv
 __pycache__
+plots
