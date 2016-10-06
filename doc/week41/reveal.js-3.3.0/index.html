@@ -11,8 +11,7 @@
 
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
-
-		<!-- Printing and PDF exports -->
+<!-- Printing and PDF exports -->
 		<script>
 			var link = document.createElement( 'link' );
 			link.rel = 'stylesheet';
@@ -62,9 +61,22 @@
 						## ECR-ionilähteen neutraalitiheysjakauman mallintaminen
 					</script>
 				</section>
+				<section>
+					<section data-markdown>
+						<script type="text/template">
+							## Tehty tähän mennessä
+
+							* Kandi 2015
+							* Erikoistyö joulukuu 2016
+						</script>
+					</section>
+					<section>
+						<img src="esimerkkiplotti.png" alt="Esimerkki tiheysplotista" />
+					</section>
+				<section>
 				<section data-markdown>
 					<script type="text/template">
-						## Tavoitteet
+						### Tavoitteet
 
 						* Keskitytään neutraaleihin ja niiden lähteisiin
 						* Monte Carlo -testihiukkasmenetelmä
@@ -76,9 +88,11 @@
 				</section>
 				<section data-markdown>
 					<script type="text/template">
-						## Tehty tähän mennessä
+						### Approksimaatiot
 
-						* Kandi 2015
+						* Neutraalien vapaa molekyylivirtaus
+						* Stationaarinen plasma
+						* Vain neutraalien kannalta oleelliset plasmaprosessit
 					</script>
 				</section>
 				<section>
@@ -112,7 +126,7 @@
 
 					<section>
 						<h3>Neutralisaatio</h3>
-						<img src="neutralisaatio.svg" alt="Neutralisaatio" class="ecris ecris-small" />
+						<img src="neutralisaatio.png" alt="Neutralisaatio" class="ecris ecris-small" />
 
 						<ul class="ecris-list">
 							<li>rekombinaatio</li>
@@ -123,21 +137,23 @@
 
 					<section>
 						<h3>Seinätörmäykset</h3>
-						<img src="tormaykset.svg" alt="Neutraalien vuo" class="ecris ecris-small" />
 
 						<ul class="ecris-list">
-							<li>rekombinaatio</li>
-							<li>varauksenvaihto</li>
-							<li>ionien seinätörmäykset</li>
+							<li>adsorptio-desorptio</li>
+							<li>suunnan vaihtuminen</li>
+							<li>lämpöakkommodaatio</li>
+							<li>tarttumisen aikaskaala?</li>
 						</ul>
 					</section>
 				</section>
 				<section data-markdown>
 					<script type="text/template">
-						## Approksimaatiot
+						### Plasmamalli
 
-						* Neutraalien vapaa molekyylivirtaus
 						* Stationaarinen plasma
+						* Varausastejakaumat (muoto) ennalta lasketun elektronijakauman pohjalta
+						* Varausasteiden suhteet kokeellisesti tai tasapainoyhtälöistä
+						* Elektronien ja ionien nopeusjakaumat?
 					</script>
 				</section>
 			</div>
