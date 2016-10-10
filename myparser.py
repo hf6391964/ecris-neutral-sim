@@ -29,26 +29,21 @@ def parseData(prefix, dimensions):
     nx = nIntervals[0]
     ny = nIntervals[1]
     nz = nIntervals[2]
-    nxy = nx*ny
+    nxyz = nx*ny*nz
     nDecimals = int(log10(nz) + 1)
-    zvalues = np.empty((nz))
-    slices = np.empty((nz, nxy, 4))
-    nums = []
-    for iz in range(nz):
-        num = str(iz).zfill(nDecimals)
-        filename = '{0}_{1}'.format(prefix, num)
-        nums.append(num)
-        csvFilename = filename + '.csv'
-        if not path.isfile(csvFilename):
-            exit('File {0} not found, exiting'.format(filename))
+    zvalues = [xyzMin[2] + i*(xyzMax[2] - xyzMin[2]) for i in range(nz)]
+    nums = [str(iz).zfill(nDecimals) for iz in range(nz)]
+    slices = np.empty((nxyz, 4))
 
-        with open(csvFilename, 'r') as f:
-            z = float(f.readline().split('=')[1])
-            zvalues[iz] = z
-            f.readline()
+    csvFilename = prefix + '_stationary.csv'
+    if not path.isfile(csvFilename):
+        exit('File {0} not found, exiting'.format(csvFilename))
 
-            for i in range(nxy):
-                slices[iz, i] = readCsvLine(f)
+    with open(csvFilename, 'r') as f:
+        f.readline()
+
+        for i in range(nxyz):
+            slices[i] = readCsvLine(f)
 
     slices.shape = nz, ny, nx, 4
     return zvalues, nums, slices
