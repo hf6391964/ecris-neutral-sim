@@ -22,7 +22,11 @@ void SimulationModel::runSimulation(unsigned long nParticles,
 
     Grid grid(bbox_, gridSize);
 
-    size_t arraySize = grid.arraySize();
+    size_t gSize = grid.arraySize();
+    size_t arraySize = gSize;
+    if (!stationary) {
+        arraySize *= nSteps;
+    }
 
     std::cout << "Timestep: " << dt << std::endl;
     std::cout << "Running with " << nThreads << " thread(s)..." << std::endl;
@@ -66,7 +70,21 @@ void SimulationModel::runSimulation(unsigned long nParticles,
         count[j] = c;
     }
 
-    writeResults(prefix, velocity, count, grid, stationary);
+    std::ofstream dim(prefix + "_dimensions.csv");
+    grid.writeDimensions(dim);
+    dim.close();
+
+    if (stationary) {
+        writeResults(prefix, velocity, count, grid, 0.0, "stationary");
+    } else {
+        int nDigits = std::log10(nSteps) + 1;
+        for (unsigned long step = 0; step < nSteps; step++) {
+            std::stringstream suffix;
+            suffix << std::setw(nDigits) << std::setfill('0') << step;
+            writeResults(prefix, velocity + step*gSize, count + step*gSize,
+                grid, step * dt, suffix.str());
+        }
+    }
 
     for (auto p : velocityPointers) {
         delete[] p;
@@ -81,6 +99,8 @@ void SimulationModel::runSimulation(unsigned long nParticles,
 void SimulationModel::simulationThread(unsigned long nParticles,
     unsigned long maxSteps, double dt, Grid grid, uint_least32_t seed,
     Vector* velocity, unsigned long* count, bool stationary) const {
+    size_t gridSize = grid.arraySize();
+
     for (Surface* pSurf : surfaces_) {
         if (!pSurf->isEmissive()) continue;
 
@@ -107,8 +127,10 @@ void SimulationModel::simulationThread(unsigned long nParticles,
                 continue;
             }
 
+            // Do this to spread the gas pulse evenly across the whole timestep
+            // in time dependent simulations
+            double timeRemainder = uni01(rng)*dt;
             for (unsigned long step = 0; step < maxSteps; step++) {
-                double timeRemainder = dt;
 
                 bool moving = true;
                 while (moving) {
@@ -132,6 +154,9 @@ void SimulationModel::simulationThread(unsigned long nParticles,
 
                 size_t arrIndex;
                 if (grid.arrayIndex(particle.getPosition(), arrIndex)) {
+                    if (!stationary) {
+                        arrIndex += step*gridSize;
+                    }
                     count[arrIndex] += 1;
                     velocity[arrIndex] = velocity[arrIndex] +
                         particle.getVelocity();
@@ -141,24 +166,23 @@ void SimulationModel::simulationThread(unsigned long nParticles,
                     particle.getState() == Particle::Pumped) {
                     break;
                 }
+
+                timeRemainder = dt;
             }
         }
     }
 }
 
 void SimulationModel::writeResults(std::string prefix, Vector* velocity,
-    unsigned long* count, Grid& grid, bool stationary) const {
-    std::ofstream dim(prefix + "_dimensions.csv");
-    grid.writeDimensions(dim);
-    dim.close();
-
+    unsigned long* count, Grid& grid, double t, std::string suffix) const {
     size_t nx, ny, nz;
     std::tie(nx, ny, nz) = grid.dimensions();
     std::stringstream filename;
-    filename << prefix << "_stationary.csv";
+    filename << prefix << '_' << suffix << ".csv";
     std::ofstream f(filename.str());
     f << "# vx" << CSV_SEP << "vy" << CSV_SEP << "vz" << CSV_SEP <<
         "count" << std::endl;
+    f << "t = " << t << std::endl;
 
     size_t nxyz = nx*ny*nz;
     for (size_t j = 0; j < nxyz; j++) {

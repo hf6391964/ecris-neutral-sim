@@ -22,7 +22,7 @@ class SimulationModel {
         unsigned long* count, bool stationary) const;
 
     void writeResults(std::string prefix, Vector* velocity,
-        unsigned long* count, Grid& grid, bool stationary) const;
+        unsigned long* count, Grid& grid, double t, std::string suffix) const;
 
     public:
         void addSurface(Surface* surface) {
