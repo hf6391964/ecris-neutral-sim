@@ -24,8 +24,8 @@ int main() {
     model.addSurface(surf_source);
     model.addSurface(surf_sink);
 
-    unsigned long nParticles = 10000000;
-    model.runSimulation(nParticles, 1e-1, "test");
+    unsigned long nParticles = 100000;
+    model.runSimulation(nParticles, "test");
 
     std::cout << "% of particles pumped to source: " <<
         (100 * surf_source->getPumpedParticles() / nParticles) << std::endl;

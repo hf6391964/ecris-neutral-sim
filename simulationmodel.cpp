@@ -1,7 +1,8 @@
 #include "simulationmodel.h"
 
-void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
-    std::string prefix, int nThreads) {
+void SimulationModel::runSimulation(unsigned long nParticles,
+    std::string prefix, bool stationary, double gridSize, double maxTime,
+    double timestepFactor, int nThreads) {
     if (nThreads <= 0) {
         nThreads = std::thread::hardware_concurrency();
         if (nThreads == 0) {
@@ -12,14 +13,12 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
 
     long particlesInChunk = nParticles / nThreads;
 
-    double maxTime = 50.0;
-    double timeStepFactor = 2.0;
     // TODO figure out typical particle parameters (e.g. average of present
     // particle masses and surface temperatures)
     double averageSpeed = Util::getMBAverage(273.0, 1.0);
-    double dt = timeStepFactor * gridSize / averageSpeed;
-    unsigned long maxSteps = maxTime / dt;
-    std::cout << "max steps: " << maxSteps << std::endl;
+    double dt = timestepFactor * gridSize / averageSpeed;
+    unsigned long nSteps = maxTime / dt;
+    std::cout << "max steps: " << nSteps << std::endl;
 
     Grid grid(bbox_, gridSize);
 
@@ -44,8 +43,8 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
         velocityPointers.push_back(velocity);
         countPointers.push_back(count);
         threads.push_back(std::thread(&SimulationModel::simulationThread,
-            this, particlesInChunk, maxSteps, dt, grid, seeds[i],
-            velocity, count));
+            this, particlesInChunk, nSteps, dt, grid, seeds[i],
+            velocity, count, stationary));
     }
 
     for (auto it = threads.begin(); it != threads.end(); ++it) {
@@ -67,7 +66,7 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
         count[j] = c;
     }
 
-    writeResults(prefix, velocity, count, grid);
+    writeResults(prefix, velocity, count, grid, stationary);
 
     for (auto p : velocityPointers) {
         delete[] p;
@@ -81,7 +80,7 @@ void SimulationModel::runSimulation(unsigned long nParticles, double gridSize,
 
 void SimulationModel::simulationThread(unsigned long nParticles,
     unsigned long maxSteps, double dt, Grid grid, uint_least32_t seed,
-    Vector* velocity, unsigned long* count) const {
+    Vector* velocity, unsigned long* count, bool stationary) const {
     for (Surface* pSurf : surfaces_) {
         if (!pSurf->isEmissive()) continue;
 
@@ -148,7 +147,7 @@ void SimulationModel::simulationThread(unsigned long nParticles,
 }
 
 void SimulationModel::writeResults(std::string prefix, Vector* velocity,
-    unsigned long* count, Grid& grid) const {
+    unsigned long* count, Grid& grid, bool stationary) const {
     std::ofstream dim(prefix + "_dimensions.csv");
     grid.writeDimensions(dim);
     dim.close();

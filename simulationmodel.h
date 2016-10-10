@@ -19,10 +19,10 @@ class SimulationModel {
 
     void simulationThread(unsigned long nParticles, unsigned long maxSteps,
         double dt, Grid grid, uint_least32_t seed, Vector* velocity,
-        unsigned long* count) const;
+        unsigned long* count, bool stationary) const;
 
     void writeResults(std::string prefix, Vector* velocity,
-        unsigned long* count, Grid& grid) const;
+        unsigned long* count, Grid& grid, bool stationary) const;
 
     public:
         void addSurface(Surface* surface) {
@@ -30,8 +30,10 @@ class SimulationModel {
             bbox_ += surface->bbox();
         }
 
-        void runSimulation(unsigned long nParticles, double gridSize,
-            std::string prefix, int nThreads = -1);
+        void runSimulation(unsigned long nParticles, std::string prefix,
+            bool stationary = true,
+            double gridSize = 0.1, double maxTime = 0.1,
+            double timestepFactor = 2.0, int nThreads = -1);
 };
 
 #endif
