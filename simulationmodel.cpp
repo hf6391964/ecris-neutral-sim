@@ -155,23 +155,18 @@ void SimulationModel::writeResults(std::string prefix, Vector* velocity,
 
     size_t nx, ny, nz;
     std::tie(nx, ny, nz) = grid.dimensions();
-    int nDigits = std::log10(nz) + 1;
-    for (size_t iz = 0; iz < nz; iz++) {
-        std::stringstream filename;
-        filename << prefix << '_' << std::setw(nDigits) << std::setfill('0') <<
-            iz << ".csv";
-        std::ofstream f(filename.str());
-        f << "# Z=" << grid.getZatIndex(iz) << std::endl;
-        f << "# vx" << CSV_SEP << "vy" << CSV_SEP << "vz" << CSV_SEP <<
-            "count" << std::endl;
+    std::stringstream filename;
+    filename << prefix << "_stationary.csv";
+    std::ofstream f(filename.str());
+    f << "# vx" << CSV_SEP << "vy" << CSV_SEP << "vz" << CSV_SEP <<
+        "count" << std::endl;
 
-        size_t nxy = nx*ny;
-        for (size_t j = 0; j < nxy; j++) {
-            Vector v = velocity[iz*nxy + j];
-            f << v.x() << CSV_SEP << v.y() << CSV_SEP << v.z() << CSV_SEP <<
-                count[iz*nxy + j] << std::endl;
-        }
-
-        f.close();
+    size_t nxyz = nx*ny*nz;
+    for (size_t j = 0; j < nxyz; j++) {
+        Vector v = velocity[j];
+        f << v.x() << CSV_SEP << v.y() << CSV_SEP << v.z() << CSV_SEP <<
+            count[j] << std::endl;
     }
+
+    f.close();
 }
