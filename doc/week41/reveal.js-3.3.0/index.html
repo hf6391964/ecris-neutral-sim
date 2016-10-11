@@ -74,26 +74,36 @@
 						<img src="esimerkkiplotti.png" alt="Esimerkki tiheysplotista" />
 					</section>
 				</section>
-				<section data-markdown>
-					<script type="text/template">
-						### Tavoitteet
+				<section>
+					<section data-markdown>
+						<script type="text/template">
+							### Tavoitteet
 
-						* Keskitytään neutraaleihin ja niiden lähteisiin
-						* Monte Carlo -testihiukkasmenetelmä
-						* Neutraaleihin vaikuttavat plasmareaktiot mukana
-						* Laitteiston CAD-malli geometriana
-						* Lineaarinen malli: kokonaisjakauma eri populaatioiden superpositio
-						* Ajettavissa PC:llä kohtuullisessa ajassa
-					</script>
-				</section>
-				<section data-markdown>
-					<script type="text/template">
-						### Approksimaatiot
+							* Jäännöskaasun vaikutus korkeiden varausasteiden tuottamiseen (stationaarinen)
+							* Neutraalin kaasupulssin eteneminen tyhjiökammiossa (transientti)
+							* Ajettavissa PC:llä kohtuullisessa ajassa
+						</script>
+					</section>
+					<section data-markdown>
+						<script type="text/template">
+							### Approksimaatiot
 
-						* Neutraalien vapaa molekyylivirtaus
-						* Stationaarinen plasma
-						* Vain neutraalien kannalta oleelliset plasmaprosessit
-					</script>
+							* Neutraalien vapaa molekyylivirtaus
+							* Stationaarinen plasma
+							* Vain neutraalien kannalta oleelliset plasmaprosessit
+						</script>
+					</section>
+					<section data-markdown>
+						<script type="text/template">
+								### Mallin ominaisuudet
+
+								* Keskitytään neutraaleihin ja niiden lähteisiin
+								* Monte Carlo -testihiukkasmenetelmä
+								* Neutraaleihin vaikuttavat plasmareaktiot huomioidaan riittävällä tarkkuudella
+								* Laitteiston CAD-malli geometriana
+								* Lineaarinen malli: kokonaisjakauma eri populaatioiden superpositio
+						</script>
+					</section>
 				</section>
 				<section>
 					<section>
@@ -146,15 +156,30 @@
 						</ul>
 					</section>
 				</section>
-				<section data-markdown>
-					<script type="text/template">
+				<section>
+					<section data-markdown>
+						<script type="text/template">
 						### Plasmamalli
 
 						* Stationaarinen plasma
-						* Varausastejakaumat (muoto) ennalta lasketun elektronijakauman pohjalta
+						* Spatiaaliset varausastejakaumat yhdenmuotoisia ennalta lasketun elektronijakauman kanssa
 						* Varausasteiden suhteet kokeellisesti tai tasapainoyhtälöistä
-						* Elektronien ja ionien nopeusjakaumat?
-					</script>
+						* Elektroneille kaksois-MB-jakauma?
+						* Ioneille kullekin lajille oma Maxwell-Boltzmann (Geller)
+						* Elektroni- ja ionilämpötilat parametreina
+						</script>
+					</section>
+					<section data-markdown>
+						<script type="text/template">
+						### Plasmareaktioiden parametrit
+
+						* Varauksenvaihdon vaikutusalat: Müller-Salzborn tai Kronholm
+						* Elektroni-ionisaation vaikutusalat: (parannettu) Lotz
+						* Rekombinaatiokertoimet kirjallisuudesta (FLYCKH)
+						* Elastisen sironnan vaikutusalat kirjallisuudesta (Jovanovic)
+						* Ekstraktiotodennäköisyydet kokeellisten arvojen perusteella
+						</script>
+					</section>
 				</section>
 			</div>
 			<div class=footer>
