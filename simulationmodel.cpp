@@ -101,9 +101,7 @@ void SimulationModel::simulationThread(unsigned long nParticles,
     Vector* velocity, unsigned long* count, bool stationary) const {
     size_t gridSize = grid.arraySize();
 
-    for (Surface* pSurf : surfaces_) {
-        if (!pSurf->isEmissive()) continue;
-
+    for (NeutralSource* pSource : sources_) {
         Rng rng(seed);
 
         // TODO run simulation separately for each particle species in the
@@ -111,15 +109,8 @@ void SimulationModel::simulationThread(unsigned long nParticles,
 
         for (unsigned long i = 0; i < nParticles; i++) {
             Particle particle;
-            Point p;
-            face_descriptor fd;
 
-            std::tie(p, fd) = pSurf->getRandomPoint(rng);
-            Direction d = pSurf->generateCosineLawDirection(fd, rng);
-            double v = Util::getMBSpeed(rng, particle.getTemperature(),
-                particle.getMolarMass());
-            particle.setPosition(p);
-            particle.setVelocity(v, d);
+            pSource->generateParticle(particle, rng);
 
             if (!particle.findNextIntersection(surfaces_.begin(),
                 surfaces_.end())) {

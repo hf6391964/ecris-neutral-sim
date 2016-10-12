@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <fstream>
 
+#include "neutralsource.h"
 #include "surface.h"
 #include "particle.h"
 #include "constants.h"
@@ -13,6 +14,7 @@
 #include "util.h"
 
 class SimulationModel {
+    std::vector<NeutralSource*> sources_;
     std::vector<Surface*> surfaces_;
     long nParticles_;
     Bbox bbox_;
@@ -25,6 +27,10 @@ class SimulationModel {
         unsigned long* count, Grid& grid, double t, std::string suffix) const;
 
     public:
+        void addSource(NeutralSource* source) {
+            sources_.push_back(source);
+        }
+
         void addSurface(Surface* surface) {
             surfaces_.push_back(surface);
             bbox_ += surface->bbox();

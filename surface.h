@@ -25,7 +25,6 @@ class Surface {
         faceRotations_;
     double pumpingFactor_;
     double temperature_;
-    double emissionRate_;
     std::atomic_ulong pumpedParticles_;
 
     public:
@@ -33,10 +32,8 @@ class Surface {
             pumpedParticles_ = 0;
         }
         Surface(std::string filename, double pumpingFactor, double temperature,
-            double emissionRate, bool flipNormals = false,
-            double avgTriangleArea = -1.0)
-            : pumpingFactor_(pumpingFactor), temperature_(temperature),
-              emissionRate_(emissionRate) {
+            bool flipNormals = false, double avgTriangleArea = -1.0)
+            : pumpingFactor_(pumpingFactor), temperature_(temperature) {
             pumpedParticles_ = 0;
             loadFromSTL(filename, avgTriangleArea);
             buildAABBTree();
@@ -67,14 +64,6 @@ class Surface {
 
         bool isLoaded() const {
             return mesh_.is_valid() && !mesh_.is_empty();
-        }
-
-        bool isEmissive() const {
-            return emissionRate_ > 0.0;
-        }
-
-        double getEmissionRate() const {
-            return isEmissive() ? emissionRate_ : 0.0;
         }
 
         double getTemperature() const {

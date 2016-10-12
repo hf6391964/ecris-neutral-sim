@@ -3,38 +3,29 @@
 #include "cgal_and_typedefs.h"
 #include "surface.h"
 #include "simulationmodel.h"
+#include "surfaceemission.h"
 
 int main() {
     SimulationModel model;
 
-    /* Surface* surf_walls = new Surface("models/cylinder/cylinder_walls.stl", */
-    /*     0.0, 273.0, 0.0, 0.1); */
-    /* Surface* surf_source = new Surface("models/cylinder/cylinder_cap1.stl", */
-    /*     1.0, 273.0, 1e-12, 0.1); */
-    /* Surface* surf_sink = new Surface("models/cylinder/cylinder_cap2.stl", */
-    /*     1.0, 273.0, 0.0, 0.1); */
-    Surface* surf_walls = new Surface("models/elbow/elbow_3_4_body.stl",
-        0.0, 273.0, 0.0, true, 0.1);
-    Surface* surf_source = new Surface("models/elbow/elbow_3_4_cap1.stl",
-        1.0, 273.0, 1e-12, false, 0.1);
-    Surface* surf_sink = new Surface("models/elbow/elbow_3_4_cap2.stl",
-        1.0, 273.0, 0.0, false, 0.1);
+    Surface surf_walls("models/elbow/elbow_3_4_body.stl", 0.0, 273.0, true, 0.1);
+    Surface surf_source("models/elbow/elbow_3_4_cap1.stl", 1.0, 273.0, false, 0.1);
+    Surface surf_sink("models/elbow/elbow_3_4_cap2.stl", 1.0, 273.0, false, 0.1);
 
-    model.addSurface(surf_walls);
-    model.addSurface(surf_source);
-    model.addSurface(surf_sink);
+    model.addSurface(&surf_walls);
+    model.addSurface(&surf_source);
+    model.addSurface(&surf_sink);
+
+    SurfaceEmission gasFeed(&surf_source, 1e-12);
+    model.addSource(&gasFeed);
 
     unsigned long nParticles = 100000;
-    model.runSimulation(nParticles, "test");
+    model.runSimulation(nParticles, "test", true, 0.1, 5);
 
     std::cout << "% of particles pumped to source: " <<
-        (100 * surf_source->getPumpedParticles() / nParticles) << std::endl;
+        (100 * surf_source.getPumpedParticles() / nParticles) << std::endl;
     std::cout << "% of particles pumped to sink: " <<
-        (100 * surf_sink->getPumpedParticles() / nParticles) << std::endl;
-
-    delete surf_walls;
-    delete surf_source;
-    delete surf_sink;
+        (100 * surf_sink.getPumpedParticles() / nParticles) << std::endl;
 
     return 0;
 }
