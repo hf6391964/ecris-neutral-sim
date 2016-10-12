@@ -41,6 +41,7 @@ def parseData(prefix, dimensions):
 
     with open(csvFilename, 'r') as f:
         f.readline()
+        f.readline()
 
         for i in range(nxyz):
             slices[i] = readCsvLine(f)
