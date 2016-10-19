@@ -9,6 +9,7 @@ struct LotzParameters {
     double ci[MAX_SHELLS];
 };
 
+// POTENTIALLY INCORRECT, TODO better formula
 double ionizationCrossSection(unsigned int N, double electronEnergy,
     LotzParameters parameters, double ionizationEnergies[],
     unsigned int electronPopulation[]);
