@@ -1,0 +1,12 @@
+#ifndef ARGON_DATA_H
+#define ARGON_DATA_H
+
+ElementData ARGON_DATA;
+
+ARGON_DATA.Z = 18;
+ARGON_DATA.mass = 39.948;
+
+// IONIZATION ENERGIES, LOTZ PARAMETERS
+
+#endif
+
