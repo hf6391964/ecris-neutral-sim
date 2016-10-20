@@ -10,8 +10,12 @@ class ElectronModel {
         -1175.09, -4300.16, 23335.8 };
 
     private:
-        Vector Bfield(const Vector vx, const double B0, const double r0,
-            const double a[] = Ai) const;
+        static Vector totalBfield(const Vector vx, const double B0,
+            const double r0, const double a[] = Ai);
+        static Vector solenoidBfield(const double x, const double y,
+            const double z, const double a[]);
+        static Vector hexapoleBfield(const double x, const double y,
+            const double B0, const double r0);
 };
 
 #endif
