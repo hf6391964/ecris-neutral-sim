@@ -5,7 +5,6 @@ Vector ElectronModel::Bfield(const Vector vx, const double B0, const double r0,
     double x = vx.x();
     double y = vx.y();
     double r2 = x*x + y*y;
-    double r4 = r2*r2;
     double z = vx.z();
     double C = -2.0*B0 / (r0*r0);
 
