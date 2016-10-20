@@ -1,7 +1,7 @@
 *.a
 *.o
 *.blend1
-sim
 *.csv
 __pycache__
 plots
+main

@@ -1,29 +1,27 @@
-TARGET = sim
-INCDIRS = -I../CGAL-4.9/include #-I../gsl-2.2.1
-LIBS = -lpthread
-STATIC_LIBS = ../CGAL-4.9/lib/libCGAL.a #../gsl-2.2.1/.libs/libgsl.a
+LIBNAME = libneutrals
+INCDIRS = -I../CGAL-4.9/include -I./include #-I../gsl-2.2.1
 CC = g++
 CFLAGS_COMMON = -Wall -Wextra -std=c++11 -O3 #-flto
 # CFLAGS = -g
-CFLAGS = #-O3
+CFLAGS = 
 
 .PHONY: default all clean
 
-default: $(TARGET)
+default: $(LIBNAME)
 all: default
 
-OBJECTS = $(patsubst %.cpp, %.o, $(wildcard *.cpp))
-HEADERS = $(wildcard *.h)
+OBJECTS = $(patsubst %.cpp, %.o, $(wildcard lib/*.cpp))
+HEADERS = $(wildcard include/*.h)
 
-%.o: %.cpp $(HEADERS)
+lib/%.o: lib/%.cpp $(HEADERS)
 	$(CC) $(CFLAGS_COMMON) $(CFLAGS) $(INCDIRS) -c $< -o $@
 
 .PRECIOUS: $(TARGET) $(OBJECTS)
 
-$(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS_COMMON) -o $@ $(LIBS) $(OBJECTS) $(STATIC_LIBS) 
+$(LIBNAME): $(OBJECTS)
+	ar cr $@.a $(OBJECTS)
 
 clean:
-	rm -f *.o
-	rm -f $(TARGET)
+	rm -f $(OBJECTS)
+	rm -f $(LIBNAME).a
 
