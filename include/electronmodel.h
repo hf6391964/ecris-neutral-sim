@@ -4,18 +4,31 @@
 #include <cmath>
 
 #include "cgal_and_typedefs.h"
+#include "constants.h"
 
 class ElectronModel {
-    static constexpr double Ai[7] = { 0.341949, -0.102496, 57.3281, 20.3848,
-        -1175.09, -4300.16, 23335.8 };
+    public:
+        ElectronModel(const double B0, const double r0, const double dt,
+            const double z1, const double z2, double a[] = SOLENOID_FIELD_AI);
 
-    private:
+        void newParticle(const double energy, Rng& rng);
+        Vector velocity() const;
+        Vector position() const;
+        Vector energy() const;
+        bool moveParticle();
+
         static Vector totalBfield(const Vector vx, const double B0,
-            const double r0, const double a[] = Ai);
+            const double r0, const double a[] = SOLENOID_FIELD_AI);
         static Vector solenoidBfield(const double x, const double y,
             const double z, const double a[]);
         static Vector hexapoleBfield(const double x, const double y,
             const double B0, const double r0);
+
+    private:
+        Vector particleVelocity_;
+        Vector particlePosition_;
+        double B0_, r0_, dt_, t_, z1_, z2_;
+        double* a_;
 };
 
 #endif
