@@ -44,18 +44,23 @@ Vector ElectronModel::totalBfield(const Vector vx, const double B0,
     return solenoidBfield(x, y, z, a) + hexapoleBfield(x, y, B0, r0);
 }
 
-void ElectronModel::newParticle(const double energy, Rng& rng) {
+void ElectronModel::newParticle(const double energy,
+    std::function<bool(Vector)> criterion, Rng& rng) {
     double speed = std::sqrt(2.0*energy / ELECTRON_MASS_EV) * SPEED_OF_LIGHT;
 
     double u = 2.0 * uni01(rng) - 1.0;
     double theta = 2.0*M_PI*uni01(rng);
     double sqrtu = std::sqrt(1.0 - u*u);
 
-    // Pick a point uniformly on a cylinder
-    double z = z1_ + (z2_ - z1_) * uni01(rng);
-    double r = r0_ * sqrt(uni01(rng));
-    theta = 2.0*M_PI * uni01(rng);
-    particlePosition_ = Vector(r*std::cos(theta), r*std::sin(theta), z);
+    Vector B;
+    do {
+        // Pick a point uniformly on a cylinder
+        double z = z1_ + (z2_ - z1_) * uni01(rng);
+        double r = r0_ * sqrt(uni01(rng));
+        theta = 2.0*M_PI * uni01(rng);
+        particlePosition_ = Vector(r*std::cos(theta), r*std::sin(theta), z);
+        B = totalBfield(particlePosition_, B0_, r0_, a_);
+    } while (!criterion(B));
 
     Vector v = speed * Vector(
         sqrtu * std::cos(theta),
@@ -65,7 +70,7 @@ void ElectronModel::newParticle(const double energy, Rng& rng) {
     // Make a half step backwards to get the "half timestep" velocity for
     // leapfrog to get a start
     particleVelocity_ = v - 0.5*dt_*(-ELECTRON_CHARGE_MASS_RATIO) *
-        CGAL::cross_product(v, totalBfield(particlePosition_, B0_, r0_, a_));
+        CGAL::cross_product(v, B);
 }
 
 bool ElectronModel::moveParticle() {

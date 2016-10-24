@@ -2,6 +2,7 @@
 #define ELECTRONMODEL_H
 
 #include <cmath>
+#include <functional>
 
 #include "cgal_and_typedefs.h"
 #include "constants.h"
@@ -11,7 +12,8 @@ class ElectronModel {
         ElectronModel(const double B0, const double r0, const double dt,
             const double z1, const double z2, const double a[] = SOLENOID_FIELD_AI);
 
-        void newParticle(const double energy, Rng& rng);
+        void newParticle(const double energy,
+            std::function<bool(Vector)> criterion, Rng& rng);
 
         Vector velocity() const {
             return particleVelocity_;
