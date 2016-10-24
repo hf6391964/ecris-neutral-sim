@@ -1,7 +1,7 @@
 #include "electronmodel.h"
 
 ElectronModel::ElectronModel(const double B0, const double r0, const double dt,
-    const double z1, const double z2, double a[]) : B0_(B0), r0_(r0), dt_(dt),
+    const double z1, const double z2, const double a[]) : B0_(B0), r0_(r0), dt_(dt),
     z1_(z1), z2_(z2), a_(a) {
 }
 
