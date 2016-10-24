@@ -1,8 +1,34 @@
 #include "electronmodel.h"
 
 ElectronModel::ElectronModel(const double B0, const double r0, const double dt,
-    const double z1, const double z2, const double a[]) : B0_(B0), r0_(r0), dt_(dt),
-    z1_(z1), z2_(z2), a_(a) {
+    const double z1, const double z2, const double gridSize,
+    const double confinementTime, const double a[]) : B0_(B0), r0_(r0), dt_(dt),
+    z1_(z1), z2_(z2), gridSize_(gridSize), confinementTime_(confinementTime),
+    a_(a) {
+    grid_ = Grid(Bbox(-r0, -r0, z1, r0, r0, z2), gridSize_);
+    resetCounters();
+}
+
+ElectronModel::~ElectronModel() {
+    if (particleCount_ != NULL) {
+        delete[] particleCount_;
+    }
+}
+
+void ElectronModel::resetCounters() {
+    if (particleCount_ != NULL) {
+        delete[] particleCount_;
+    }
+
+    size_t arraySize = grid_.arraySize();
+    particleCount_ = new unsigned long[arraySize];
+    for (size_t i = 0; i < arraySize; i++) {
+        particleCount_[i] = 0;
+    }
+
+    z1CollisionPoints_.clear();
+    z2CollisionPoints_.clear();
+    cylinderCollisionPoints_.clear();
 }
 
 Vector ElectronModel::solenoidBfield(const double x, const double y,
@@ -71,6 +97,8 @@ void ElectronModel::newParticle(const double energy,
     // leapfrog to get a start
     particleVelocity_ = v - 0.5*dt_*(-ELECTRON_CHARGE_MASS_RATIO) *
         CGAL::cross_product(v, B);
+
+    t_ = 0.0;
 }
 
 bool ElectronModel::moveParticle() {
@@ -88,6 +116,39 @@ bool ElectronModel::moveParticle() {
     particleVelocity_ = particleVelocity_ + f2*CGAL::cross_product(v, B);
     particlePosition_ = particlePosition_ + dt_ * particleVelocity_;
 
-    return false;
+    t_ += dt_;
+
+    double x = particlePosition_.x(),
+           y = particlePosition_.y(),
+           z = particlePosition_.z();
+    if (z < z1_) {
+        z1CollisionPoints_.push_back(particlePosition_);
+    } else if (z > z2_) {
+        z2CollisionPoints_.push_back(particlePosition_);
+    } else if (x*x + y*y > r0_*r0_) {
+        cylinderCollisionPoints_.push_back(particlePosition_);
+    } else {
+        size_t i;
+        if (grid_.arrayIndex(x, y, z, i)) {
+            particleCount_[i] += 1;
+        }
+        return false;
+    }
+
+    return true;
+}
+
+void ElectronModel::runMonoenergeticSimulation(const unsigned long nParticles,
+    const double energy, const double BnormLimit, Rng& rng) {
+    for (unsigned long n = 0; n < nParticles; n++) {
+        newParticle(energy,
+            [BnormLimit](Vector B) {
+                return B.squared_length() < BnormLimit*BnormLimit;
+            }, rng);
+
+        while (t_ < confinementTime_) {
+            if (moveParticle()) break;
+        }
+    }
 }
 

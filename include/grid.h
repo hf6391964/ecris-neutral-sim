@@ -11,6 +11,8 @@ class Grid {
     double gridSize_;
 
     public:
+        Grid() {};
+
         Grid(Bbox bbox, double gridSize) : gridSize_(gridSize) {
             intervalsX_ = std::ceil((bbox.xmax() - bbox.xmin()) / gridSize);
             intervalsY_ = std::ceil((bbox.ymax() - bbox.ymin()) / gridSize);

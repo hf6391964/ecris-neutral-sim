@@ -10,9 +10,11 @@ int main() {
                  z2 = 170e-3,
                  r0 = 39e-3,
                  B0 = 1.07,
-                 dt = 5e-12;
+                 dt = 5e-12,
+                 confinementTime = 1e-6,
+                 gridSize = 0.05;
     // B0, r0, dt, z1, z2
-    ElectronModel model(B0, r0, dt, z1, z2);
+    ElectronModel model(B0, r0, dt, z1, z2, gridSize, confinementTime);
 
     // Plot solenoid Bz(r=0, z)
     int nPoints = 100;
@@ -76,6 +78,26 @@ int main() {
         fout << t << CSV_SEP << pos.x() << CSV_SEP << pos.y() << CSV_SEP <<
             pos.z() << std::endl;
         model.moveParticle();
+    }
+    fout.close();
+
+    model.resetCounters();
+    // Track multiple particles and capture some statistics of the motion
+    unsigned long nParticles = 1000;
+    model.runMonoenergeticSimulation(nParticles, 10e3, BnormMax, rng);
+    fout.open("output/z1_collision_points.csv");
+    for (Vector pos : model.z1CollisionPoints()) {
+        fout << pos.x() << CSV_SEP << pos.y() << CSV_SEP << pos.z() << std::endl;
+    }
+    fout.close();
+    fout.open("output/z2_collision_points.csv");
+    for (Vector pos : model.z2CollisionPoints()) {
+        fout << pos.x() << CSV_SEP << pos.y() << CSV_SEP << pos.z() << std::endl;
+    }
+    fout.close();
+    fout.open("output/cylinder_collision_points.csv");
+    for (Vector pos : model.cylinderCollisionPoints()) {
+        fout << pos.x() << CSV_SEP << pos.y() << CSV_SEP << pos.z() << std::endl;
     }
     fout.close();
 
