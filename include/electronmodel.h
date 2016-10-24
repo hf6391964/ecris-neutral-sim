@@ -31,7 +31,7 @@ class ElectronModel {
         static Vector totalBfield(const Vector vx, const double B0,
             const double r0, const double a[] = SOLENOID_FIELD_AI);
         static Vector solenoidBfield(const double x, const double y,
-            const double z, const double a[]);
+            const double z, const double a[] = SOLENOID_FIELD_AI);
         static Vector hexapoleBfield(const double x, const double y,
             const double B0, const double r0);
 
