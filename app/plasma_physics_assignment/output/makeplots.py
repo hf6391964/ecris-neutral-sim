@@ -40,4 +40,13 @@ plt.xlabel('z (m)')
 plt.ylabel('y (m)')
 plt.savefig('total_B_yz.png')
 
+# Single particle trajectory
+data = np.loadtxt('particle_trajectory.csv', delimiter=';')
+plt.figure()
+plt.plot(data[:, 1], data[:, 2])
+plt.gca().set_aspect('equal')
+plt.xlabel('x (m)')
+plt.ylabel('y (m)')
+plt.savefig('particle_trajectory.png')
+
 plt.show()

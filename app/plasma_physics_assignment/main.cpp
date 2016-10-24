@@ -10,7 +10,7 @@ int main() {
                  z2 = 170e-3,
                  r0 = 39e-3,
                  B0 = 1.07,
-                 dt = 1e-9;
+                 dt = 5e-12;
     // B0, r0, dt, z1, z2
     ElectronModel model(B0, r0, dt, z1, z2);
 
@@ -38,6 +38,7 @@ int main() {
     }
     fout.close();
 
+    // Total fields Bxz and Byz
     fout.open("output/total_B_xz.csv");
     std::ofstream fout2("output/total_B_yz.csv");
     int nPointsZ = 20;
@@ -58,6 +59,25 @@ int main() {
     }
     fout.close();
     fout2.close();
+
+    Rng rng(2016);
+
+    // Track a single particle trajectory to observe stability for a given
+    // timestep length
+    int nTimesteps = 1000;
+    const double BnormMax = 0.5;
+    model.newParticle(10e3,
+        [BnormMax](Vector B) { return B.squared_length() < BnormMax*BnormMax; },
+        rng);
+    fout.open("output/particle_trajectory.csv");
+    for (int i = 0; i < nTimesteps; i++) {
+        double t = i*dt;
+        Vector pos = model.position();
+        fout << t << CSV_SEP << pos.x() << CSV_SEP << pos.y() << CSV_SEP <<
+            pos.z() << std::endl;
+        model.moveParticle();
+    }
+    fout.close();
 
     return 0;
 }
