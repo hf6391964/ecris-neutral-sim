@@ -83,7 +83,7 @@ int main() {
 
     model.resetCounters();
     // Track multiple particles and capture some statistics of the motion
-    unsigned long nParticles = 1000;
+    unsigned long nParticles = 100000;
     model.runMonoenergeticSimulation(nParticles, 10e3, BnormMax, rng);
     fout.open("output/z1_collision_points.csv");
     for (Vector pos : model.z1CollisionPoints()) {
