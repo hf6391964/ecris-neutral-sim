@@ -38,6 +38,27 @@ int main() {
     }
     fout.close();
 
+    fout.open("output/total_B_xz.csv");
+    std::ofstream fout2("output/total_B_yz.csv");
+    int nPointsZ = 20;
+    int nPointsXY = 8;
+    for (int i = 0; i < nPointsZ; i++) {
+        double z = z1 + (z2 - z1) * (double)i/nPointsZ;
+        for (int j = 0; j < nPointsXY; j++) {
+            double xy = -r0 + 2.0*r0 * (double)j/nPointsXY;
+
+            Vector Bxz = ElectronModel::totalBfield(Vector(xy, 0.0, z), B0, r0);
+            Vector Byz = ElectronModel::totalBfield(Vector(0.0, xy, z), B0, r0);
+
+            fout << xy << CSV_SEP << z << CSV_SEP << Bxz.x() << CSV_SEP <<
+                Bxz.z() << std::endl;
+            fout2 << xy << CSV_SEP << z << CSV_SEP << Byz.y() << CSV_SEP <<
+                Byz.z() << std::endl;
+        }
+    }
+    fout.close();
+    fout2.close();
+
     return 0;
 }
 
