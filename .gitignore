@@ -5,3 +5,8 @@
 __pycache__
 plots
 main
+*.aux
+*.dvi
+*.fdb_latexmk
+*.fls
+*.log

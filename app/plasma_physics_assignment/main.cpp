@@ -13,6 +13,7 @@ int main() {
                  dt = 5e-12,
                  confinementTime = 1e-6,
                  gridSize = 0.05;
+
     // B0, r0, dt, z1, z2
     ElectronModel model(B0, r0, dt, z1, z2, gridSize, confinementTime);
 
@@ -45,9 +46,9 @@ int main() {
     std::ofstream fout2("output/total_B_yz.csv");
     int nPointsZ = 20;
     int nPointsXY = 8;
-    for (int i = 0; i < nPointsZ; i++) {
+    for (int i = 0; i <= nPointsZ; i++) {
         double z = z1 + (z2 - z1) * (double)i/nPointsZ;
-        for (int j = 0; j < nPointsXY; j++) {
+        for (int j = 0; j <= nPointsXY; j++) {
             double xy = -r0 + 2.0*r0 * (double)j/nPointsXY;
 
             Vector Bxz = ElectronModel::totalBfield(Vector(xy, 0.0, z), B0, r0);
@@ -68,21 +69,49 @@ int main() {
     // timestep length
     int nTimesteps = 1000;
     const double BnormMax = 0.5;
-    model.newParticle(10e3,
+    ElectronModel model1(B0, r0, 1e-10, z1, z2, gridSize, confinementTime);
+    model1.newParticle(10e3,
         [BnormMax](Vector B) { return B.squared_length() < BnormMax*BnormMax; },
         rng);
-    fout.open("output/particle_trajectory.csv");
+    fout.open("output/particle_trajectory_10.csv");
     for (int i = 0; i < nTimesteps; i++) {
         double t = i*dt;
-        Vector pos = model.position();
+        Vector pos = model1.position();
         fout << t << CSV_SEP << pos.x() << CSV_SEP << pos.y() << CSV_SEP <<
-            pos.z() << std::endl;
-        model.moveParticle();
+            pos.z() << CSV_SEP << model1.energy() << std::endl;
+        model1.moveParticle();
+    }
+    fout.close();
+    ElectronModel model2(B0, r0, 1e-11, z1, z2, gridSize, confinementTime);
+    model2.newParticle(10e3,
+        [BnormMax](Vector B) { return B.squared_length() < BnormMax*BnormMax; },
+        rng);
+    fout.open("output/particle_trajectory_11.csv");
+    for (int i = 0; i < nTimesteps; i++) {
+        double t = i*dt;
+        Vector pos = model2.position();
+        fout << t << CSV_SEP << pos.x() << CSV_SEP << pos.y() << CSV_SEP <<
+            pos.z() << CSV_SEP << model2.energy() << std::endl;
+        model2.moveParticle();
+    }
+    fout.close();
+    ElectronModel model3(B0, r0, 1e-12, z1, z2, gridSize, confinementTime);
+    model3.newParticle(10e3,
+        [BnormMax](Vector B) { return B.squared_length() < BnormMax*BnormMax; },
+        rng);
+    fout.open("output/particle_trajectory_11.csv");
+    for (int i = 0; i < nTimesteps; i++) {
+        double t = i*dt;
+        Vector pos = model3.position();
+        fout << t << CSV_SEP << pos.x() << CSV_SEP << pos.y() << CSV_SEP <<
+            pos.z() << CSV_SEP << model3.energy() << std::endl;
+        model3.moveParticle();
     }
     fout.close();
 
     model.resetCounters();
     // Track multiple particles and capture some statistics of the motion
+    /*
     unsigned long nParticles = 100000;
     model.runMonoenergeticSimulation(nParticles, 10e3, BnormMax, rng);
     fout.open("output/z1_collision_points.csv");
@@ -100,6 +129,7 @@ int main() {
         fout << pos.x() << CSV_SEP << pos.y() << CSV_SEP << pos.z() << std::endl;
     }
     fout.close();
+    */
 
     return 0;
 }
