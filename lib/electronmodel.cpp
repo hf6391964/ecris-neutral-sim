@@ -29,6 +29,7 @@ void ElectronModel::resetCounters() {
     z1CollisionPoints_.clear();
     z2CollisionPoints_.clear();
     cylinderCollisionPoints_.clear();
+    finalEnergies_.clear();
 }
 
 Vector ElectronModel::solenoidBfield(const double x, const double y,
@@ -72,7 +73,7 @@ Vector ElectronModel::totalBfield(const Vector vx, const double B0,
 
 void ElectronModel::newParticle(const double energy,
     std::function<bool(Vector)> criterion, Rng& rng) {
-    double speed = std::sqrt(2.0*energy / ELECTRON_MASS_EV) * SPEED_OF_LIGHT;
+    double speed = std::sqrt(2.0 * energy / ELECTRON_MASS_EV) * SPEED_OF_LIGHT;
 
     double u = 2.0 * uni01(rng) - 1.0;
     double theta = 2.0*M_PI*uni01(rng);
@@ -93,10 +94,19 @@ void ElectronModel::newParticle(const double energy,
         sqrtu * std::sin(theta),
         u
     );
+
+    int nSteps = 10000;
+    double dt2 = 0.5/nSteps * dt_;
     // Make a half step backwards to get the "half timestep" velocity for
     // leapfrog to get a start
-    particleVelocity_ = v - 0.5*dt_*(-ELECTRON_CHARGE_MASS_RATIO) *
-        CGAL::cross_product(v, B);
+    Vector pos = particlePosition_;
+    for (int i = 0; i < nSteps; i++) {
+        v = v - dt2*(-ELECTRON_CHARGE_MASS_RATIO) *
+            CGAL::cross_product(v, B);
+        pos = pos - dt2*v;
+    }
+
+    particleVelocity_ = v;
 
     t_ = 0.0;
 }
@@ -139,9 +149,9 @@ bool ElectronModel::moveParticle() {
 }
 
 void ElectronModel::runMonoenergeticSimulation(const unsigned long nParticles,
-    const double energy, const double BnormLimit, Rng& rng) {
+    const double energy_, const double BnormLimit, Rng& rng) {
     for (unsigned long n = 0; n < nParticles; n++) {
-        newParticle(energy,
+        newParticle(energy_,
             [BnormLimit](Vector B) {
                 return B.squared_length() < BnormLimit*BnormLimit;
             }, rng);
@@ -149,6 +159,23 @@ void ElectronModel::runMonoenergeticSimulation(const unsigned long nParticles,
         while (t_ < confinementTime_) {
             if (moveParticle()) break;
         }
+
+        finalEnergies_.push_back(energy());
     }
+}
+
+double ElectronModel::meanEnergy() const {
+    return std::accumulate(finalEnergies_.begin(), finalEnergies_.end(),
+        (double)0.0) / finalEnergies_.size();
+}
+
+double ElectronModel::energyStdDev() const {
+    double mean = meanEnergy();
+    return std::sqrt(std::accumulate(finalEnergies_.begin(),
+        finalEnergies_.end(), (double)0.0, [mean](double acc, double e) {
+            double de = e - mean;
+            return acc + de*de;
+        }
+    )) / finalEnergies_.size();
 }
 

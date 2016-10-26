@@ -67,41 +67,43 @@ int main() {
 
     // Track a single particle trajectory to observe stability for a given
     // timestep length
-    int nTimesteps = 1000;
+    double simTime = 1e-8;
     const double BnormMax = 0.5;
-    ElectronModel model1(B0, r0, 1e-10, z1, z2, gridSize, confinementTime);
+    double dt_ = 1e-10;
+    ElectronModel model1(B0, r0, dt_, z1, z2, gridSize, confinementTime);
     model1.newParticle(10e3,
         [BnormMax](Vector B) { return B.squared_length() < BnormMax*BnormMax; },
         rng);
     fout.open("output/particle_trajectory_10.csv");
-    for (int i = 0; i < nTimesteps; i++) {
-        double t = i*dt;
+    for (double t = 0.0; t < simTime; t += dt_) {
         Vector pos = model1.position();
         fout << t << CSV_SEP << pos.x() << CSV_SEP << pos.y() << CSV_SEP <<
             pos.z() << CSV_SEP << model1.energy() << std::endl;
         model1.moveParticle();
     }
     fout.close();
-    ElectronModel model2(B0, r0, 1e-11, z1, z2, gridSize, confinementTime);
+    dt_ = 1e-11;
+    ElectronModel model2(B0, r0, dt_, z1, z2, gridSize, confinementTime);
+    rng.seed(2016);
     model2.newParticle(10e3,
         [BnormMax](Vector B) { return B.squared_length() < BnormMax*BnormMax; },
         rng);
     fout.open("output/particle_trajectory_11.csv");
-    for (int i = 0; i < nTimesteps; i++) {
-        double t = i*dt;
+    for (double t = 0.0; t < simTime; t += dt_) {
         Vector pos = model2.position();
         fout << t << CSV_SEP << pos.x() << CSV_SEP << pos.y() << CSV_SEP <<
             pos.z() << CSV_SEP << model2.energy() << std::endl;
         model2.moveParticle();
     }
     fout.close();
-    ElectronModel model3(B0, r0, 1e-12, z1, z2, gridSize, confinementTime);
+    dt_ = 1e-12;
+    rng.seed(2016);
+    ElectronModel model3(B0, r0, dt_, z1, z2, gridSize, confinementTime);
     model3.newParticle(10e3,
         [BnormMax](Vector B) { return B.squared_length() < BnormMax*BnormMax; },
         rng);
-    fout.open("output/particle_trajectory_11.csv");
-    for (int i = 0; i < nTimesteps; i++) {
-        double t = i*dt;
+    fout.open("output/particle_trajectory_12.csv");
+    for (double t = 0.0; t < simTime; t += dt_) {
         Vector pos = model3.position();
         fout << t << CSV_SEP << pos.x() << CSV_SEP << pos.y() << CSV_SEP <<
             pos.z() << CSV_SEP << model3.energy() << std::endl;
@@ -111,8 +113,7 @@ int main() {
 
     model.resetCounters();
     // Track multiple particles and capture some statistics of the motion
-    /*
-    unsigned long nParticles = 100000;
+    unsigned long nParticles = 1000;
     model.runMonoenergeticSimulation(nParticles, 10e3, BnormMax, rng);
     fout.open("output/z1_collision_points.csv");
     for (Vector pos : model.z1CollisionPoints()) {
@@ -129,7 +130,10 @@ int main() {
         fout << pos.x() << CSV_SEP << pos.y() << CSV_SEP << pos.z() << std::endl;
     }
     fout.close();
-    */
+
+    std::cout << "Mean energy: " << model.meanEnergy() <<
+        " eV, standard deviation: " << model.energyStdDev() <<
+        " eV" << std::endl;
 
     return 0;
 }

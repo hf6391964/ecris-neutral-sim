@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <functional>
+#include <numeric>
 
 #include "cgal_and_typedefs.h"
 #include "constants.h"
@@ -44,8 +45,12 @@ class ElectronModel {
 
         double energy() const {
             return 0.5 * ELECTRON_MASS_EV * velocity().squared_length() /
-                SPEED_OF_LIGHT*SPEED_OF_LIGHT;
+                (SPEED_OF_LIGHT*SPEED_OF_LIGHT);
         }
+
+        double meanEnergy() const;
+
+        double energyStdDev() const;
 
         bool moveParticle();
 
@@ -69,6 +74,7 @@ class ElectronModel {
         std::vector<Vector> z1CollisionPoints_;
         std::vector<Vector> z2CollisionPoints_;
         std::vector<Vector> cylinderCollisionPoints_;
+        std::vector<double> finalEnergies_;
         unsigned long* particleCount_ = NULL;
 };
 
