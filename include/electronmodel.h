@@ -43,6 +43,14 @@ class ElectronModel {
             return cylinderCollisionPoints_;
         }
 
+        std::vector<std::tuple<double, double>> lostVelocities() const {
+            return lostVelocities_;
+        }
+
+        std::vector<std::tuple<double, double>> nonLostVelocities() const {
+            return nonLostVelocities_;
+        }
+
         double energy() const {
             return 0.5 * ELECTRON_MASS_EV * velocity().squared_length() /
                 (SPEED_OF_LIGHT*SPEED_OF_LIGHT);
@@ -75,6 +83,8 @@ class ElectronModel {
         std::vector<Vector> z2CollisionPoints_;
         std::vector<Vector> cylinderCollisionPoints_;
         std::vector<double> finalEnergies_;
+        std::vector<std::tuple<double, double>> lostVelocities_;
+        std::vector<std::tuple<double, double>> nonLostVelocities_;
         unsigned long* particleCount_ = NULL;
 };
 

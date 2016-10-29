@@ -30,6 +30,8 @@ void ElectronModel::resetCounters() {
     z2CollisionPoints_.clear();
     cylinderCollisionPoints_.clear();
     finalEnergies_.clear();
+    lostVelocities_.clear();
+    nonLostVelocities_.clear();
 }
 
 Vector ElectronModel::solenoidBfield(const double x, const double y,
@@ -156,8 +158,23 @@ void ElectronModel::runMonoenergeticSimulation(const unsigned long nParticles,
                 return B.squared_length() < BnormLimit*BnormLimit;
             }, rng);
 
+        Vector v = particleVelocity_;
+        Vector B = totalBfield(particlePosition_, B0_, r0_, a_);
+
+        double vRadial = v * B / std::sqrt(B.squared_length());
+        Vector vt = v - vRadial * B / std::sqrt(B.squared_length());
+        double vTransverse = std::sqrt(vt.squared_length());
+
         while (t_ < confinementTime_) {
             if (moveParticle()) break;
+        }
+
+        if (t_ < confinementTime_) {
+            lostVelocities_.push_back(
+                std::tuple<double, double>(vRadial, vTransverse));
+        } else {
+            nonLostVelocities_.push_back(
+                std::tuple<double, double>(vRadial, vTransverse));
         }
 
         finalEnergies_.push_back(energy());

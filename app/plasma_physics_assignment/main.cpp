@@ -113,7 +113,7 @@ int main() {
 
     model.resetCounters();
     // Track multiple particles and capture some statistics of the motion
-    unsigned long nParticles = 1000;
+    unsigned long nParticles = 100000;
     model.runMonoenergeticSimulation(nParticles, 10e3, BnormMax, rng);
     fout.open("output/z1_collision_points.csv");
     for (Vector pos : model.z1CollisionPoints()) {
@@ -131,9 +131,27 @@ int main() {
     }
     fout.close();
 
-    std::cout << "Mean energy: " << model.meanEnergy() <<
+    fout.open("output/nonlost_velocity.csv");
+    for (std::tuple<double, double> v : model.nonLostVelocities()) {
+        double vr, vt;
+        std::tie(vr, vt) = v;
+        fout << vr << CSV_SEP << vt << std::endl;
+    }
+    fout.close();
+
+    fout.open("output/lost_velocity.csv");
+    for (std::tuple<double, double> v : model.lostVelocities()) {
+        double vr, vt;
+        std::tie(vr, vt) = v;
+        fout << vr << CSV_SEP << vt << std::endl;
+    }
+    fout.close();
+
+    fout.open("output/energy.txt");
+    fout << "Mean energy: " << model.meanEnergy() <<
         " eV, standard deviation: " << model.energyStdDev() <<
         " eV" << std::endl;
+    fout.close();
 
     return 0;
 }

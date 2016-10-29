@@ -1,0 +1,1 @@
+Mean energy: 10000 eV, standard deviation: 3.74714e-05 eV
