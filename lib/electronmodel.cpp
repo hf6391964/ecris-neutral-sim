@@ -193,6 +193,6 @@ double ElectronModel::energyStdDev() const {
             double de = e - mean;
             return acc + de*de;
         }
-    )) / finalEnergies_.size();
+    ) / finalEnergies_.size());
 }
 
