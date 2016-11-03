@@ -214,7 +214,7 @@ void ElectronModel::writeDensityToFile(const std::string &filename) const {
     grid_.writeDimensions(fout);
     size_t N = grid_.arraySize();
     for (size_t i = 0; i < N; i++) {
-        fout << particleCount_ << std::endl;
+        fout << particleCount_[i] << std::endl;
     }
     fout.close();
 }
