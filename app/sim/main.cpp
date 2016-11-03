@@ -8,9 +8,9 @@
 int main() {
     SimulationModel model;
 
-    Surface surf_walls("models/elbow/elbow_3_4_body.stl", 0.0, 273.0, true, 0.1);
-    Surface surf_source("models/elbow/elbow_3_4_cap1.stl", 1.0, 273.0, false, 0.1);
-    Surface surf_sink("models/elbow/elbow_3_4_cap2.stl", 1.0, 273.0, false, 0.1);
+    Surface surf_walls("models/elbow/elbow_3_4_body.stl", 0.0, ROOM_TEMPERATURE_EV, true, 0.1);
+    Surface surf_source("models/elbow/elbow_3_4_cap1.stl", 1.0, ROOM_TEMPERATURE_EV, false, 0.1);
+    Surface surf_sink("models/elbow/elbow_3_4_cap2.stl", 1.0, ROOM_TEMPERATURE_EV, false, 0.1);
 
     model.addSurface(&surf_walls);
     model.addSurface(&surf_source);

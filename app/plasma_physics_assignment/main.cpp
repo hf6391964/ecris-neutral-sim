@@ -13,6 +13,8 @@ int main() {
                  dt = 5e-12,
                  confinementTime = 1e-6,
                  gridSize = 0.05;
+    double speed_10keV = std::sqrt(2.0 * 10e3 / ELECTRON_MASS_EV) *
+        SPEED_OF_LIGHT;
 
     // B0, r0, dt, z1, z2
     ElectronModel model(B0, r0, dt, z1, z2, gridSize, confinementTime);
@@ -71,7 +73,7 @@ int main() {
     const double BnormMax = 0.5;
     double dt_ = 1e-10;
     ElectronModel model1(B0, r0, dt_, z1, z2, gridSize, confinementTime);
-    model1.newParticle(10e3,
+    model1.newParticle(speed_10keV,
         [BnormMax](Vector B) { return B.squared_length() < BnormMax*BnormMax; },
         rng);
     fout.open("output/particle_trajectory_10.csv");
@@ -85,7 +87,7 @@ int main() {
     dt_ = 1e-11;
     ElectronModel model2(B0, r0, dt_, z1, z2, gridSize, confinementTime);
     rng.seed(2016);
-    model2.newParticle(10e3,
+    model2.newParticle(speed_10keV,
         [BnormMax](Vector B) { return B.squared_length() < BnormMax*BnormMax; },
         rng);
     fout.open("output/particle_trajectory_11.csv");
