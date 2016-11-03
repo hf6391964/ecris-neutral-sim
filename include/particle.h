@@ -4,6 +4,7 @@
 #include "cgal_and_typedefs.h"
 #include "surface.h"
 #include "util.h"
+#include "constants.h"
 
 /* #define DEBUG */
 
@@ -25,8 +26,8 @@ class Particle {
             return Ray(position_, direction_);
         }
 
-        double getMolarMass() const {
-            return molarMass_;
+        double getMass_eV() const {
+            return mass_eV_;
         }
 
         double getTemperature() const {
@@ -78,8 +79,8 @@ class Particle {
         Point position_;
         Direction direction_;
         double speed_ = 0.0;  // m/s
-        double temperature_ = 273.0;  // K
-        double molarMass_ = 1.0;  // g/mol
+        double temperature_ = ROOM_TEMPERATURE_EV;  // eV
+        double mass_eV_ = 1.0;  // eV
         State state_ = Free;
         IntersectionPoint nextIntersection_;
 };

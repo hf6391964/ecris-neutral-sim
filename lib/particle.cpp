@@ -8,7 +8,7 @@ void Particle::goToIntersection(Rng& rng) {
     position_ = nextIntersection_.point;
     // TODO accommodation!
     speed_ = Util::getMBSpeed(rng,
-        nextIntersection_.pSurface->getTemperature(), molarMass_);
+        nextIntersection_.pSurface->getTemperature(), mass_eV_);
     direction_ = nextIntersection_.pSurface->
         generateCosineLawDirection(nextIntersection_.faceId, rng);
 

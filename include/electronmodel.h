@@ -4,6 +4,8 @@
 #include <cmath>
 #include <functional>
 #include <numeric>
+#include <string>
+#include <fstream>
 
 #include "cgal_and_typedefs.h"
 #include "constants.h"
@@ -20,7 +22,7 @@ class ElectronModel {
 
         void resetCounters();
 
-        void newParticle(const double energy,
+        void newParticle(const double speed,
             std::function<bool(Vector)> criterion, Rng& rng);
 
         Vector velocity() const {
@@ -62,8 +64,16 @@ class ElectronModel {
 
         bool moveParticle();
 
+        void runSimulation(const unsigned long nParticles,
+            std::function<double(Rng&)> getSpeed, const double Becr, Rng& rng);
+
         void runMonoenergeticSimulation(const unsigned long nParticles,
-            const double energy, const double BnormLimit, Rng& rng);
+            const double energy, const double Becr, Rng& rng);
+
+        void runMaxwellSimulation(const unsigned long nParticles,
+            const double T_eV, const double Becr, Rng& rng);
+
+        void writeDensityToFile(const std::string &filename) const;
 
         static Vector totalBfield(const Vector vx, const double B0,
             const double r0, const double a[] = SOLENOID_FIELD_AI);

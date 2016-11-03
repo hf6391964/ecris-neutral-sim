@@ -9,8 +9,8 @@ class Util {
         static void printPoint(Point p);
         static void printVector(Vector v);
 
-        static double getMBSpeed(Rng& rng, double T, double molarMass);
-        static double getMBAverage(double T, double molarMass);
+        static double getMBSpeed(Rng& rng, double T_eV, double mass_eV);
+        static double getMBAverage(double T, double mass_eV);
 };
 
 #endif

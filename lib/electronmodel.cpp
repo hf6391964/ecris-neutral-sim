@@ -1,4 +1,5 @@
 #include "electronmodel.h"
+#include "util.h"
 
 ElectronModel::ElectronModel(const double B0, const double r0, const double dt,
     const double z1, const double z2, const double gridSize,
@@ -73,10 +74,8 @@ Vector ElectronModel::totalBfield(const Vector vx, const double B0,
     return solenoidBfield(x, y, z, a) + hexapoleBfield(x, y, B0, r0);
 }
 
-void ElectronModel::newParticle(const double energy,
+void ElectronModel::newParticle(const double speed,
     std::function<bool(Vector)> criterion, Rng& rng) {
-    double speed = std::sqrt(2.0 * energy / ELECTRON_MASS_EV) * SPEED_OF_LIGHT;
-
     double u = 2.0 * uni01(rng) - 1.0;
     double theta = 2.0*M_PI*uni01(rng);
     double sqrtu = std::sqrt(1.0 - u*u);
@@ -150,12 +149,12 @@ bool ElectronModel::moveParticle() {
     return true;
 }
 
-void ElectronModel::runMonoenergeticSimulation(const unsigned long nParticles,
-    const double energy_, const double BnormLimit, Rng& rng) {
+void ElectronModel::runSimulation(const unsigned long nParticles,
+    std::function<double(Rng&)> getSpeed, const double Becr, Rng& rng) {
     for (unsigned long n = 0; n < nParticles; n++) {
-        newParticle(energy_,
-            [BnormLimit](Vector B) {
-                return B.squared_length() < BnormLimit*BnormLimit;
+        newParticle(getSpeed(rng),
+            [Becr](Vector B) {
+                return B.squared_length() < Becr*Becr;
             }, rng);
 
         Vector v = particleVelocity_;
@@ -181,6 +180,20 @@ void ElectronModel::runMonoenergeticSimulation(const unsigned long nParticles,
     }
 }
 
+void ElectronModel::runMonoenergeticSimulation(const unsigned long nParticles,
+    const double energy, const double Becr, Rng& rng) {
+    runSimulation(nParticles, [energy](Rng &) {
+        return std::sqrt(2.0 * energy / ELECTRON_MASS_EV) * SPEED_OF_LIGHT;
+    }, Becr, rng);
+}
+
+void ElectronModel::runMaxwellSimulation(const unsigned long nParticles,
+    const double T_eV, const double Becr, Rng& rng) {
+    runSimulation(nParticles, [T_eV](Rng &rng_) {
+        return Util::getMBSpeed(rng_, T_eV, ELECTRON_MASS_EV);
+    }, Becr, rng);
+}
+
 double ElectronModel::meanEnergy() const {
     return std::accumulate(finalEnergies_.begin(), finalEnergies_.end(),
         (double)0.0) / finalEnergies_.size();
@@ -194,5 +207,15 @@ double ElectronModel::energyStdDev() const {
             return acc + de*de;
         }
     ) / finalEnergies_.size());
+}
+
+void ElectronModel::writeDensityToFile(const std::string &filename) const {
+    std::ofstream fout(filename);
+    grid_.writeDimensions(fout);
+    size_t N = grid_.arraySize();
+    for (size_t i = 0; i < N; i++) {
+        fout << particleCount_ << std::endl;
+    }
+    fout.close();
 }
 
