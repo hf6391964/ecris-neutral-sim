@@ -11,6 +11,8 @@ Grid::Grid(Bbox bbox, double gridSize) : gridSize_(gridSize) {
         bbox.ymin() + intervalsY_ * gridSize,
         bbox.zmin() + intervalsZ_ * gridSize
     ).bbox();
+
+    removeCoordinateTransformation();
 }
 
 Grid::Grid(std::ifstream &fin) {
@@ -44,10 +46,12 @@ Grid::Grid(std::ifstream &fin) {
     gridSize_ = (xmax - xmin) / intervalsX_;
 }
 
-bool Grid::arrayIndex(double x, double y, double z, size_t& i) const {
-    size_t ix = std::floor((x - bbox_.xmin()) / gridSize_);
-    size_t iy = std::floor((y - bbox_.ymin()) / gridSize_);
-    size_t iz = std::floor((z - bbox_.zmin()) / gridSize_);
+bool Grid::arrayIndex(const Point &p, size_t& i) const {
+    const Point &pTransformed = doTransform_ ?
+        coordTransformation_.transform(p) : p;
+    size_t ix = std::floor((pTransformed.x() - bbox_.xmin()) / gridSize_);
+    size_t iy = std::floor((pTransformed.y() - bbox_.ymin()) / gridSize_);
+    size_t iz = std::floor((pTransformed.z() - bbox_.zmin()) / gridSize_);
 
     if (ix < intervalsX_ && iy < intervalsY_ && iz < intervalsZ_) {
         i = ix + intervalsX_ * (iy + intervalsY_ * iz);
@@ -69,5 +73,16 @@ void Grid::writeDimensions(std::ostream& os) const {
     os << "# Xmax" << CSV_SEP << " Ymax" << CSV_SEP << " Zmax" << std::endl;
     os << bbox_.xmax() << CSV_SEP << bbox_.ymax() << CSV_SEP <<
         bbox_.zmax() << std::endl;
+}
+
+void Grid::setCoordinateTransformation(const Aff_transformation
+    &transformation) {
+    coordTransformation_ = transformation;
+    doTransform_ = true;
+}
+
+void Grid::removeCoordinateTransformation() {
+    coordTransformation_ = Aff_transformation();
+    doTransform_ = false;
 }
 

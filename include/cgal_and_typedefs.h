@@ -16,6 +16,7 @@ typedef K::Point_3 Point;
 typedef K::Vector_3 Vector;
 typedef K::Direction_3 Direction;
 typedef K::Ray_3 Ray;
+typedef K::Aff_transformation_3 Aff_transformation;
 typedef CGAL::Bbox_3 Bbox;
 typedef CGAL::Surface_mesh<Point> Surface_mesh;
 typedef Surface_mesh::Face_index face_descriptor;

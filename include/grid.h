@@ -10,6 +10,8 @@ class Grid {
     Bbox bbox_;
     size_t intervalsX_, intervalsY_, intervalsZ_;
     double gridSize_;
+    Aff_transformation coordTransformation_;
+    bool doTransform_ = false;
 
     public:
         Grid() {};
@@ -38,13 +40,24 @@ class Grid {
             return intervalsX_ * intervalsY_ * intervalsZ_;
         }
 
-        bool arrayIndex(Point p, size_t& i) const {
-            return arrayIndex(p.x(), p.y(), p.z(), i);
+        bool arrayIndex(const Point &p, size_t& i) const;
+
+        bool arrayIndex(const double &x, const double &y, const double &z,
+            size_t& i) const {
+            return arrayIndex(Point(x, y, z), i);
         }
 
-        bool arrayIndex(double x, double y, double z, size_t& i) const;
-
         void writeDimensions(std::ostream& os) const;
+
+        // Set the coordinate transformation which maps coordinates from the
+        // target geometry frame to the frame where the electron densities are
+        // calculated. Typical uses would be translations and some 90 degree
+        // rotations.
+        // The default is identity where no transformation is performed.
+        void setCoordinateTransformation(const Aff_transformation
+            &transformation);
+        // Removes the current coordinate transformation.
+        void removeCoordinateTransformation();
 };
 
 #endif
