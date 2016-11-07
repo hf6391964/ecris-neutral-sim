@@ -27,6 +27,8 @@ PlasmaDensities::PlasmaDensities(std::string electronDensityFilename,
         }
         ionDensities_.push_back(densityArr);
     }
+
+    maxChargeState_ = ionDensities_.size() - 1;
 }
 
 PlasmaDensities::~PlasmaDensities() {
@@ -36,3 +38,25 @@ PlasmaDensities::~PlasmaDensities() {
         }
     }
 }
+
+void PlasmaDensities::setCoordinateTransformation(
+    const Aff_transformation &tf) {
+    grid_.setCoordinateTransformation(tf);
+}
+
+double PlasmaDensities::getIonDensityAt(const Point &p,
+    unsigned int chargeState) const {
+    size_t index;
+    bool hasValue = grid_.arrayIndex(p, index);
+
+    if (hasValue && chargeState <= maxChargeState_) {
+        return ionDensities_[chargeState][index];
+    }
+
+    return 0.0;
+}
+
+double PlasmaDensities::getElectronDensityAt(const Point &p) const {
+    return getIonDensityAt(p, 0);
+}
+

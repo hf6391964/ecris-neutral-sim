@@ -12,6 +12,7 @@
 class PlasmaDensities {
     std::vector<double *> ionDensities_;
     Grid grid_;
+    unsigned int maxChargeState_ = 0;
 
     public:
         // Electron weight is the statistical weight of an electron in the
@@ -26,11 +27,12 @@ class PlasmaDensities {
 
         ~PlasmaDensities();
 
-        void setCoordinateTransformation();
-        void removeCoordinateTransformation();
+        void setCoordinateTransformation(const Aff_transformation &tf);
 
-        double getIonDensityAt(Point p, unsigned int chargeState) const;
-        double getElectronDensityAt(Point p) const;
+        // Here ion densities are indexed such that i = q.
+        // A special case is i = 0 which corresponds to electron density.
+        double getIonDensityAt(const Point &p, unsigned int chargeState) const;
+        double getElectronDensityAt(const Point &p) const;
 };
 
 #endif
