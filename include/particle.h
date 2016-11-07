@@ -18,7 +18,7 @@ class Particle {
             return position_;
         }
 
-        const Direction& getDirection() const {
+        const Direction getDirection() const {
             return direction_;
         }
 
@@ -42,11 +42,11 @@ class Particle {
             return speed_;
         }
 
-        void setPosition(Point position) {
+        void setPosition(const Point &position) {
             position_ = position;
         }
 
-        void setVelocity(double speed, Direction direction) {
+        void setVelocity(double speed, const Direction &direction) {
             speed_ = speed;
             direction_ = direction;
         }

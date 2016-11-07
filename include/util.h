@@ -6,8 +6,8 @@
 
 class Util {
     public:
-        static void printPoint(Point p);
-        static void printVector(Vector v);
+        static void printPoint(const Point &p);
+        static void printVector(const Vector &v);
 
         static double getMBSpeed(Rng& rng, double T_eV, double mass_eV);
         static double getMBAverage(double T, double mass_eV);

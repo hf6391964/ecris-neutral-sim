@@ -1,10 +1,10 @@
 #include "util.h"
 
-void Util::printPoint(Point p) {
+void Util::printPoint(const Point &p) {
     std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z() << ")";
 }
 
-void Util::printVector(Vector v) {
+void Util::printVector(const Vector &v) {
     std::cout << "(" << v.x() << ", " << v.y() << ", " << v.z() << ")";
 }
 
