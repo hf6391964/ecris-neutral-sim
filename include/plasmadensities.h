@@ -10,13 +10,19 @@
 #include "grid.h"
 
 class PlasmaDensities {
-    std::vector<double *> ionDensities;
-    unsigned int maxChargeState = 0;
+    std::vector<double *> ionDensities_;
     Grid grid_;
 
     public:
+        // Electron weight is the statistical weight of an electron in the
+        // electron density distribution i.e.
+        // # of real particles / test particle.
+        // Ion densities are relative to real electron density,
+        // ionRelativeDensities[i] corresponds to charge state i+1
+        // Quasineutrality should be satisfied:
+        // sum(ionRelativeDensities[i] * (i+1)) = 1
         PlasmaDensities(std::string electronDensityFilename,
-            double electronWeight, std::vector<double> ionDensities);
+            double electronWeight, std::vector<double> ionRelativeDensities);
 
         ~PlasmaDensities();
 
