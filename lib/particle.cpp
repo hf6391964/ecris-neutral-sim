@@ -21,9 +21,8 @@ void Particle::goToIntersection(Rng& rng) {
 bool Particle::findNextIntersection(
     std::vector<Surface*>::const_iterator itSurface,
     std::vector<Surface*>::const_iterator itEnd) {
-    Direction direction = getDirection();
-    Point position = getPosition() + 1e-12 * direction.vector();
-    Ray r(position, direction);
+    Point position = getPosition() + 1e-12 * direction_.vector();
+    Ray r(position, direction_);
 
     bool found = false;
     double nearestDistance = 0.0;

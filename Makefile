@@ -1,9 +1,9 @@
 LIBNAME = libneutrals
 INCDIRS = -I../CGAL-4.9/include -I./include #-I../gsl-2.2.1
 CC = g++
-CFLAGS_COMMON = -Wall -Wextra -std=c++11 -O3 #-flto
-# CFLAGS = -g
-CFLAGS = 
+CFLAGS_COMMON = -Wall -Wextra -std=c++11 -O3 -DCGAL_DISABLE_ROUNDING_MATH_CHECK #-flto
+CFLAGS = -g
+# CFLAGS = 
 
 .PHONY: default all clean
 

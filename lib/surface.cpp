@@ -182,7 +182,7 @@ Direction Surface::generateCosineLawDirection(face_descriptor fd, Rng& rng) cons
 }
 
 Bbox Surface::bbox() const {
-    return CGAL::Polygon_mesh_processing::bbox_3(mesh_,
-        CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()));
+    return CGAL::Polygon_mesh_processing::bbox_3(mesh_);
+        /* CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points())); */
 }
 

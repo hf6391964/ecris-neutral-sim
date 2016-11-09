@@ -13,6 +13,7 @@ Grid::Grid(Bbox bbox, double gridSize) : gridSize_(gridSize) {
     ).bbox();
 
     removeCoordinateTransformation();
+    gridSizeInverse_ = 1.0 / gridSize_;
 }
 
 Grid::Grid(std::ifstream &fin) {
@@ -44,14 +45,15 @@ Grid::Grid(std::ifstream &fin) {
 
     bbox_ = Bbox(xmin, ymin, zmin, xmax, ymax, zmax);
     gridSize_ = (xmax - xmin) / intervalsX_;
+    gridSizeInverse_ = 1.0 / gridSize_;
 }
 
 bool Grid::arrayIndex(const Point &p, size_t& i) const {
     const Point &pTransformed = doTransform_ ?
         coordTransformation_.transform(p) : p;
-    size_t ix = std::floor((pTransformed.x() - bbox_.xmin()) / gridSize_);
-    size_t iy = std::floor((pTransformed.y() - bbox_.ymin()) / gridSize_);
-    size_t iz = std::floor((pTransformed.z() - bbox_.zmin()) / gridSize_);
+    size_t ix = std::floor((pTransformed.x() - bbox_.xmin()) * gridSizeInverse_);
+    size_t iy = std::floor((pTransformed.y() - bbox_.ymin()) * gridSizeInverse_);
+    size_t iz = std::floor((pTransformed.z() - bbox_.zmin()) * gridSizeInverse_);
 
     if (ix < intervalsX_ && iy < intervalsY_ && iz < intervalsZ_) {
         i = ix + intervalsX_ * (iy + intervalsY_ * iz);
