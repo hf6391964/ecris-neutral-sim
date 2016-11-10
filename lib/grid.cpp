@@ -83,9 +83,9 @@ void Grid::removeCoordinateTransformation() {
 bool Grid::arrayIndex(const Point &p, size_t& i) const {
     const Point &pTransformed = doTransform_ ?
         coordTransformation_.transform(p) : p;
-    unsigned int ix = std::floor((pTransformed.x() - xmin_) * gridSizeInverse_);
-    unsigned int iy = std::floor((pTransformed.y() - ymin_) * gridSizeInverse_);
-    unsigned int iz = std::floor((pTransformed.z() - zmin_) * gridSizeInverse_);
+    unsigned int ix = Util::fastFloor((pTransformed.x() - xmin_) * gridSizeInverse_);
+    unsigned int iy = Util::fastFloor((pTransformed.y() - ymin_) * gridSizeInverse_);
+    unsigned int iz = Util::fastFloor((pTransformed.z() - zmin_) * gridSizeInverse_);
 
     if (ix < intervalsX_ && iy < intervalsY_ && iz < intervalsZ_) {
         i = ix + intervalsX_ * (iy + intervalsY_ * iz);

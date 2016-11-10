@@ -11,6 +11,11 @@ class Util {
 
         static double getMBSpeed(Rng& rng, double T_eV, double mass_eV);
         static double getMBAverage(double T, double mass_eV);
+
+        static int fastFloor(double x) {
+            int i = x;
+            return i - (i > x);
+        }
 };
 
 #endif

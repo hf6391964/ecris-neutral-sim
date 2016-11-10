@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "cgal_and_typedefs.h"
+#include "util.h"
 
 class Grid {
     Bbox bbox_;

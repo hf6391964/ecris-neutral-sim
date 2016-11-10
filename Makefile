@@ -1,7 +1,7 @@
 LIBNAME = libneutrals
-INCDIRS = -I../CGAL-4.9/include -I./include #-I../gsl-2.2.1
+INCDIRS = -I../CGAL-4.9/include -I./include
 CC = g++
-CFLAGS_COMMON = -Wall -Wextra -std=c++11 -O3 -ffast-math -march=native -DCGAL_DISABLE_ROUNDING_MATH_CHECK
+CFLAGS_COMMON = -Wall -Wextra -std=c++14 -O2
 # CFLAGS = -pg
 CFLAGS = 
 
