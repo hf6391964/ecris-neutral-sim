@@ -1,9 +1,9 @@
 TARGET = main
-INCDIRS = -I../../../CGAL-4.9/include -I../../include #-I../../../gsl-2.2.1
+INCDIRS = -I../../include -I../../../CGAL-4.9/include
 LIBS = -lpthread
-STATIC_LIBS = ../../../CGAL-4.9/lib/libCGAL.a ../../libneutrals.a #../../../gsl-2.2.1/.libs/libgsl.a
+STATIC_LIBS = ../../libneutrals.a ../../../CGAL-4.9/lib/libCGAL.a
 CC = g++
-CFLAGS_COMMON = -Wall -Wextra -std=c++14
+CFLAGS_COMMON = -Wall -Wextra -std=c++11
 # CFLAGS = -pg
 CFLAGS = 
 

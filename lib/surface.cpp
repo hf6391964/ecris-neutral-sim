@@ -24,9 +24,7 @@ void Surface::computeFaceNormals() {
     faceNormals_ = mesh_.add_property_map<face_descriptor, Vector>
         ("f:normals", CGAL::NULL_VECTOR).first;
     CGAL::Polygon_mesh_processing::compute_face_normals(mesh_,
-        faceNormals_,
-        CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()).
-        geom_traits(K()));
+        faceNormals_);
 }
 
 void Surface::computeFaceRotations(bool flipNormals) {
@@ -112,8 +110,7 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
             CGAL::Polygon_mesh_processing::refine(mesh, faces(mesh),
                 std::back_inserter(new_facets),
                 std::back_inserter(new_vertex),
-                CGAL::Polygon_mesh_processing::parameters::density_control_factor(densityControlFactor).
-                vertex_point_map(mesh.points()));
+                CGAL::Polygon_mesh_processing::parameters::density_control_factor(densityControlFactor));
         }
         std::cout << "Loaded " << filename << " with " <<
             mesh.number_of_faces() << " faces and " <<
@@ -183,6 +180,5 @@ Direction Surface::generateCosineLawDirection(face_descriptor fd, Rng& rng) cons
 
 Bbox Surface::bbox() const {
     return CGAL::Polygon_mesh_processing::bbox_3(mesh_);
-        /* CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points())); */
 }
 
