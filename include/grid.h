@@ -8,7 +8,7 @@
 
 class Grid {
     Bbox bbox_;
-    size_t intervalsX_, intervalsY_, intervalsZ_;
+    unsigned int intervalsX_, intervalsY_, intervalsZ_;
     double gridSize_, gridSizeInverse_;
     double xmin_, ymin_, zmin_;
     Aff_transformation coordTransformation_;
@@ -33,7 +33,7 @@ class Grid {
             return bbox_.zmin() + i*gridSize_;
         }
 
-        std::tuple<size_t, size_t, size_t> dimensions() const {
+        std::tuple<unsigned int, unsigned int, unsigned int> dimensions() const {
             return std::make_tuple(intervalsX_, intervalsY_, intervalsZ_);
         }
 

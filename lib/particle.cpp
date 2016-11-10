@@ -13,7 +13,7 @@ void Particle::goToIntersection(Rng& rng) {
         generateCosineLawDirection(nextIntersection_.faceId, rng);
 
     if (nextIntersection_.pSurface->checkIfPumped(rng)) {
-        //nextIntersection_.pSurface->addPumpedParticle();
+        nextIntersection_.pSurface->addPumpedParticle();
         state_ = Pumped;
     }
 }

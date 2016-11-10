@@ -4,8 +4,8 @@ LIBS = -lpthread
 STATIC_LIBS = ../../../CGAL-4.9/lib/libCGAL.a ../../libneutrals.a #../../../gsl-2.2.1/.libs/libgsl.a
 CC = g++
 CFLAGS_COMMON = -Wall -Wextra -std=c++11 -O3 -march=native -DCGAL_DISABLE_ROUNDING_MATH_CHECK
-CFLAGS = -pg
-# CFLAGS = 
+# CFLAGS = -pg
+CFLAGS = 
 
 .PHONY: default all clean
 
