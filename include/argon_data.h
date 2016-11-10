@@ -1,15 +1,19 @@
 #ifndef ARGON_DATA_H
 #define ARGON_DATA_H
 
-ElementData ARGON_DATA;
-
-ARGON_DATA.Z = 18;
-ARGON_DATA.mass = 39.948;
+#include "element_data.h"
+#include "lotz.h"
 
 // IONIZATION ENERGIES, LOTZ PARAMETERS
 
-LotzParameters ARGON_LOTZ_PARAMETERS;
+// const LotzParameters ARGON_LOTZ_PARAMETERS;
 
+const ElementData ARGON_DATA = {
+    18,  // Z
+    39.962384,  // mass in eV
+    {},
+    {}
+};
 
 #endif
 

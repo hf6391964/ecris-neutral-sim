@@ -26,6 +26,10 @@ class Particle {
             return Ray(position_, direction_);
         }
 
+        void setMass_eV(double mass_eV) {
+            mass_eV_ = mass_eV;
+        }
+
         double getMass_eV() const {
             return mass_eV_;
         }

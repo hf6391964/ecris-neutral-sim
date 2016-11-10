@@ -15,7 +15,8 @@ void SimulationModel::runSimulation(unsigned long nParticles,
 
     // TODO figure out typical particle parameters (e.g. average of present
     // particle masses and surface temperatures)
-    double averageSpeed = Util::getMBAverage(273.0, 1.0);
+    double averageSpeed = Util::getMBAverage(ROOM_TEMPERATURE_EV,
+        ARGON_DATA.mass * ATOMIC_MASS_TO_EV);
     double dt = timestepFactor * gridSize / averageSpeed;
     unsigned long nSteps = maxTime / dt;
     std::cout << "max steps: " << nSteps << std::endl;
