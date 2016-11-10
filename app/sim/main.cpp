@@ -19,7 +19,7 @@ int main() {
     SurfaceEmission gasFeed(&surf_source, 1e-12);
     model.addSource(&gasFeed);
 
-    unsigned long nParticles = 10000;
+    unsigned long nParticles = 100000;
     model.runSimulation(nParticles, "test", true, 0.1, 5.0, 2.0, 1);
 
     std::cout << "% of particles pumped to source: " <<

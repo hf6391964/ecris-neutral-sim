@@ -10,6 +10,7 @@ class Grid {
     Bbox bbox_;
     size_t intervalsX_, intervalsY_, intervalsZ_;
     double gridSize_, gridSizeInverse_;
+    double xmin_, ymin_, zmin_;
     Aff_transformation coordTransformation_;
     bool doTransform_ = false;
 
