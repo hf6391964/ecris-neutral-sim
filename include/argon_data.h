@@ -1,5 +1,4 @@
-#ifndef ARGON_DATA_H
-#define ARGON_DATA_H
+#pragma once
 
 #include "element_data.h"
 #include "lotz.h"
@@ -14,6 +13,4 @@ const ElementData ARGON_DATA = {
     {},
     {}
 };
-
-#endif
 

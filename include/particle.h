@@ -1,5 +1,4 @@
-#ifndef PARTICLE_H
-#define PARTICLE_H
+#pragma once
 
 #include "cgal_and_typedefs.h"
 #include "surface.h"
@@ -89,4 +88,3 @@ class Particle {
         IntersectionPoint nextIntersection_;
 };
 
-#endif

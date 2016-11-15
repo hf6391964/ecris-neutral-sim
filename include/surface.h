@@ -1,5 +1,4 @@
-#ifndef SURFACE_H
-#define SURFACE_H
+#pragma once
 
 #include <string>
 #include <algorithm>
@@ -84,6 +83,4 @@ class Surface {
 
         Bbox bbox() const;
 };
-
-#endif
 

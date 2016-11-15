@@ -1,5 +1,4 @@
-#ifndef ELECTRONMODEL_H
-#define ELECTRONMODEL_H
+#pragma once
 
 #include <cmath>
 #include <functional>
@@ -132,6 +131,4 @@ class ElectronModel {
         std::vector<std::tuple<double, double>> nonLostVelocities_;
         unsigned long* particleCount_ = NULL;
 };
-
-#endif
 

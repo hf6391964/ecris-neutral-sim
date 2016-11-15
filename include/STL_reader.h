@@ -16,8 +16,7 @@
 //
 // Author(s)     : Andreas Fabri
 
-#ifndef CGAL_IO_STL_READER_H
-#define CGAL_IO_STL_READER_H
+#pragma once
 
 #include <CGAL/array.h>
 #include <boost/cstdint.hpp> 
@@ -35,4 +34,3 @@ namespace CGAL{
             bool verbose = false);
 } // namespace CGAL
 
-#endif // CGAL_IO_STL_READER_H

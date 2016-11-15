@@ -1,5 +1,4 @@
-#ifndef GRID_H
-#define GRID_H
+#pragma once
 
 #include <tuple>
 #include <fstream>
@@ -62,4 +61,3 @@ class Grid {
         void removeCoordinateTransformation();
 };
 
-#endif

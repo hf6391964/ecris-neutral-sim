@@ -1,5 +1,4 @@
-#ifndef UTIL_H
-#define UTIL_H
+#pragma once
 
 #include "cgal_and_typedefs.h"
 #include "constants.h"
@@ -18,4 +17,3 @@ class Util {
         }
 };
 
-#endif

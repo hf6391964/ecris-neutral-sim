@@ -1,5 +1,4 @@
-#ifndef PLASMADENSITIES_H
-#define PLASMADENSITIES_H
+#pragma once
 
 #include <fstream>
 #include <string>
@@ -34,6 +33,4 @@ class PlasmaDensities {
         double getIonDensityAt(const Point &p, unsigned int chargeState) const;
         double getElectronDensityAt(const Point &p) const;
 };
-
-#endif
 

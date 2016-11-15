@@ -1,5 +1,4 @@
-#ifndef CGAL_AND_TYPEDEFS_H
-#define CGAL_AND_TYPEDEFS_H
+#pragma once
 
 #include <random>
 
@@ -31,6 +30,4 @@ typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type>
 
 typedef std::mt19937 Rng;
 static std::uniform_real_distribution<double> uni01(0.0, 1.0);
-
-#endif
 

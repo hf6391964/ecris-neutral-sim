@@ -1,5 +1,4 @@
-#ifndef SURFACEEMISSION_H
-#define SURFACEEMISSION_H
+#pragma once
 
 #include "neutralsource.h"
 #include "surface.h"
@@ -13,6 +12,4 @@ class SurfaceEmission : public NeutralSource {
 
         void generateParticle(Particle& particle, Rng& rng) const;
 };
-
-#endif
 

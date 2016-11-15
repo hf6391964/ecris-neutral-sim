@@ -1,5 +1,4 @@
-#ifndef ELEMENT_DATA_H
-#define ELEMENT_DATA_H
+#pragma once
 
 #define MAX_SHELLS 20
 
@@ -11,6 +10,4 @@ struct ElementData {
     double ionizationEnergies[MAX_SHELLS];
     unsigned int electronPopulation[MAX_SHELLS];
 };
-
-#endif
 

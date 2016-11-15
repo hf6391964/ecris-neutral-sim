@@ -1,5 +1,4 @@
-#ifndef SIMULATIONMODEL_H
-#define SIMULATIONMODEL_H
+#pragma once
 
 #include <thread>
 #include <random>
@@ -43,4 +42,3 @@ class SimulationModel {
             double timestepFactor = 2.0, int nThreads = -1);
 };
 
-#endif
