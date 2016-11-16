@@ -95,3 +95,19 @@ bool Grid::arrayIndex(const Point &p, size_t& i) const {
     return false;
 }
 
+bool Grid::getCellMidpoint(size_t i, Point &p) const {
+    if (i >= arraySize()) return false;
+
+    unsigned int iz = i / (intervalsX_*intervalsY_);
+    unsigned int iy = (i - iz*intervalsX_*intervalsY_) / intervalsX_;
+    unsigned int ix = i - intervalsX_ * (intervalsY_*iz + iy);
+
+    p = Point(
+        bbox_.xmin() + (ix + 0.5) * gridSize_,
+        bbox_.ymin() + (iy + 0.5) * gridSize_,
+        bbox_.zmin() + (iz + 0.5) * gridSize_
+    );
+
+    return true;
+}
+

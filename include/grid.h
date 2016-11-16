@@ -48,6 +48,8 @@ class Grid {
             return arrayIndex(Point(x, y, z), i);
         }
 
+        bool getCellMidpoint(size_t i, Point &p) const;
+
         void writeDimensions(std::ostream& os) const;
 
         // Set the coordinate transformation which maps coordinates from the
