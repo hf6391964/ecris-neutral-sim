@@ -16,22 +16,8 @@ class Grid {
 
     public:
         Grid() {};
-
         Grid(Bbox bbox, double gridSize);
-
         Grid(std::ifstream &fin);
-
-        double getXatIndex(size_t i) const {
-            return bbox_.xmin() + i*gridSize_;
-        }
-
-        double getYatIndex(size_t i) const {
-            return bbox_.ymin() + i*gridSize_;
-        }
-
-        double getZatIndex(size_t i) const {
-            return bbox_.zmin() + i*gridSize_;
-        }
 
         std::tuple<unsigned int, unsigned int, unsigned int> dimensions() const {
             return std::make_tuple(intervalsX_, intervalsY_, intervalsZ_);
