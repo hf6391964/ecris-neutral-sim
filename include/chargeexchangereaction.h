@@ -8,6 +8,7 @@ class ChargeExchangeReaction : CollisionReaction {
     PlasmaDensities &plasmaDensities_;
     unsigned int chargeState_ = 0;
     double ionizationPotentialEv_ = 0.0;
+    double projectileMass_ = 0.0;
     double mullerSalzbornCrossSection_ = 0.0;
 
     public:
@@ -17,6 +18,9 @@ class ChargeExchangeReaction : CollisionReaction {
 
         double getMeanReactionRate(const Point &p) const;
         double getMajorantReactionRate(const Point &p) const;
+
+        std::vector<Particle> computeReactionProducts(Rng &rng,
+            const Point &, const Particle &target) const;
 
         double getCrossSection(const Point &, double) const;
 };

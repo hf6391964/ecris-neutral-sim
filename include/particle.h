@@ -54,6 +54,11 @@ class Particle {
             direction_ = direction;
         }
 
+        void setVelocity(const Vector &vel) {
+            direction_ = Direction(vel);
+            speed_ = std::sqrt(vel.squared_length());
+        }
+
         Vector getVelocity() const {
             return speed_ * direction_.vector();
         }
