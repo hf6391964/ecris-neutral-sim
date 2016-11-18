@@ -4,7 +4,23 @@
 #include <algorithm>
 #include <atomic>
 
+#include <CGAL/Surface_mesh.h>
+#include <CGAL/AABB_tree.h>
+#include <CGAL/AABB_traits.h>
+#include <CGAL/AABB_face_graph_triangle_primitive.h>
+
 #include "cgal_and_typedefs.h"
+
+typedef CGAL::Surface_mesh<Point> Surface_mesh;
+typedef Surface_mesh::Face_index face_descriptor;
+typedef Surface_mesh::Vertex_index vertex_descriptor;
+typedef Surface_mesh::Halfedge_index halfedge_descriptor;
+typedef CGAL::AABB_face_graph_triangle_primitive<Surface_mesh> Primitive;
+typedef CGAL::AABB_traits<K, Primitive> Traits;
+typedef CGAL::AABB_tree<Traits> Tree;
+typedef Tree::Point_and_primitive_id Point_and_primitive_id;
+typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type>
+    Ray_intersection;
 
 class Surface;
 
