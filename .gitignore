@@ -11,3 +11,4 @@ main
 *.fls
 *.log
 *.out
+*.gch
