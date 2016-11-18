@@ -4,6 +4,8 @@ CC = g++
 CFLAGS_COMMON = -Wall -Wextra -std=c++11 -O2
 # CFLAGS = -pg
 CFLAGS = 
+PRECOMPILED_HEADER = include/cgal_and_typedefs.h
+PRECOMPILED_HEADER_TARGET = $(PRECOMPILED_HEADER).gch
 
 .PHONY: default all clean
 
@@ -13,8 +15,11 @@ all: default
 OBJECTS = $(patsubst %.cpp, %.o, $(wildcard lib/*.cpp))
 HEADERS = $(wildcard include/*.h)
 
-lib/%.o: lib/%.cpp $(HEADERS)
-	$(CC) $(CFLAGS_COMMON) $(CFLAGS) $(INCDIRS) -c $< -o $@
+$(PRECOMPILED_HEADER_TARGET): $(PRECOMPILED_HEADER)
+	$(CC) $(CFLAGS_COMMON) $(CFLAGS) $(INCDIRS) $(PRECOMPILED_HEADER) -o $(PRECOMPILED_HEADER_TARGET)
+
+lib/%.o: lib/%.cpp $(HEADERS) $(PRECOMPILED_HEADER_TARGET)
+	$(CC) $(CFLAGS_COMMON) $(CFLAGS) $(INCDIRS) -include $(PRECOMPILED_HEADER) -c $< -o $@
 
 .PRECIOUS: $(TARGET) $(OBJECTS)
 
@@ -24,4 +29,5 @@ $(LIBNAME): $(OBJECTS)
 clean:
 	rm -f $(OBJECTS)
 	rm -f $(LIBNAME).a
+	rm -f $(PRECOMPILED_HEADER_TARGET)
 
