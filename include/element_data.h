@@ -1,13 +1,21 @@
 #pragma once
 
-#define MAX_SHELLS 20
+// Ionization paramaters as per
+// https://www.nist.gov/sites/default/files/documents/srd/jpcrd347.pdf
+struct IonizationParameters {
+    double I;
+    double A;
+    double B[5];
+};
 
 struct ElementData {
     unsigned int Z;  // proton number
     double mass;  // in atomic mass units
-    // Shell ordering: TODO fill
-    // 1s, 2s, 2p, 3s, 3p, ...
-    double ionizationEnergies[MAX_SHELLS];
-    unsigned int electronPopulation[MAX_SHELLS];
+
+    // If this is 0, low energy parameters are always used
+    double ionizationHighEnergyLimit;
+    IonizationParameters ionizationParametersLowEnergy;
+    // Parameters for impact energies larger than the high energy limit
+    IonizationParameters ionizationParametersHighEnergy;
 };
 
