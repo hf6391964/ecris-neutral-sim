@@ -6,7 +6,7 @@ ChargeExchangeReaction::ChargeExchangeReaction(PlasmaDensities &densities,
     : ionMeanSpeed_(ionMeanSpeed), ionMajorantSpeed_(ionMajorantSpeed),
       plasmaDensities_(densities),
       chargeState_(chargeState), ionizationPotentialEv_(ionizationPotentialEv) {
-    mullerSalzbornCrossSection_ = 1.43e-12 *
+    mullerSalzbornCrossSection_ = 1.43e-16 *
         std::pow((double)chargeState_, 1.17) *
         std::pow(ionizationPotentialEv_, -2.76);
 }

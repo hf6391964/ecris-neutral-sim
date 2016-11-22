@@ -12,3 +12,4 @@ main
 *.log
 *.out
 *.gch
+tags
