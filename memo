@@ -1,0 +1,15 @@
+Null collision: törmäyksen evaluointi?
+--------------------------------------
+* Käytetäänkö kussakin pisteessä törmäystaajuuden keskiarvoa vai samplataanko projektiilin nopeus ja päätetään pisteittäinen törmäystaajuus sen mukaan?
+* Edelliseen liittyen: majorantin laskenta?
+* Aika-askellus. Null collisionin "look-ahead"-aika määräytyy reaktiotaajuuden majorantin perusteella, mitä tapahtuu varsinaiselle aika-askeleelle (näytteistykseen käytettävä)
+
+Rekombinaatio ja ekstraktio
+---------------------------
+* Valmiita rate coefficienteja:
+https://www-amdis.iaea.org/FLYCHK/ZBAR/csd018.php
+* Pitäisikö kuitenkin laskea plasmaan (ionisaation kautta) "hävinneiden"
+neutraalien lukumäärä ja energia, ja "tasapainottaa" se emittoimalla neutraaleja
+kammioon ja poistamalla ekstraktion kautta?
+* Ekstraktiotodennäköisyys?
+
