@@ -28,7 +28,7 @@ double Util::mbHelperFn(double speed, void *p) {
     mbparams *params = (mbparams *)p;
 
     return evaluateMBDistribution(params->T_eV, params->mass_eV, speed) *
-        (*(params->fn))(speed, params->fnParams);
+        speed * (*(params->fn))(speed, params->fnParams);
 }
 
 double Util::evaluateMBDistribution(double T_eV, double mass_eV,
