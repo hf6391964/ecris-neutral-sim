@@ -52,7 +52,7 @@ double Util::calculateMBRateCoefficient(double T_eV, double mass_eV,
     fn.function = mbHelperFn;
     fn.params = &par;
     double result, error;
-    gsl_integration_qag(&fn, 0, 8.0*mbMean, 1e-50, 1e-12, 1000, 6, ws, &result,
+    gsl_integration_qag(&fn, 0.0, 8.0*mbMean, 1e-12, 1e-6, 1000, 6, ws, &result,
         &error);
     gsl_integration_workspace_free(ws);
     return result;
