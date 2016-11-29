@@ -1,4 +1,5 @@
 * Add ParticlePopulation class, refactor PlasmaDensities (rename to PlasmaModel)?
-* Ionization cross section and rate coefficient calculation
-* Numerical integration: use Boost or GSL?
+* Extraction and recombination
+    - use recombination rate coefficients?
+* Thermal accommodation
 
