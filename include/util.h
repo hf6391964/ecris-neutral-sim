@@ -14,6 +14,7 @@ struct mbrelativeparams {
     double mass_eV;
     double T_eV;
     double particleSpeed;
+    double vmean;
 };
 
 class Util {
