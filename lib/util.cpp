@@ -1,4 +1,7 @@
 #include "integration/gsl_integration.h"
+#include "monte/gsl_monte.h"
+#include "monte/gsl_monte_vegas.h"
+#include "rng/gsl_rng.h"
 #include "util.h"
 
 void Util::printPoint(const Point &p) {
@@ -73,5 +76,48 @@ Direction Util::getIsotropicSphereDirection(Rng &rng) {
     double v = std::sqrt(1 - u*u);
     double theta = 2.0 * M_PI * uni01(rng);
     return Direction(v * std::cos(theta), v * std::sin(theta), u);
+}
+
+double Util::relativeSpeedHelper(double *v, size_t, void *params) {
+    mbrelativeparams *par = (mbrelativeparams *)params;
+    double mper2kT = par->mass_eV /
+        (2.0 * par->T_eV * SPEED_OF_LIGHT * SPEED_OF_LIGHT);
+    double vx2 = v[0]*v[0];
+    double vy2 = v[1]*v[1];
+    double vz2 = v[2]*v[2];
+    double vzdiff2 = v[2] - par->particleSpeed;
+    vzdiff2 *= vzdiff2;
+    double vsq = vx2 + vy2 + vz2;
+    double vdiffsq = vx2 + vy2 + vzdiff2;
+    return std::pow(mper2kT / M_PI, 1.5) * std::sqrt(vdiffsq) *
+        std::exp(-mper2kT * vsq);
+}
+
+double Util::calculateMBRelativeSpeed(double particleSpeed, double T_eV,
+    double mass_eV, size_t N_calls) {
+    mbrelativeparams par;
+    par.T_eV = T_eV;
+    par.mass_eV = mass_eV;
+    par.particleSpeed = particleSpeed;
+
+    gsl_monte_function fn;
+    fn.f = relativeSpeedHelper;
+    fn.dim = 3;
+    fn.params = &par;
+
+    double vmean = getMBAverage(T_eV, mass_eV);
+    double lim = 8.0*vmean;
+    double xl[] = { -lim, -lim, -lim };
+    double xu[] = { lim, lim, lim };
+    double result, absErr;
+    gsl_rng *rng = gsl_rng_alloc(gsl_rng_mt19937);
+    gsl_rng_set(rng, 20161129L);
+    gsl_monte_vegas_state *state = gsl_monte_vegas_alloc(3);
+    gsl_monte_vegas_integrate(&fn, xl, xu, 3, N_calls, rng, state, &result,
+        &absErr);
+    gsl_monte_vegas_free(state);
+    gsl_rng_free(rng);
+
+    return result;
 }
 
