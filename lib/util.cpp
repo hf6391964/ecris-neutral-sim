@@ -109,7 +109,7 @@ double Util::calculateMBRelativeSpeed(double particleSpeed, double T_eV,
     fn.params = &par;
 
     double lim = 8.0;
-    double xl[] = { -lim, -lim, -lim };
+    double xl[] = { 0.0, 0.0, -lim };
     double xu[] = { lim, lim, lim };
     double result, absErr;
     gsl_rng *rng = gsl_rng_alloc(gsl_rng_mt19937);
@@ -120,6 +120,6 @@ double Util::calculateMBRelativeSpeed(double particleSpeed, double T_eV,
     gsl_monte_vegas_free(state);
     gsl_rng_free(rng);
 
-    return vmean*vmean*vmean*result;
+    return 4.0*vmean*vmean*vmean*result;
 }
 
