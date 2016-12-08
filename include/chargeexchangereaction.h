@@ -16,12 +16,14 @@ class ChargeExchangeReaction : CollisionReaction {
             double ionMeanSpeed, double ionMajorantSpeed,
             unsigned int chargeState, double ionizationPotentialEv);
 
-        double getMeanReactionRate(const Point &p) const;
-        double getMajorantReactionRate(const Point &p) const;
+        double getMeanReactionRate(const Point &p, double relativeSpeed)
+            const;
+        double getMajorantReactionRate(const Point &p,
+            double relativeSpeed) const;
 
         std::vector<Particle> computeReactionProducts(Rng &rng,
             const Point &, const Particle &target) const;
 
-        double getCrossSection(const Point &, double) const;
+        double getCrossSection(double) const;
 };
 

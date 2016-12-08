@@ -9,18 +9,22 @@ ElectronIonizationReaction::ElectronIonizationReaction(
       plasmaDensities_(densities), ionizationParameters_(ip) {
 }
 
-double ElectronIonizationReaction::getMeanReactionRate(const Point &p) const {
-    // TODO rate coefficient calculation
-    return plasmaDensities_.getElectronDensityAt(p) *
-        Util::calculateMBRateCoefficient(
-            plasmaDensities_.getElectronTemperature(),
-            ELECTRON_MASS_EV, crossSection, (void *)&ionizationParameters_);
+double ElectronIonizationReaction::getMeanReactionRate(const Point &p,
+    double relativeSpeed) const {
+    // TODO return precomputed values from table
+    /* return plasmaDensities_.getElectronDensityAt(p) * */
+    /*     Util::calculateMBRateCoefficient( */
+    /*         plasmaDensities_.getElectronTemperature(), */
+    /*         ELECTRON_MASS_EV, crossSection, (void *)&ionizationParameters_, ws); */
+    return 0.0;
 }
 
-double ElectronIonizationReaction::getMajorantReactionRate(const Point &p)
-    const {
-    return plasmaDensities_.getElectronDensityAt(p) *
-        getCrossSection(p, electronMajorantSpeed_) * electronMajorantSpeed_;
+double ElectronIonizationReaction::getMajorantReactionRate(const Point &p,
+    double relativeSpeed) const {
+    /* return plasmaDensities_.getElectronDensityAt(p) * */
+    /*     getCrossSection(p, electronMajorantSpeed_) * electronMajorantSpeed_; */
+    // TODO calculate based on highest density and precomputed rate coeffs
+    return 0.0;
 }
 
 std::vector<Particle> ElectronIonizationReaction::computeReactionProducts(
@@ -28,8 +32,7 @@ std::vector<Particle> ElectronIonizationReaction::computeReactionProducts(
     return std::vector<Particle>();
 }
 
-double ElectronIonizationReaction::getCrossSection(const Point &,
-    double speed) const {
+double ElectronIonizationReaction::getCrossSection(double speed) const {
     return crossSection(speed, (void *)&ionizationParameters_);
 }
 
@@ -41,7 +44,7 @@ double ElectronIonizationReaction::crossSection(double v, void *p) {
     double *B;
     IonizationParameters *ip = (IonizationParameters *)p;
     if (E < ip->I_le) return 0.0;  // Can't ionize if impact energy lower than
-                                  // ionization energy
+                                   // ionization energy
     if (E < ip->ionizationEnergyLimit * ip->I_le) {
         A = ip->A_le;
         I = ip->I_le;

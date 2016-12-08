@@ -3,6 +3,8 @@
 
 #include <random>
 
+#include "monte/gsl_monte_vegas.h"
+
 #include <CGAL/Simple_cartesian.h>
 #include <CGAL/squared_distance_3.h>
 
@@ -37,6 +39,7 @@ typedef Tree::Point_and_primitive_id Point_and_primitive_id;
 typedef boost::optional<Tree::Intersection_and_primitive_id<Ray>::Type>
     Ray_intersection;
 
+typedef gsl_monte_vegas_state monte_state;
 typedef std::mt19937 Rng;
 static std::uniform_real_distribution<double> uni01(0.0, 1.0);
 

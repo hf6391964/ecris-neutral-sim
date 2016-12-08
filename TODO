@@ -1,4 +1,4 @@
-* Add ParticlePopulation class, refactor PlasmaDensities (rename to PlasmaModel)?
+* Reaction computation with relative speed
 * Extraction and recombination
     - use recombination rate coefficients?
 * Thermal accommodation

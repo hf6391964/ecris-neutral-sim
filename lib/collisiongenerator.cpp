@@ -44,10 +44,10 @@ void CollisionGenerator::precomputeReactions() {
         double totalRate = 0.0;
         double majorant = 0.0;
         for (CollisionReaction *reaction : collisionReactions_) {
-            double rate = reaction->getMeanReactionRate(p);
+            double rate = reaction->getMeanReactionRate(p, 0.0);
             totalRate += rate;
             cumulativeProbability_[nReactions * i + j] = rate;
-            majorant += reaction->getMajorantReactionRate(p);
+            majorant += reaction->getMajorantReactionRate(p, 0.0);
             j += 1;
         }
 

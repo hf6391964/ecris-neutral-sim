@@ -43,9 +43,9 @@ double Util::evaluateMBDistribution(double T_eV, double mass_eV,
 }
 
 double Util::calculateMBRateCoefficient(double T_eV, double mass_eV,
-    double (*crossSectionFn)(double, void *), void *params) {
+    double (*crossSectionFn)(double, void *), void *params,
+    gsl_integration_workspace *ws) {
     double mbMean = getMBAverage(T_eV, mass_eV);
-    gsl_integration_workspace *ws = gsl_integration_workspace_alloc(1000);
     gsl_function fn;
     mbparams par;
     par.T_eV = T_eV;
@@ -55,9 +55,8 @@ double Util::calculateMBRateCoefficient(double T_eV, double mass_eV,
     fn.function = mbHelperFn;
     fn.params = &par;
     double result, error;
-    gsl_integration_qag(&fn, 0.0, 8.0*mbMean, 1e-12, 1e-6, 1000, 6, ws, &result,
-        &error);
-    gsl_integration_workspace_free(ws);
+    gsl_integration_qag(&fn, 0.0, 8.0*mbMean, 1e-12, 1e-6,
+        RATE_COEFF_WORKSPACE_SIZE, 6, ws, &result, &error);
     return result;
 }
 
@@ -95,7 +94,7 @@ double Util::relativeSpeedHelper(double *v, size_t, void *params) {
 }
 
 double Util::calculateMBRelativeSpeed(double particleSpeed, double T_eV,
-    double mass_eV, size_t N_calls) {
+    double mass_eV, gsl_rng *rng, monte_state *ms, size_t N_calls) {
     double vmean = getMBAverage(T_eV, mass_eV);
     mbrelativeparams par;
     par.T_eV = T_eV;
@@ -112,14 +111,29 @@ double Util::calculateMBRelativeSpeed(double particleSpeed, double T_eV,
     double xl[] = { 0.0, 0.0, -lim };
     double xu[] = { lim, lim, lim };
     double result, absErr;
-    gsl_rng *rng = gsl_rng_alloc(gsl_rng_mt19937);
-    gsl_rng_set(rng, 20161129L);
-    gsl_monte_vegas_state *state = gsl_monte_vegas_alloc(3);
-    gsl_monte_vegas_integrate(&fn, xl, xu, 3, N_calls, rng, state, &result,
+    gsl_monte_vegas_integrate(&fn, xl, xu, 3, N_calls, rng, ms, &result,
         &absErr);
-    gsl_monte_vegas_free(state);
-    gsl_rng_free(rng);
 
     return 4.0*vmean*vmean*vmean*result;
+}
+
+simthreadresources *Util::allocateThreadResources(uint_least32_t seed) {
+    simthreadresources *thread_res = new simthreadresources;
+
+    thread_res->rng = Rng(seed);
+    thread_res->ms = gsl_monte_vegas_alloc(3);
+    thread_res->ws = gsl_integration_workspace_alloc(RATE_COEFF_WORKSPACE_SIZE);
+    thread_res->gslrng = gsl_rng_alloc(gsl_rng_mt19937);
+    gsl_rng_set(thread_res->gslrng, seed);
+
+    return thread_res;
+}
+
+void Util::deallocateThreadResources(simthreadresources *thread_res) {
+    if (thread_res == NULL) return;
+    gsl_monte_vegas_free(thread_res->ms);
+    gsl_integration_workspace_free(thread_res->ws);
+    gsl_rng_free(thread_res->gslrng);
+    delete thread_res;
 }
 

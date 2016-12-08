@@ -11,17 +11,18 @@ ChargeExchangeReaction::ChargeExchangeReaction(PlasmaDensities &densities,
         std::pow(ionizationPotentialEv_, -2.76);
 }
 
-double ChargeExchangeReaction::getCrossSection(const Point &, double) const {
+double ChargeExchangeReaction::getCrossSection(double) const {
     return mullerSalzbornCrossSection_;
 }
 
-double ChargeExchangeReaction::getMeanReactionRate(const Point &p) const {
-    return getCrossSection(p, ionMeanSpeed_) * ionMeanSpeed_ *
+double ChargeExchangeReaction::getMeanReactionRate(const Point &p, double) const {
+    return getCrossSection(ionMeanSpeed_) * ionMeanSpeed_ *
         plasmaDensities_.getIonDensityAt(p, chargeState_);
 }
 
-double ChargeExchangeReaction::getMajorantReactionRate(const Point &p) const {
-    return getCrossSection(p, ionMajorantSpeed_) * ionMajorantSpeed_ *
+double ChargeExchangeReaction::getMajorantReactionRate(const Point &p,
+    double relativeSpeed) const {
+    return getCrossSection(ionMajorantSpeed_) * ionMajorantSpeed_ *
         plasmaDensities_.getIonDensityAt(p, chargeState_);
 }
 
