@@ -13,3 +13,5 @@ main
 *.out
 *.gch
 tags
+doc/week41
+TODO
