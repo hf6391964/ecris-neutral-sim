@@ -18,6 +18,9 @@ class ParticlePopulation {
         virtual Vector getRandomParticleVelocity(Rng &rng) const = 0;
         Point getRandomParticlePosition(Rng &rng) const;
 
+        double getParticleMass_eV() const { return particleMass_eV_; }
+        int getChargeState() const { return chargeState_; }
+
         double getDensityAt(const Point &p) const;
 
         virtual double getRelativeSpeed(double particleSpeed, monte_state *ms,

@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "collisionreaction.h"
+#include "grid.h"
 
 class CollisionGenerator {
     std::vector<CollisionReaction *> collisionReactions_;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cgal_and_typedefs.h"
-#include "plasmadensities.h"
 #include "particle.h"
 
 // Base class for a general collision reaction

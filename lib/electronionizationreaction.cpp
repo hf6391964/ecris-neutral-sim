@@ -2,11 +2,11 @@
 #include "electronionizationreaction.h"
 
 ElectronIonizationReaction::ElectronIonizationReaction(
-    PlasmaDensities &densities, double electronMeanSpeed,
+    ParticlePopulation &population, double electronMeanSpeed,
     double electronMajorantSpeed, const IonizationParameters &ip)
     : electronMeanSpeed_(electronMeanSpeed),
       electronMajorantSpeed_(electronMajorantSpeed),
-      plasmaDensities_(densities), ionizationParameters_(ip) {
+      population_(population), ionizationParameters_(ip) {
 }
 
 double ElectronIonizationReaction::getMeanReactionRate(const Point &p,

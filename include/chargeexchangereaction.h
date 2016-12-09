@@ -1,20 +1,21 @@
 #pragma once
 
 #include "collisionreaction.h"
+#include "particlepopulation.h"
 
 class ChargeExchangeReaction : CollisionReaction {
     double ionMeanSpeed_ = 0.0;
     double ionMajorantSpeed_ = 0.0;
-    PlasmaDensities &plasmaDensities_;
+    ParticlePopulation &population_;
     unsigned int chargeState_ = 0;
     double ionizationPotentialEv_ = 0.0;
     double projectileMass_ = 0.0;
     double mullerSalzbornCrossSection_ = 0.0;
 
     public:
-        ChargeExchangeReaction(PlasmaDensities &densities,
+        ChargeExchangeReaction(ParticlePopulation &population,
             double ionMeanSpeed, double ionMajorantSpeed,
-            unsigned int chargeState, double ionizationPotentialEv);
+            double ionizationPotentialEv);
 
         double getMeanReactionRate(const Point &p, double relativeSpeed)
             const;

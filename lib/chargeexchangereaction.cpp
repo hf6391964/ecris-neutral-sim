@@ -1,11 +1,10 @@
 #include "chargeexchangereaction.h"
 
-ChargeExchangeReaction::ChargeExchangeReaction(PlasmaDensities &densities,
-    double ionMeanSpeed, double ionMajorantSpeed,
-    unsigned int chargeState, double ionizationPotentialEv)
+ChargeExchangeReaction::ChargeExchangeReaction(ParticlePopulation &population,
+    double ionMeanSpeed, double ionMajorantSpeed, double ionizationPotentialEv)
     : ionMeanSpeed_(ionMeanSpeed), ionMajorantSpeed_(ionMajorantSpeed),
-      plasmaDensities_(densities),
-      chargeState_(chargeState), ionizationPotentialEv_(ionizationPotentialEv) {
+      population_(population), ionizationPotentialEv_(ionizationPotentialEv) {
+    chargeState_ = population_.getChargeState();
     mullerSalzbornCrossSection_ = 1.43e-16 *
         std::pow((double)chargeState_, 1.17) *
         std::pow(ionizationPotentialEv_, -2.76);
@@ -17,13 +16,13 @@ double ChargeExchangeReaction::getCrossSection(double) const {
 
 double ChargeExchangeReaction::getMeanReactionRate(const Point &p, double) const {
     return getCrossSection(ionMeanSpeed_) * ionMeanSpeed_ *
-        plasmaDensities_.getIonDensityAt(p, chargeState_);
+        population_.getDensityAt(p);
 }
 
 double ChargeExchangeReaction::getMajorantReactionRate(const Point &p,
     double relativeSpeed) const {
     return getCrossSection(ionMajorantSpeed_) * ionMajorantSpeed_ *
-        plasmaDensities_.getIonDensityAt(p, chargeState_);
+        population_.getDensityAt(p);
 }
 
 std::vector<Particle> ChargeExchangeReaction::computeReactionProducts(
@@ -31,10 +30,9 @@ std::vector<Particle> ChargeExchangeReaction::computeReactionProducts(
     // Elastic collision kinematics calculated in center of mass frame
 
     // Projectile particle velocity is isotropic Maxwell-Boltzmann:
-    Vector ionVelocity = plasmaDensities_.getIsotropicIonVelocity(
-        rng, chargeState_);
+    Vector ionVelocity = population_.getRandomParticleVelocity(rng);
     Vector neutralVelocity = target.getVelocity();
-    double ionMass = plasmaDensities_.getIonMass();
+    double ionMass = population_.getParticleMass_eV();
     double neutralMass = target.getMass_eV();
 
     Vector vcm = (ionMass * ionVelocity + neutralMass * neutralVelocity) /

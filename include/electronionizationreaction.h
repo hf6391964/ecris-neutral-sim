@@ -2,15 +2,16 @@
 
 #include "collisionreaction.h"
 #include "element_data.h"
+#include "particlepopulation.h"
 
 class ElectronIonizationReaction : CollisionReaction {
     double electronMeanSpeed_ = 0.0;
     double electronMajorantSpeed_ = 0.0;
-    PlasmaDensities &plasmaDensities_;
+    ParticlePopulation &population_;
     IonizationParameters ionizationParameters_;
 
     public:
-        ElectronIonizationReaction(PlasmaDensities &densities,
+        ElectronIonizationReaction(ParticlePopulation &population,
             double electronMeanSpeed, double electronMajorantSpeed,
             const IonizationParameters &ip);
 
