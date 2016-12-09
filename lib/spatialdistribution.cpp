@@ -11,7 +11,8 @@ SpatialDistribution<T>::SpatialDistribution(const Grid &grid) {
 }
 
 template<typename T>
-SpatialDistribution<T>::SpatialDistribution(const SpatialDistribution<T> &src,
+template<typename T1>
+SpatialDistribution<T>::SpatialDistribution(const SpatialDistribution<T1> &src,
     double weight) {
     grid_ = src.grid_;
     size_t n = grid_.arraySize();

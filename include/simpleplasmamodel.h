@@ -6,12 +6,12 @@
 #include <limits>
 
 #include "cgal_and_typedefs.h"
-#include "grid.h"
+#include "spatialdistribution.h"
+#include "particlepopulation.h"
+#include "maxwellianpopulation.h"
 
-class PlasmaDensities {
-    std::vector<double *> ionDensities_;
-    std::vector<double> ionTemperatures_;
-    Grid grid_;
+class SimplePlasmaModel {
+    std::vector<ParticlePopulation *> particlePopulations_;
     unsigned int maxChargeState_ = 0;
     double ionMassEv_ = 0.0;
 
@@ -30,12 +30,12 @@ class PlasmaDensities {
         // ion temperatures (eV) at indices corresponding to charge state
         //
         // ion mass should be in eV
-        PlasmaDensities(std::string electronDensityFilename,
+        SimplePlasmaModel(std::string electronDensityFilename,
             double electronWeight, std::vector<double> ionRelativeDensities,
             double electronTemperature,
             std::vector<double> ionTemperatures, double ionMassEv);
 
-        ~PlasmaDensities();
+        ~SimplePlasmaModel();
 
         void setCoordinateTransformation(const Aff_transformation &tf);
 
@@ -43,13 +43,6 @@ class PlasmaDensities {
         // A special case is i = 0 which corresponds to electron density.
         double getIonDensityAt(const Point &p, unsigned int chargeState) const;
         double getElectronDensityAt(const Point &p) const;
-
-        double getIonTemperature(unsigned int chargeState) const {
-            return ionTemperatures_[chargeState];
-        }
-        double getElectronTemperature() const {
-            return getIonTemperature(0);
-        }
 
         double getIonMass() const {
             return ionMassEv_;

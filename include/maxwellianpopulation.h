@@ -3,7 +3,7 @@
 #include "cgal_and_typedefs.h"
 #include "particlepopulation.h"
 
-class MaxwellianPopulation : ParticlePopulation {
+class MaxwellianPopulation : public ParticlePopulation {
     double temperature_eV_;
 
     public:

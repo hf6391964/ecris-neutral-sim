@@ -14,6 +14,7 @@ class ParticlePopulation {
             DensityDistribution densityDistribution)
             : particleMass_eV_(particleMass_eV), chargeState_(chargeState),
               densityDistribution_(densityDistribution) {}
+        virtual ~ParticlePopulation() {};
 
         virtual Vector getRandomParticleVelocity(Rng &rng) const = 0;
         Point getRandomParticlePosition(Rng &rng) const;

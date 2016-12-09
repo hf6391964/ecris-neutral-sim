@@ -15,7 +15,8 @@ class SpatialDistribution {
     public:
         SpatialDistribution() {}
         SpatialDistribution(const Grid &grid);
-        SpatialDistribution(const SpatialDistribution &src,
+        template<typename T1>
+        SpatialDistribution(const SpatialDistribution<T1> &src,
             double weight = 1.0);
         ~SpatialDistribution();
 
@@ -32,6 +33,9 @@ class DensityDistribution : public SpatialDistribution<double> {
 
     public:
         DensityDistribution(std::string filename, double weight = 1.0);
+        template<typename T>
+        DensityDistribution(const SpatialDistribution<T> &src,
+            double weight = 1.0);
 };
 
 class VelocityDistribution : public SpatialDistribution<Vector> {
