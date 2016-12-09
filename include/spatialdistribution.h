@@ -14,6 +14,7 @@ class SpatialDistribution {
 
     public:
         SpatialDistribution() {}
+        SpatialDistribution(const Grid &grid);
         SpatialDistribution(const SpatialDistribution &src,
             double weight = 1.0);
         ~SpatialDistribution();

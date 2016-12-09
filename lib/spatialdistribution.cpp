@@ -1,6 +1,16 @@
 #include "spatialdistribution.h"
 
 template<typename T>
+SpatialDistribution<T>::SpatialDistribution(const Grid &grid) {
+    size_t n = grid_.arraySize();
+    valueVector_ = new T[n];
+    grid_ = grid;
+    for (size_t i = 0; i < n; i++) {
+        valueVector_[i] = getNull();
+    }
+}
+
+template<typename T>
 SpatialDistribution<T>::SpatialDistribution(const SpatialDistribution<T> &src,
     double weight) {
     grid_ = src.grid_;
