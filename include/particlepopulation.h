@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cgal_and_typedefs.h"
-#include "densitydistribution.h"
+#include "spatialdistribution.h"
 
 class ParticlePopulation {
     protected:
