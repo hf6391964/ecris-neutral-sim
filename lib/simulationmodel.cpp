@@ -15,6 +15,11 @@ void SimulationModel::runSimulation(unsigned long nParticles,
 
     // TODO figure out typical particle parameters (e.g. average of present
     // particle masses and surface temperatures)
+    //
+    // There will be two separate choices of timestep length:
+    // the density sampling timestep (long, to reduce correlation between
+    // sampled frames) and the particle simulation timestep (determined in the
+    // particle loop based on reaction rate majorant estimate)
     double averageSpeed = Util::getMBAverage(ROOM_TEMPERATURE_EV,
         ARGON_DATA.mass * ATOMIC_MASS_TO_EV);
     double dt = timestepFactor * gridSize / averageSpeed;
