@@ -5,7 +5,7 @@ SpatialDistribution<T>::SpatialDistribution(const Grid &grid) {
     size_t n = grid_.arraySize();
     valueVector_ = new T[n];
     grid_ = grid;
-    for (size_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; ++i) {
         valueVector_[i] = getNull();
     }
 }

@@ -40,6 +40,7 @@ void SimulationModel::runSimulation(unsigned long nParticles,
     std::seed_seq sseq = {2016, 9, 19};
     std::vector<std::thread> threads;
     std::vector<uint_least32_t> seeds(nThreads);
+    // TODO extend and use SpatialDistribution here
     std::vector<Vector*> velocityPointers;
     std::vector<unsigned long*> countPointers;
     sseq.generate(seeds.begin(), seeds.end());
@@ -192,3 +193,4 @@ void SimulationModel::writeResults(std::string prefix, Vector* velocity,
 
     f.close();
 }
+
