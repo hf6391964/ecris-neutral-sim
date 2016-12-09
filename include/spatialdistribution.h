@@ -35,7 +35,7 @@ class DensityDistribution : public SpatialDistribution<double> {
         DensityDistribution(std::string filename, double weight = 1.0);
         template<typename T>
         DensityDistribution(const SpatialDistribution<T> &src,
-            double weight = 1.0);
+            double weight = 1.0) : SpatialDistribution<double>(src, weight) {};
 };
 
 class VelocityDistribution : public SpatialDistribution<Vector> {
