@@ -9,6 +9,9 @@ class SpatialDistribution {
         T *valueVector_ = NULL;
         Grid grid_;
 
+    private:
+        virtual T getNull() const = 0;
+
     public:
         SpatialDistribution() {}
         SpatialDistribution(const SpatialDistribution &src,
@@ -23,9 +26,15 @@ class SpatialDistribution {
 };
 
 class DensityDistribution : public SpatialDistribution<double> {
+    private:
+        double getNull() const { return 0.0; }
+
     public:
         DensityDistribution(std::string filename, double weight = 1.0);
 };
 
-typedef SpatialDistribution<Vector> VelocityDistribution;
+class VelocityDistribution : public SpatialDistribution<Vector> {
+    private:
+        Vector getNull() const { return Vector(0.0, 0.0, 0.0); }
+};
 

@@ -27,7 +27,7 @@ T SpatialDistribution<T>::getValueAt(const Point &p) const {
         return valueVector_[index];
     }
 
-    return 0.0;
+    return getNull();
 }
 
 template<typename T>
