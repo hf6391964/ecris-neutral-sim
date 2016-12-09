@@ -20,7 +20,7 @@ class SimulationModel {
     Bbox bbox_;
 
     void simulationThread(unsigned long nParticles, unsigned long maxSteps,
-        double dt, Grid grid, uint_least32_t seed, Vector* velocity,
+        double dt, const Grid &grid, uint_least32_t seed, Vector* velocity,
         unsigned long* count, bool stationary) const;
 
     void writeResults(std::string prefix, Vector* velocity,

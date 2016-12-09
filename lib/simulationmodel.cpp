@@ -103,20 +103,20 @@ void SimulationModel::runSimulation(unsigned long nParticles,
 }
 
 void SimulationModel::simulationThread(unsigned long nParticles,
-    unsigned long maxSteps, double dt, Grid grid, uint_least32_t seed,
+    unsigned long maxSteps, double dt, const Grid &grid, uint_least32_t seed,
     Vector* velocity, unsigned long* count, bool stationary) const {
+    simthreadresources *thread_res = Util::allocateThreadResources(seed);
+
     size_t gridSize = grid.arraySize();
 
     for (NeutralSource* pSource : sources_) {
-        Rng rng(seed);
-
         // TODO run simulation separately for each particle species in the
         // spectrum
 
         for (unsigned long i = 0; i < nParticles; i++) {
             Particle particle;
 
-            pSource->generateParticle(particle, rng);
+            pSource->generateParticle(particle, thread_res->rng);
 
             if (!particle.findNextIntersection(surfaces_.begin(),
                 surfaces_.end())) {
@@ -126,7 +126,7 @@ void SimulationModel::simulationThread(unsigned long nParticles,
 
             // Do this to spread the gas pulse evenly across the whole timestep
             // in time dependent simulations
-            double timeRemainder = uni01(rng)*dt;
+            double timeRemainder = uni01(thread_res->rng)*dt;
             for (unsigned long step = 0; step < maxSteps; step++) {
 
                 bool moving = true;
@@ -139,7 +139,7 @@ void SimulationModel::simulationThread(unsigned long nParticles,
                         double speed = particle.getSpeed();
                         if (isectDistance <= speed*timeRemainder) {
                             timeRemainder -= isectDistance / particle.getSpeed();
-                            particle.goToIntersection(rng);
+                            particle.goToIntersection(thread_res->rng);
                             particle.findNextIntersection(surfaces_.begin(),
                                 surfaces_.end());
                         } else {
@@ -168,6 +168,8 @@ void SimulationModel::simulationThread(unsigned long nParticles,
             }
         }
     }
+
+    Util::deallocateThreadResources(thread_res);
 }
 
 void SimulationModel::writeResults(std::string prefix, Vector* velocity,
