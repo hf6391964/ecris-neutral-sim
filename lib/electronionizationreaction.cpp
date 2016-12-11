@@ -10,22 +10,11 @@ ElectronIonizationReaction::ElectronIonizationReaction(
       ionizationParameters_(ip) {
 }
 
-double ElectronIonizationReaction::getMeanReactionRate(const Point &p,
-    double relativeSpeed) const {
-    // TODO return precomputed values from table
-    /* return plasmaDensities_.getElectronDensityAt(p) * */
-    /*     Util::calculateMBRateCoefficient( */
-    /*         plasmaDensities_.getElectronTemperature(), */
-    /*         ELECTRON_MASS_EV, crossSection, (void *)&ionizationParameters_, ws); */
-    return 0.0;
-}
-
-double ElectronIonizationReaction::getMajorantReactionRate(const Point &p,
-    double relativeSpeed) const {
-    /* return plasmaDensities_.getElectronDensityAt(p) * */
-    /*     getCrossSection(p, electronMajorantSpeed_) * electronMajorantSpeed_; */
-    // TODO calculate based on highest density and precomputed rate coeffs
-    return 0.0;
+double ElectronIonizationReaction::getReactionRate(const Point &p,
+    double particleSpeed, simthreadresources &thread_res) const {
+    return population_.getDensityAt(p) *
+        population_.calculateRateCoefficient(particleSpeed, thread_res.ms,
+        thread_res.gslrng, crossSection, (void *)&ionizationParameters_);
 }
 
 std::vector<Particle> ElectronIonizationReaction::computeReactionProducts(

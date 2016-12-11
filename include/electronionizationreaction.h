@@ -14,9 +14,8 @@ class ElectronIonizationReaction : CollisionReaction {
             double electronMeanSpeed, double electronMajorantSpeed,
             const IonizationParameters &ip);
 
-        double getMeanReactionRate(const Point &p, double relativeSpeed) const;
-        double getMajorantReactionRate(const Point &p, double relativeSpeed)
-            const;
+        double getReactionRate(const Point &p, double particleSpeed,
+            simthreadresources &thread_res) const;
 
         std::vector<Particle> computeReactionProducts(Rng &rng,
             const Point &p, const Particle &target) const;

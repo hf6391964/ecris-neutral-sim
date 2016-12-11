@@ -21,6 +21,8 @@ struct mbrelativeparams {
     double T_eV;
     double particleSpeed;
     double vmean;
+    void *fnParams;
+    double (*fn)(double, void *);
 };
 
 struct simthreadresources {
@@ -34,6 +36,8 @@ class Util {
     private:
         static double mbHelperFn(double speed, void *params);
         static double relativeSpeedHelper(double *v, size_t dim, void *params);
+
+        static double fOne(double, void *) { return 1.0; }
 
     public:
         static void printPoint(const Point &p);
@@ -57,6 +61,11 @@ class Util {
 
         static simthreadresources *allocateThreadResources(uint_least32_t seed);
         static void deallocateThreadResources(simthreadresources *thread_res);
+
+        static double calculateMBRelativeRateCoeff(double particleSpeed,
+            double T_eV, double mass_eV, gsl_rng *rng, monte_state *ms,
+            double (*fn)(double, void *), void *fnParams,
+            size_t N_calls = 10000);
 
         static double calculateMBRelativeSpeed(double particleSpeed,
             double T_eV, double mass_eV, gsl_rng *rng, monte_state *ms,

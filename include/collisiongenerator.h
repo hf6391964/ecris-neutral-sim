@@ -14,6 +14,8 @@ class CollisionGenerator {
     size_t nSpeedSteps_ = 0;
     double speedStepSize_ = 0.0;
 
+    void _cleanup();
+
     public:
         CollisionGenerator(const Grid &grid);
         ~CollisionGenerator();

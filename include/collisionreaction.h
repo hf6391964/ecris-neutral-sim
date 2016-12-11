@@ -17,10 +17,8 @@ class CollisionReaction {
             return population_;
         }
 
-        virtual double getMeanReactionRate(const Point &p,
-            double relativeSpeed) const = 0;
-        virtual double getMajorantReactionRate(const Point &p,
-            double relativeSpeed) const = 0;
+        virtual double getReactionRate(const Point &p, double particleSpeed,
+            simthreadresources &thread_res) const = 0;
 
         virtual std::vector<Particle> computeReactionProducts(
             const Point &p, const Particle &target) const = 0;

@@ -10,3 +10,10 @@ double MaxwellianPopulation::getRelativeSpeed(double particleSpeed,
         particleMass_eV_, rng, ms);
 }
 
+double MaxwellianPopulation::calculateRateCoefficient(double particleSpeed,
+    monte_state *ms, gsl_rng *rng,
+    double (*fCrossSection)(double, void *), void *fArgs) const {
+    return Util::calculateMBRelativeRateCoeff(particleSpeed, temperature_eV_,
+        particleMass_eV_, rng, ms, fCrossSection, fArgs);
+}
+

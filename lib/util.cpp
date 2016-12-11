@@ -89,32 +89,42 @@ double Util::relativeSpeedHelper(double *v, size_t, void *params) {
     vzdiff2 *= vzdiff2;
     double vsq = (vx2 + vy2 + vz2) * vmean2;
     double vdiffsq = (vx2 + vy2 + vzdiff2) * vmean2;
-    return std::pow(mper2kT / M_PI, 1.5) * std::sqrt(vdiffsq) *
-        std::exp(-mper2kT * vsq);
+    double vdiff = std::sqrt(vdiffsq);
+    return std::pow(mper2kT / M_PI, 1.5) * vdiff *
+        par->fn(vdiff, par->fnParams) * std::exp(-mper2kT * vsq);
 }
 
-double Util::calculateMBRelativeSpeed(double particleSpeed, double T_eV,
-    double mass_eV, gsl_rng *rng, monte_state *ms, size_t N_calls) {
+double Util::calculateMBRelativeRateCoeff(double particleSpeed, double T_eV,
+    double mass_eV, gsl_rng *rng, monte_state *ms,
+    double (*fn)(double, void *), void *fnParams, size_t N_calls) {
     double vmean = getMBAverage(T_eV, mass_eV);
     mbrelativeparams par;
     par.T_eV = T_eV;
     par.mass_eV = mass_eV;
     par.particleSpeed = particleSpeed / vmean;
     par.vmean = vmean;
+    par.fn = fn;
+    par.fnParams = fnParams;
 
-    gsl_monte_function fn;
-    fn.f = relativeSpeedHelper;
-    fn.dim = 3;
-    fn.params = &par;
+    gsl_monte_function mfn;
+    mfn.f = relativeSpeedHelper;
+    mfn.dim = 3;
+    mfn.params = &par;
 
     double lim = 8.0;
     double xl[] = { 0.0, 0.0, -lim };
     double xu[] = { lim, lim, lim };
     double result, absErr;
-    gsl_monte_vegas_integrate(&fn, xl, xu, 3, N_calls, rng, ms, &result,
+    gsl_monte_vegas_integrate(&mfn, xl, xu, 3, N_calls, rng, ms, &result,
         &absErr);
 
     return 4.0*vmean*vmean*vmean*result;
+}
+
+double Util::calculateMBRelativeSpeed(double particleSpeed, double T_eV,
+    double mass_eV, gsl_rng *rng, monte_state *ms, size_t N_calls) {
+    return calculateMBRelativeRateCoeff(particleSpeed, T_eV, mass_eV, rng,
+        ms, fOne, NULL, N_calls);
 }
 
 simthreadresources *Util::allocateThreadResources(uint_least32_t seed) {

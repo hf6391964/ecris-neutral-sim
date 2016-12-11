@@ -16,15 +16,15 @@ double ChargeExchangeReaction::getCrossSection(double) const {
     return mullerSalzbornCrossSection_;
 }
 
-double ChargeExchangeReaction::getMeanReactionRate(const Point &p, double) const {
-    return getCrossSection(ionMeanSpeed_) * ionMeanSpeed_ *
-        population_.getDensityAt(p);
+double ChargeExchangeReaction::getReactionRate(const Point &p,
+    double particleSpeed, simthreadresources &thread_res) const {
+    return population_.getDensityAt(p) *
+        population_.calculateRateCoefficient(particleSpeed, thread_res.ms,
+        thread_res.gslrng, crossSection, (void *)&mullerSalzbornCrossSection_);
 }
 
-double ChargeExchangeReaction::getMajorantReactionRate(const Point &p,
-    double relativeSpeed) const {
-    return getCrossSection(ionMajorantSpeed_) * ionMajorantSpeed_ *
-        population_.getDensityAt(p);
+double ChargeExchangeReaction::crossSection(double, void *args) {
+    return *((double *)args);
 }
 
 std::vector<Particle> ChargeExchangeReaction::computeReactionProducts(

@@ -5,6 +5,11 @@ CollisionGenerator::CollisionGenerator(const Grid &grid)
 }
 
 CollisionGenerator::~CollisionGenerator() {
+    _cleanup();
+}
+
+void CollisionGenerator::_cleanup() {
+    // Deallocate previously allocated resources
     if (totalReactionRate_ != NULL) {
         delete[] totalReactionRate_;
     }
@@ -28,16 +33,7 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     speedStepSize_ = speedStepSize;
     nSpeedSteps_ = std::ceil(maxSpeed / speedStepSize);
 
-    // Deallocate previously allocated resources
-    if (totalReactionRate_ != NULL) {
-        delete[] totalReactionRate_;
-    }
-    if (cumulativeProbability_ != NULL) {
-        delete[] cumulativeProbability_;
-    }
-    if (majorantReactionRate_ != NULL) {
-        delete[] majorantReactionRate_;
-    }
+    _cleanup();
 
     // Allocate necessary resources
     totalReactionRate_ = new double[nSpeedSteps_ * gridSize];
@@ -49,7 +45,7 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
         double *pTotalReactionRate = &totalReactionRate_[iv * gridSize];
         double *pCumulativeProbability =
             &cumulativeProbability_[iv * gridSize * nReactions];
-
+        majorantReactionRate_[iv] = 0.0;
         double particleSpeed = speedStepSize_ * iv;
 
         for (size_t i = 0; i < gridSize; ++i) {
@@ -58,22 +54,23 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
 
             int j = 0;
             double totalRate = 0.0;
-            double majorant = 0.0;
             for (CollisionReaction *reaction : collisionReactions_) {
-                double relativeSpeed =
-                    reaction->getPopulation().getRelativeSpeed(particleSpeed,
-                    thread_res.ms, thread_res.gslrng);
-                double rate = reaction->getMeanReactionRate(p, relativeSpeed);
+                double rate = reaction->getReactionRate(p, particleSpeed,
+                    thread_res);
                 totalRate += rate;
-                pCumulativeProbability[nReactions * i + j] = rate;
-                majorant += reaction->getMajorantReactionRate(p, relativeSpeed);
+                // Sum rates to get cumulative rate, will be normalized later
+                // to yield probability
+                pCumulativeProbability[nReactions * i + j] = totalRate;
                 j += 1;
             }
 
             pTotalReactionRate[i] = totalRate;
-            majorantReactionRate_[iv] = std::max(majorantReactionRate_[iv], majorant);
+            majorantReactionRate_[iv] = std::max(majorantReactionRate_[iv],
+                totalRate);
 
             for (int k = 0; k < j; ++k) {
+                // Normalize the previously stored cumulative rates into
+                // probabilities
                 pCumulativeProbability[nReactions*i + k] /= totalRate;
             }
         }

@@ -15,5 +15,8 @@ class MaxwellianPopulation : public ParticlePopulation {
         Vector getRandomParticleVelocity(Rng &rng) const;
         double getRelativeSpeed(double particleSpeed, monte_state *ms,
             gsl_rng *rng) const;
+        double calculateRateCoefficient(double particleSpeed,
+            monte_state *ms, gsl_rng *rng,
+            double (*fCrossSection)(double, void *), void *fArgs) const;
 };
 

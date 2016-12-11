@@ -27,6 +27,10 @@ class ParticlePopulation {
         virtual double getRelativeSpeed(double particleSpeed, monte_state *ms,
             gsl_rng *rng) const = 0;
 
+        virtual double calculateRateCoefficient(double particleSpeed,
+            monte_state *ms, gsl_rng *rng,
+            double (*fCrossSection)(double, void *), void *fArgs) const = 0;
+
         void setCoordinateTransformation(const Aff_transformation
             &transformation);
         void removeCoordinateTransformation();
