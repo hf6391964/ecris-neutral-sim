@@ -7,11 +7,10 @@
 class ElectronIonizationReaction : CollisionReaction {
     double electronMeanSpeed_ = 0.0;
     double electronMajorantSpeed_ = 0.0;
-    ParticlePopulation &population_;
     IonizationParameters ionizationParameters_;
 
     public:
-        ElectronIonizationReaction(ParticlePopulation &population,
+        ElectronIonizationReaction(const ParticlePopulation &population,
             double electronMeanSpeed, double electronMajorantSpeed,
             const IonizationParameters &ip);
 

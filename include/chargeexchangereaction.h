@@ -3,17 +3,16 @@
 #include "collisionreaction.h"
 #include "particlepopulation.h"
 
-class ChargeExchangeReaction : CollisionReaction {
+class ChargeExchangeReaction : public CollisionReaction {
     double ionMeanSpeed_ = 0.0;
     double ionMajorantSpeed_ = 0.0;
-    ParticlePopulation &population_;
     unsigned int chargeState_ = 0;
     double ionizationPotentialEv_ = 0.0;
     double projectileMass_ = 0.0;
     double mullerSalzbornCrossSection_ = 0.0;
 
     public:
-        ChargeExchangeReaction(ParticlePopulation &population,
+        ChargeExchangeReaction(const ParticlePopulation &population,
             double ionMeanSpeed, double ionMajorantSpeed,
             double ionizationPotentialEv);
 

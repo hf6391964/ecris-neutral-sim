@@ -1,9 +1,11 @@
 #include "chargeexchangereaction.h"
 
-ChargeExchangeReaction::ChargeExchangeReaction(ParticlePopulation &population,
+ChargeExchangeReaction::ChargeExchangeReaction(
+    const ParticlePopulation &population,
     double ionMeanSpeed, double ionMajorantSpeed, double ionizationPotentialEv)
-    : ionMeanSpeed_(ionMeanSpeed), ionMajorantSpeed_(ionMajorantSpeed),
-      population_(population), ionizationPotentialEv_(ionizationPotentialEv) {
+    : CollisionReaction(population),
+      ionMeanSpeed_(ionMeanSpeed), ionMajorantSpeed_(ionMajorantSpeed),
+      ionizationPotentialEv_(ionizationPotentialEv) {
     chargeState_ = population_.getChargeState();
     mullerSalzbornCrossSection_ = 1.43e-16 *
         std::pow((double)chargeState_, 1.17) *

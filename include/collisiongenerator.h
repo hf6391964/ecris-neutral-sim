@@ -10,13 +10,16 @@ class CollisionGenerator {
     Grid grid_;
     double *totalReactionRate_ = NULL;
     double *cumulativeProbability_ = NULL;
-    double majorantReactionRate_ = 0.0;
+    double *majorantReactionRate_ = NULL;
+    size_t nSpeedSteps_ = 0;
+    double speedStepSize_ = 0.0;
 
     public:
         CollisionGenerator(const Grid &grid);
         ~CollisionGenerator();
 
         void addCollisionReaction(CollisionReaction *);
-        void precomputeReactions();
+        void precomputeReactionRates(double maxSpeed,
+            double speedStepSize, simthreadresources &thread_res);
 };
 
