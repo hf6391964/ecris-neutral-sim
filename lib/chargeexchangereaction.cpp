@@ -30,30 +30,32 @@ double ChargeExchangeReaction::crossSection(double, void *args) {
 std::vector<Particle> ChargeExchangeReaction::computeReactionProducts(
     Rng &rng, const Point &, const Particle &target) const {
     // Elastic collision kinematics calculated in center of mass frame
-
-    // Projectile particle velocity is isotropic Maxwell-Boltzmann:
-    Vector ionVelocity = population_.getRandomParticleVelocity(rng);
-    Vector neutralVelocity = target.getVelocity();
-    double ionMass = population_.getParticleMass_eV();
-    double neutralMass = target.getMass_eV();
-
-    Vector vcm = (ionMass * ionVelocity + neutralMass * neutralVelocity) /
-        (ionMass + neutralMass);
-
-    Vector neutralVelocityCm = neutralVelocity - vcm;
-
-    double momentumNorm = std::sqrt(neutralVelocityCm.squared_length() /
-        neutralMass);
-
-    Direction dir = Util::getIsotropicSphereDirection(rng);
-    Vector productVel = vcm + dir.vector() * momentumNorm / ionMass;
-
-    Particle neutralProduct;
-    neutralProduct.setMass_eV(ionMass);
-    neutralProduct.setVelocity(productVel);
-
     std::vector<Particle> products;
-    products.push_back(neutralProduct);
+
+    if (chargeState_ == 1) {
+        // Projectile particle velocity is isotropic Maxwell-Boltzmann:
+        Vector ionVelocity = population_.getRandomParticleVelocity(rng);
+        Vector neutralVelocity = target.getVelocity();
+        double ionMass = population_.getParticleMass_eV();
+        double neutralMass = target.getMass_eV();
+
+        Vector vcm = (ionMass * ionVelocity + neutralMass * neutralVelocity) /
+            (ionMass + neutralMass);
+
+        Vector neutralVelocityCm = neutralVelocity - vcm;
+
+        double momentumNorm = std::sqrt(neutralVelocityCm.squared_length() /
+            neutralMass);
+
+        Direction dir = Util::getIsotropicSphereDirection(rng);
+        Vector productVel = vcm + dir.vector() * momentumNorm / ionMass;
+
+        Particle neutralProduct;
+        neutralProduct.setMass_eV(ionMass);
+        neutralProduct.setVelocity(productVel);
+
+        products.push_back(neutralProduct);
+    }
 
     return products;
 }
