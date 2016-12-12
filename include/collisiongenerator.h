@@ -13,6 +13,8 @@ class CollisionGenerator {
     double *majorantReactionRate_ = NULL;
     size_t nSpeedSteps_ = 0;
     double speedStepSize_ = 0.0;
+    size_t nReactions_ = 0;
+    size_t gridSize_ = 0;
 
     void _cleanup();
 
@@ -28,5 +30,8 @@ class CollisionGenerator {
 
         // Gives the mean free time for a particle with given speed
         double getMeanFreeTime(double particleSpeed) const;
+
+        CollisionReaction *sampleCollision(Rng &rng, const Point &p,
+            double particleSpeed, double dt) const;
 };
 

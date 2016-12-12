@@ -27,8 +27,8 @@ void CollisionGenerator::addCollisionReaction(CollisionReaction *reaction) {
 
 void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     double speedStepSize, simthreadresources &thread_res) {
-    size_t nReactions = collisionReactions_.size();
-    size_t gridSize = grid_.arraySize();
+    nReactions_ = collisionReactions_.size();
+    gridSize_ = grid_.arraySize();
 
     speedStepSize_ = speedStepSize;
     nSpeedSteps_ = std::ceil(maxSpeed / speedStepSize);
@@ -36,19 +36,19 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     _cleanup();
 
     // Allocate necessary resources
-    totalReactionRate_ = new double[nSpeedSteps_ * gridSize];
+    totalReactionRate_ = new double[nSpeedSteps_ * gridSize_];
     cumulativeProbability_ =
-        new double[nSpeedSteps_ * gridSize * nReactions];
+        new double[nSpeedSteps_ * gridSize_ * nReactions_];
     majorantReactionRate_ = new double[nSpeedSteps_];
 
     for (size_t iv = 0; iv < nSpeedSteps_; ++iv) {
-        double *pTotalReactionRate = &totalReactionRate_[iv * gridSize];
+        double *pTotalReactionRate = &totalReactionRate_[iv * gridSize_];
         double *pCumulativeProbability =
-            &cumulativeProbability_[iv * gridSize * nReactions];
+            &cumulativeProbability_[iv * gridSize_ * nReactions_];
         majorantReactionRate_[iv] = 0.0;
         double particleSpeed = speedStepSize_ * iv;
 
-        for (size_t i = 0; i < gridSize; ++i) {
+        for (size_t i = 0; i < gridSize_; ++i) {
             Point p;
             if (!grid_.getCellMidpoint(i, p)) continue;
 
@@ -61,7 +61,7 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
                 totalRate += rate;
                 // Sum rates to get cumulative rate, will be normalized later
                 // to yield probability
-                pCumulativeProbability[nReactions * i + j] = totalRate;
+                pCumulativeProbability[nReactions_ * i + j] = totalRate;
                 j += 1;
             }
 
@@ -72,7 +72,7 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
             for (int k = 0; k < j; ++k) {
                 // Normalize the previously stored cumulative rates into
                 // probabilities
-                pCumulativeProbability[nReactions*i + k] /= totalRate;
+                pCumulativeProbability[nReactions_*i + k] /= totalRate;
             }
         }
     }
@@ -83,5 +83,33 @@ double CollisionGenerator::getMeanFreeTime(double particleSpeed) const {
     if (velIndex >= nSpeedSteps_) return -1.0;
 
     return 1.0 / majorantReactionRate_[velIndex];
+}
+
+CollisionReaction *CollisionGenerator::sampleCollision(Rng &rng,
+    const Point &p, double particleSpeed, double dt) const {
+    size_t velIndex = particleSpeed / speedStepSize_;
+    size_t spatialIndex;
+    if (velIndex >= nSpeedSteps_ || grid_.arrayIndex(p, spatialIndex)) {
+        return NULL;
+    }
+
+    size_t velSpatialIndex = velIndex * gridSize_ + spatialIndex;
+    double totalRate = totalReactionRate_[velSpatialIndex];
+
+    double x = uni01(rng);
+    if (x > std::exp(-totalRate * dt)) {  // Reaction happens
+        double y = uni01(rng);
+        double *pCumulativeProbability =
+            &cumulativeProbability_[nReactions_ * velSpatialIndex];
+        size_t iReaction;
+        for (iReaction = 0; iReaction < nReactions_; ++iReaction) {
+            if (y < pCumulativeProbability[iReaction]) {
+                break;
+            }
+        }
+        return collisionReactions_[iReaction].get();
+    }
+
+    return NULL;
 }
 
