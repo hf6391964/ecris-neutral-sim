@@ -2,18 +2,16 @@
 #include "electronionizationreaction.h"
 
 ElectronIonizationReaction::ElectronIonizationReaction(
-    const ParticlePopulation &population, double electronMeanSpeed,
-    double electronMajorantSpeed, const IonizationParameters &ip)
+    std::shared_ptr<ParticlePopulation> population,
+    const IonizationParameters &ip)
     : CollisionReaction(population),
-      electronMeanSpeed_(electronMeanSpeed),
-      electronMajorantSpeed_(electronMajorantSpeed),
       ionizationParameters_(ip) {
 }
 
 double ElectronIonizationReaction::getReactionRate(const Point &p,
     double particleSpeed, simthreadresources &thread_res) const {
-    return population_.getDensityAt(p) *
-        population_.calculateRateCoefficient(particleSpeed, thread_res.ms,
+    return population_->getDensityAt(p) *
+        population_->calculateRateCoefficient(particleSpeed, thread_res.ms,
         thread_res.gslrng, crossSection, (void *)&ionizationParameters_);
 }
 

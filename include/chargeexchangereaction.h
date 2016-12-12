@@ -4,16 +4,12 @@
 #include "particlepopulation.h"
 
 class ChargeExchangeReaction : public CollisionReaction {
-    double ionMeanSpeed_ = 0.0;
-    double ionMajorantSpeed_ = 0.0;
     unsigned int chargeState_ = 0;
     double ionizationPotentialEv_ = 0.0;
-    double projectileMass_ = 0.0;
     double mullerSalzbornCrossSection_ = 0.0;
 
     public:
-        ChargeExchangeReaction(const ParticlePopulation &population,
-            double ionMeanSpeed, double ionMajorantSpeed,
+        ChargeExchangeReaction(std::shared_ptr<ParticlePopulation> population,
             double ionizationPotentialEv);
 
         double getReactionRate(const Point &p, double particleSpeed,

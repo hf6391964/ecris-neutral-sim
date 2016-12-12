@@ -7,13 +7,13 @@
 // Base class for a general collision reaction
 class CollisionReaction {
     protected:
-        const ParticlePopulation &population_;
+        std::shared_ptr<ParticlePopulation> population_;
 
     public:
-        CollisionReaction(const ParticlePopulation &population)
+        CollisionReaction(std::shared_ptr<ParticlePopulation> population)
             : population_(population) {}
 
-        const ParticlePopulation &getPopulation() const {
+        std::shared_ptr<ParticlePopulation> getPopulation() const {
             return population_;
         }
 
@@ -21,7 +21,7 @@ class CollisionReaction {
             simthreadresources &thread_res) const = 0;
 
         // TODO count energy and particles "lost" in the plasma
-        virtual std::vector<Particle> computeReactionProducts(
+        virtual std::vector<Particle> computeReactionProducts(Rng &rng,
             const Point &p, const Particle &target) const = 0;
 
         virtual double getCrossSection(double relativeSpeed) const = 0;

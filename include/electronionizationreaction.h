@@ -4,14 +4,11 @@
 #include "element_data.h"
 #include "particlepopulation.h"
 
-class ElectronIonizationReaction : CollisionReaction {
-    double electronMeanSpeed_ = 0.0;
-    double electronMajorantSpeed_ = 0.0;
+class ElectronIonizationReaction : public CollisionReaction {
     IonizationParameters ionizationParameters_;
 
     public:
-        ElectronIonizationReaction(const ParticlePopulation &population,
-            double electronMeanSpeed, double electronMajorantSpeed,
+        ElectronIonizationReaction(std::shared_ptr<ParticlePopulation> population,
             const IonizationParameters &ip);
 
         double getReactionRate(const Point &p, double particleSpeed,

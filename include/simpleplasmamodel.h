@@ -6,14 +6,15 @@
 #include <limits>
 
 #include "cgal_and_typedefs.h"
-#include "spatialdistribution.h"
 #include "particlepopulation.h"
-#include "maxwellianpopulation.h"
+#include "collisiongenerator.h"
+#include "element_data.h"
 
 class SimplePlasmaModel {
-    std::vector<ParticlePopulation *> particlePopulations_;
+    std::vector<std::shared_ptr<ParticlePopulation>> particlePopulations_;
     unsigned int maxChargeState_ = 0;
-    double ionMassEv_ = 0.0;
+    ElementData elementData_;
+    double ionMassEv_ = 0.0;;
 
     public:
         // Electron weight is the statistical weight of an electron in the
@@ -33,9 +34,11 @@ class SimplePlasmaModel {
         SimplePlasmaModel(std::string electronDensityFilename,
             double electronWeight, std::vector<double> ionRelativeDensities,
             double electronTemperature,
-            std::vector<double> ionTemperatures, double ionMassEv);
+            std::vector<double> ionTemperatures, const ElementData &elementData);
 
         ~SimplePlasmaModel();
+
+        void populateCollisionReactions(CollisionGenerator &generator) const;
 
         void setCoordinateTransformation(const Aff_transformation &tf);
 
