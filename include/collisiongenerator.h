@@ -25,5 +25,8 @@ class CollisionGenerator {
         void addCollisionReaction(CollisionReaction *reaction);
         void precomputeReactionRates(double maxSpeed,
             double speedStepSize, simthreadresources &thread_res);
+
+        // Gives the mean free time for a particle with given speed
+        double getMeanFreeTime(double particleSpeed) const;
 };
 

@@ -78,3 +78,10 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     }
 }
 
+double CollisionGenerator::getMeanFreeTime(double particleSpeed) const {
+    size_t velIndex = particleSpeed / speedStepSize_;
+    if (velIndex >= nSpeedSteps_) return -1.0;
+
+    return 1.0 / majorantReactionRate_[velIndex];
+}
+
