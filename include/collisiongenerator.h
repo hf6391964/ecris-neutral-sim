@@ -6,7 +6,7 @@
 #include "grid.h"
 
 class CollisionGenerator {
-    std::vector<CollisionReaction *> collisionReactions_;
+    std::vector<std::unique_ptr<CollisionReaction>> collisionReactions_;
     Grid grid_;
     double *totalReactionRate_ = NULL;
     double *cumulativeProbability_ = NULL;
@@ -20,7 +20,9 @@ class CollisionGenerator {
         CollisionGenerator(const Grid &grid);
         ~CollisionGenerator();
 
-        void addCollisionReaction(CollisionReaction *);
+        // NOTE: ownership of the pointed reaction will be transferred to the
+        // instance of CollisionGenerator!
+        void addCollisionReaction(CollisionReaction *reaction);
         void precomputeReactionRates(double maxSpeed,
             double speedStepSize, simthreadresources &thread_res);
 };

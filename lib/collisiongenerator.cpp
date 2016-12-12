@@ -22,7 +22,7 @@ void CollisionGenerator::_cleanup() {
 }
 
 void CollisionGenerator::addCollisionReaction(CollisionReaction *reaction) {
-    collisionReactions_.push_back(reaction);
+    collisionReactions_.push_back(std::unique_ptr<CollisionReaction>(reaction));
 }
 
 void CollisionGenerator::precomputeReactionRates(double maxSpeed,
@@ -54,8 +54,9 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
 
             int j = 0;
             double totalRate = 0.0;
-            for (CollisionReaction *reaction : collisionReactions_) {
-                double rate = reaction->getReactionRate(p, particleSpeed,
+            for (auto iReaction = collisionReactions_.begin();
+                 iReaction != collisionReactions_.end(); ++i) {
+                double rate = (*iReaction)->getReactionRate(p, particleSpeed,
                     thread_res);
                 totalRate += rate;
                 // Sum rates to get cumulative rate, will be normalized later
