@@ -55,7 +55,7 @@ void SimplePlasmaModel::populateCollisionReactions(
 
     double mbave = Util::getMBAverage(maxIonTemp_, ionMassEv_);
 
-    generator.precomputeReactionRates(8.0*mbave, mbave/1000.0, thread_res);
+    generator.precomputeReactionRates(8.0*mbave, mbave/100.0, thread_res);
 }
 
 void SimplePlasmaModel::setCoordinateTransformation(
