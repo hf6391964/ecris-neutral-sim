@@ -19,7 +19,7 @@ int main() {
     ElectronModel model(B0, r0, dt, z1, z2, gridSize, confinementTime, Ai);
 
     Rng rng(2016);
-    model.runMaxwellSimulation(N_PARTICLES, ROOM_TEMPERATURE_EV, Becr, rng);
+    model.runMonoenergeticSimulation(N_PARTICLES, 10e3, Becr, rng);
 
     model.writeDensityToFile("electron_density_hiisi.csv");
 
