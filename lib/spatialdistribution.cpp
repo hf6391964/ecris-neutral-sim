@@ -5,21 +5,6 @@ SpatialDistribution<T>::SpatialDistribution(const Grid &grid) {
     size_t n = grid_.arraySize();
     valueVector_ = new T[n];
     grid_ = grid;
-    for (size_t i = 0; i < n; ++i) {
-        valueVector_[i] = getNull();
-    }
-}
-
-template<typename T>
-template<typename T1>
-SpatialDistribution<T>::SpatialDistribution(const SpatialDistribution<T1> &src,
-    double weight) {
-    grid_ = src.grid_;
-    size_t n = grid_.arraySize();
-    valueVector_ = new T[n];
-    for (size_t i = 0; i < n; ++i) {
-        valueVector_[i] = src.valueVector_[i] * weight;
-    }
 }
 
 template<typename T>
@@ -27,6 +12,19 @@ SpatialDistribution<T>::~SpatialDistribution() {
     if (valueVector_ != NULL) {
         delete[] valueVector_;
     }
+}
+
+template<typename T>
+void SpatialDistribution<T>::initializeTo(T value) {
+    size_t n = grid_.arraySize();
+    for (size_t i = 0; i < n; ++i) {
+        valueVector_[i] = value;
+    }
+}
+
+template<typename T>
+void SpatialDistribution<T>::initializeToNull() {
+    initializeTo(getNull());
 }
 
 template<typename T>
@@ -50,6 +48,14 @@ void SpatialDistribution<T>::setCoordinateTransformation(
 template<typename T>
 void SpatialDistribution<T>::removeCoordinateTransformation() {
     grid_.removeCoordinateTransformation();
+}
+
+DensityDistribution::DensityDistribution(const DensityDistribution &src,
+    double weight) : SpatialDistribution(src.grid_) {
+    size_t n = grid_.arraySize();
+    for (size_t i = 0; i < n; ++i) {
+        valueVector_[i] = src.valueVector_[i] * weight;
+    }
 }
 
 DensityDistribution::DensityDistribution(std::string filename,

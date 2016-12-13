@@ -41,7 +41,7 @@ SimplePlasmaModel::~SimplePlasmaModel() {
 }
 
 void SimplePlasmaModel::populateCollisionReactions(
-    CollisionGenerator &generator, simthreadresources &thread_res) const {
+    CollisionGenerator &generator, simthreadresources *thread_res) const {
     std::cout << "Populating collision reactions...\n";
     // Populate the electron ionization reaction
     generator.addCollisionReaction(new ElectronIonizationReaction(

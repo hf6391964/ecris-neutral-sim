@@ -15,10 +15,10 @@ class SpatialDistribution {
     public:
         SpatialDistribution() {}
         SpatialDistribution(const Grid &grid);
-        template<typename T1>
-        SpatialDistribution(const SpatialDistribution<T1> &src,
-            double weight = 1.0);
         ~SpatialDistribution();
+
+        void initializeTo(T value);
+        void initializeToNull();
 
         T getValueAt(const Point &p) const;
 
@@ -33,9 +33,8 @@ class DensityDistribution : public SpatialDistribution<double> {
 
     public:
         DensityDistribution(std::string filename, double weight = 1.0);
-        template<typename T>
-        DensityDistribution(const SpatialDistribution<T> &src,
-            double weight = 1.0) : SpatialDistribution<double>(src, weight) {};
+        DensityDistribution(const DensityDistribution &src,
+            double weight = 1.0);
 };
 
 class VelocityDistribution : public SpatialDistribution<Vector> {
@@ -43,3 +42,5 @@ class VelocityDistribution : public SpatialDistribution<Vector> {
         Vector getNull() const { return Vector(0.0, 0.0, 0.0); }
 };
 
+template class SpatialDistribution<double>;
+template class SpatialDistribution<Vector>;

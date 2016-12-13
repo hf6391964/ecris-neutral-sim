@@ -40,7 +40,7 @@ class SimplePlasmaModel {
         ~SimplePlasmaModel();
 
         void populateCollisionReactions(CollisionGenerator &generator,
-            simthreadresources &thread_res) const;
+            simthreadresources *thread_res) const;
 
         void setCoordinateTransformation(const Aff_transformation &tf);
 

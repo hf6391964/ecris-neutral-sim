@@ -18,7 +18,7 @@ class CollisionReaction {
         }
 
         virtual double getReactionRate(const Point &p, double particleSpeed,
-            simthreadresources &thread_res) const = 0;
+            simthreadresources *thread_res) const = 0;
 
         // TODO count energy and particles "lost" in the plasma
         virtual std::vector<Particle> computeReactionProducts(Rng &rng,

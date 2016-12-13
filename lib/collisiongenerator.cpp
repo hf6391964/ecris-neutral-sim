@@ -26,7 +26,7 @@ void CollisionGenerator::addCollisionReaction(CollisionReaction *reaction) {
 }
 
 void CollisionGenerator::precomputeReactionRates(double maxSpeed,
-    double speedStepSize, simthreadresources &thread_res) {
+    double speedStepSize, simthreadresources *thread_res) {
 
     nReactions_ = collisionReactions_.size();
     gridSize_ = grid_.arraySize();

@@ -27,6 +27,10 @@ class SimulationModel {
         unsigned long* count, Grid& grid, double t, std::string suffix) const;
 
     public:
+        Grid getGrid(double gridSize) const {
+            return Grid(bbox_, gridSize);
+        }
+
         void addSource(NeutralSource* source) {
             sources_.push_back(source);
         }
