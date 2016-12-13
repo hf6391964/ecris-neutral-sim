@@ -10,8 +10,13 @@ ElectronIonizationReaction::ElectronIonizationReaction(
 
 double ElectronIonizationReaction::getReactionRate(const Point &p,
     double particleSpeed, simthreadresources *thread_res) const {
-    return population_->getDensityAt(p) *
-        population_->calculateRateCoefficient(particleSpeed, thread_res->ms,
+    return population_->getDensityAt(p) * getRateCoefficient(particleSpeed,
+        thread_res);
+}
+
+double ElectronIonizationReaction::getRateCoefficient(
+    double particleSpeed, simthreadresources *thread_res) const {
+    return population_->calculateRateCoefficient(particleSpeed, thread_res->ms,
         thread_res->gslrng, crossSection, (void *)&ionizationParameters_);
 }
 

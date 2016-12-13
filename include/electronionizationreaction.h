@@ -14,6 +14,9 @@ class ElectronIonizationReaction : public CollisionReaction {
         double getReactionRate(const Point &p, double particleSpeed,
             simthreadresources *thread_res) const;
 
+        double getRateCoefficient(double particleSpeed,
+            simthreadresources *thread_res) const;
+
         std::vector<Particle> computeReactionProducts(Rng &rng,
             const Point &p, const Particle &target) const;
 

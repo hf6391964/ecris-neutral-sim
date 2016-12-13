@@ -15,6 +15,9 @@ class ChargeExchangeReaction : public CollisionReaction {
         double getReactionRate(const Point &p, double particleSpeed,
             simthreadresources *thread_res) const;
 
+        double getRateCoefficient(double particleSpeed,
+            simthreadresources *thread_res) const;
+
         std::vector<Particle> computeReactionProducts(Rng &rng,
             const Point &, const Particle &target) const;
 
