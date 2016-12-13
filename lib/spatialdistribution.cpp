@@ -2,7 +2,7 @@
 
 template<typename T>
 SpatialDistribution<T>::SpatialDistribution(const Grid &grid) {
-    size_t n = grid_.arraySize();
+    size_t n = grid.arraySize();
     valueVector_ = new T[n];
     grid_ = grid;
 }
