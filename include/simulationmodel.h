@@ -12,6 +12,7 @@
 #include "argon_data.h"
 #include "grid.h"
 #include "util.h"
+#include "collisiongenerator.h"
 
 class SimulationModel {
     std::vector<NeutralSource*> sources_;
@@ -19,7 +20,8 @@ class SimulationModel {
     long nParticles_;
     Bbox bbox_;
 
-    void simulationThread(unsigned long nParticles, unsigned long maxSteps,
+    void simulationThread(CollisionGenerator *collisionGenerator,
+        unsigned long nParticles, unsigned long maxSteps,
         double dt, const Grid &grid, uint_least32_t seed, Vector* velocity,
         unsigned long* count, bool stationary) const;
 
@@ -40,7 +42,8 @@ class SimulationModel {
             bbox_ += surface->bbox();
         }
 
-        void runSimulation(unsigned long nParticles, std::string prefix,
+        void runSimulation(CollisionGenerator &collisionGenerator,
+            unsigned long nParticles, std::string prefix,
             bool stationary = true,
             double gridSize = 0.1, double maxTime = 0.1,
             double timestepFactor = 2.0, int nThreads = -1);

@@ -1,6 +1,7 @@
 #include "simulationmodel.h"
 
-void SimulationModel::runSimulation(unsigned long nParticles,
+void SimulationModel::runSimulation(CollisionGenerator &collisionGenerator,
+    unsigned long nParticles,
     std::string prefix, bool stationary, double gridSize, double maxTime,
     double timestepFactor, int nThreads) {
     if (nThreads <= 0) {
@@ -54,7 +55,8 @@ void SimulationModel::runSimulation(unsigned long nParticles,
         velocityPointers.push_back(velocity);
         countPointers.push_back(count);
         threads.push_back(std::thread(&SimulationModel::simulationThread,
-            this, particlesInChunk, nSteps, dt, grid, seeds[i],
+            this, &collisionGenerator,
+            particlesInChunk, nSteps, dt, grid, seeds[i],
             velocity, count, stationary));
     }
 
@@ -103,7 +105,8 @@ void SimulationModel::runSimulation(unsigned long nParticles,
     delete[] count;
 }
 
-void SimulationModel::simulationThread(unsigned long nParticles,
+void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
+    unsigned long nParticles,
     unsigned long maxSteps, double dt, const Grid &grid, uint_least32_t seed,
     Vector* velocity, unsigned long* count, bool stationary) const {
     simthreadresources *thread_res = Util::allocateThreadResources(seed);
@@ -128,9 +131,9 @@ void SimulationModel::simulationThread(unsigned long nParticles,
             // Do this to spread the gas pulse evenly across the whole timestep
             // in time dependent simulations
             double timeRemainder = uni01(thread_res->rng)*dt;
-            for (unsigned long step = 0; step < maxSteps; step++) {
-
+            for (unsigned long step = 0; step < maxSteps; ++step) {
                 bool moving = true;
+
                 while (moving) {
                     if (!particle.hasNextIntersection() ||
                         particle.getState() == Particle::Pumped) {
@@ -138,14 +141,44 @@ void SimulationModel::simulationThread(unsigned long nParticles,
                     } else {
                         double isectDistance = particle.distanceToIntersection();
                         double speed = particle.getSpeed();
-                        if (isectDistance <= speed*timeRemainder) {
-                            timeRemainder -= isectDistance / particle.getSpeed();
+                        double meanFreeTime =
+                            collisionGenerator->getMeanFreeTime(speed);
+
+                        double timestep = std::min(timeRemainder, meanFreeTime);
+
+                        if (isectDistance <= timestep) {
+                            // TODO this might need some rethinking. If time to
+                            // wall intersection is less than mean free time,
+                            // currently no collision reactions will be sampled
+                            // but the particle will be directly brought to the
+                            // intersection.
+                            timeRemainder -= isectDistance / speed;
                             particle.goToIntersection(thread_res->rng);
                             particle.findNextIntersection(surfaces_.begin(),
                                 surfaces_.end());
                         } else {
+                            particle.goForward(timestep);
+                            timeRemainder -= timestep;
+                            CollisionReaction *reaction =
+                                collisionGenerator->sampleCollision(
+                                    thread_res->rng, particle.getPosition(),
+                                    speed, timestep);
+                            if (reaction != NULL) {
+                                std::vector<Particle> products =
+                                    reaction->computeReactionProducts(thread_res->rng,
+                                    particle.getPosition(), particle);
+
+                                // TODO multiple reaction products?
+                                if (products.size() >= 1) {
+                                    particle = products[0];
+                                    particle.findNextIntersection(surfaces_.begin(),
+                                        surfaces_.end());
+                                }
+                            }
+                        }
+
+                        if (timeRemainder <= 0.0) {
                             moving = false;
-                            particle.goForward(timeRemainder);
                         }
                     }
                 }
