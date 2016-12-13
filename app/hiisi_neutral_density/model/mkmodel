@@ -1,0 +1,9 @@
+#!/bin/sh
+
+scad_file="cylinder.scad"
+defs="-DPARTNO="
+
+openscad -o "radial_wall.stl" ${defs}0 ${scad_file}
+openscad -o "end1.stl" ${defs}1 ${scad_file}
+openscad -o "end2.stl" ${defs}2 ${scad_file}
+
