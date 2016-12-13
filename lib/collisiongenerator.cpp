@@ -27,6 +27,7 @@ void CollisionGenerator::addCollisionReaction(CollisionReaction *reaction) {
 
 void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     double speedStepSize, simthreadresources &thread_res) {
+
     nReactions_ = collisionReactions_.size();
     gridSize_ = grid_.arraySize();
 
@@ -35,12 +36,15 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
 
     _cleanup();
 
+    size_t nBytes = nSpeedSteps_ * (1 + gridSize_ * (1 + nReactions_));
+    std::cout << "Precomputed values will take up " << nBytes << " bytes\n";
     // Allocate necessary resources
     totalReactionRate_ = new double[nSpeedSteps_ * gridSize_];
     cumulativeProbability_ =
         new double[nSpeedSteps_ * gridSize_ * nReactions_];
     majorantReactionRate_ = new double[nSpeedSteps_];
 
+    std::cout << "Precomputing collision rates...\n";
     for (size_t iv = 0; iv < nSpeedSteps_; ++iv) {
         double *pTotalReactionRate = &totalReactionRate_[iv * gridSize_];
         double *pCumulativeProbability =
@@ -76,6 +80,8 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
             }
         }
     }
+
+    std::cout << "Precomputation done.\n";
 }
 
 double CollisionGenerator::getMeanFreeTime(double particleSpeed) const {

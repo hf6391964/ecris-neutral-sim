@@ -14,7 +14,8 @@ class SimplePlasmaModel {
     std::vector<std::shared_ptr<ParticlePopulation>> particlePopulations_;
     unsigned int maxChargeState_ = 0;
     ElementData elementData_;
-    double ionMassEv_ = 0.0;;
+    double ionMassEv_ = 0.0;
+    double maxIonTemp_ = 0.0;
 
     public:
         // Electron weight is the statistical weight of an electron in the
@@ -38,7 +39,8 @@ class SimplePlasmaModel {
 
         ~SimplePlasmaModel();
 
-        void populateCollisionReactions(CollisionGenerator &generator) const;
+        void populateCollisionReactions(CollisionGenerator &generator,
+            simthreadresources &thread_res) const;
 
         void setCoordinateTransformation(const Aff_transformation &tf);
 
