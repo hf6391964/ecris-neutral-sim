@@ -59,7 +59,7 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
             int j = 0;
             double totalRate = 0.0;
             for (auto iReaction = collisionReactions_.begin();
-                 iReaction != collisionReactions_.end(); ++i) {
+                 iReaction != collisionReactions_.end(); ++iReaction) {
                 double rate = (*iReaction)->getReactionRate(p, particleSpeed,
                     thread_res);
                 totalRate += rate;
