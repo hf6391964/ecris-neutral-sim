@@ -1,0 +1,6 @@
+* Linear interpolation of reaction rates
+* Error handling when STL file not found!!
+* Improvement of collision computation in the particle loop
+* Extraction and recombination
+    - use recombination rate coefficients?
+* Thermal accommodation
