@@ -129,6 +129,8 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
                 continue;
             }
 
+            bool destroyedInReaction = false;
+
             // Do this to spread the gas pulse evenly across the whole timestep
             // in time dependent simulations
             double timeRemainder = uni01(thread_res->rng)*dt;
@@ -174,6 +176,10 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
                                     particle = products[0];
                                     particle.findNextIntersection(surfaces_.begin(),
                                         surfaces_.end());
+                                } else {
+                                    // There are no reaction products, we are
+                                    // done with this particle.
+                                    destroyedInReaction = true;
                                 }
                             }
                         }
@@ -182,6 +188,10 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
                             moving = false;
                         }
                     }
+                }
+
+                if (destroyedInReaction) {
+                    break;
                 }
 
                 size_t arrIndex;
