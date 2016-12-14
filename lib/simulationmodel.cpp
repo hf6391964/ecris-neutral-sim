@@ -124,7 +124,8 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
 
             if (!particle.findNextIntersection(surfaces_.begin(),
                 surfaces_.end())) {
-                std::cout << "Something wrong with intersections" << std::endl;
+                std::cout << "Something wrong with face normals / intersections"
+                    << std::endl;
                 continue;
             }
 
@@ -143,7 +144,6 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
                         double speed = particle.getSpeed();
                         double meanFreeTime =
                             collisionGenerator->getMeanFreeTime(speed);
-                        std::cout << "mean free time is " << meanFreeTime << "\n";
 
                         double timestep = std::min(timeRemainder, meanFreeTime);
 
