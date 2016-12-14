@@ -5,12 +5,12 @@
 #include "argon_data.h"
 
 int main() {
-    const double ELECTRON_WEIGHT = 1.0;  // TODO determine this
+    const double ELECTRON_DENSITY = 1e17;
     const double ELECTRON_TEMPERATURE = 10e3;
     const ElementData ELEM_DATA = ARGON_DATA;
     const double ION_TEMPERATURE = 4.0;
     std::vector<double> ION_RELATIVE_DENSITIES = {
-        0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625, 0.015625
+        1.0/2.0, 1.0/4.0, 1.0/8.0, 1.0/16.0, 1.0/32.0, 1.0/64.0, 1.0/64.0
     };
     const double GRID_SIZE = 0.005;
 
