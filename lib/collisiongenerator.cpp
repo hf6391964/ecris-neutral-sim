@@ -61,6 +61,7 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
         for (size_t ir = 0; ir < nReactions_; ++ir) {
             rateCoeffs[ir] = collisionReactions_[ir]->getRateCoefficient(
                 particleSpeed, thread_res);
+            /* std::cout << "rate coeff " << ir << ": " << rateCoeffs[ir] << std::endl; */
         }
 
         for (size_t i = 0; i < gridSize_; ++i) {
@@ -87,6 +88,8 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
                 pCumulativeProbability[nReactions_*i + k] /= totalRate;
             }
         }
+
+        /* std::cout << "Majorant rate for v = " << particleSpeed << " is " << majorantReactionRate_[iv] << "\n"; */
     }
 
     delete[] rateCoeffs;

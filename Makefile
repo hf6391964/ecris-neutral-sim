@@ -2,8 +2,8 @@ LIBNAME = libneutrals
 INCDIRS = -I../CGAL-4.9/include -I./include -I../gsl-2.2.1
 CC = g++
 CFLAGS_COMMON = -Wall -Wextra -std=c++11 -O2
-# CFLAGS = -pg
-CFLAGS = 
+CFLAGS = -g
+#CFLAGS = 
 PRECOMPILED_HEADER = include/cgal_and_typedefs.h
 PRECOMPILED_HEADER_TARGET = $(PRECOMPILED_HEADER).gch
 

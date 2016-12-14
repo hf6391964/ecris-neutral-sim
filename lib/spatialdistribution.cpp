@@ -63,11 +63,9 @@ DensityDistribution::DensityDistribution(std::string filename,
     std::ifstream fin(filename);
     // Read grid dimensions from given file
     grid_ = Grid(fin);
-
-    // Read electron data from that file
+    // Read density data from that file
     size_t n = grid_.arraySize();
     valueVector_ = new double[n];
-    // Populate electron desities first.
     for (size_t i = 0; i < n; ++i) {
         double nParticles;
         fin >> nParticles;
