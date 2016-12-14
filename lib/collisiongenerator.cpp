@@ -105,7 +105,7 @@ CollisionReaction *CollisionGenerator::sampleCollision(Rng &rng,
     const Point &p, double particleSpeed, double dt) const {
     size_t velIndex = particleSpeed / speedStepSize_;
     size_t spatialIndex;
-    if (velIndex >= nSpeedSteps_ || grid_.arrayIndex(p, spatialIndex)) {
+    if (velIndex >= nSpeedSteps_ || !grid_.arrayIndex(p, spatialIndex)) {
         return NULL;
     }
 
