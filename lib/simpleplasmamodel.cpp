@@ -19,22 +19,22 @@ SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
 
     ionMassEv_ = elementData_.mass * ATOMIC_MASS_TO_EV;
     // Populate the ion densities
-    int i = 1;
+    int q = 1;
     maxIonTemp_ = 0.0;
     for (double relDensity : ionRelativeDensities) {
         DensityDistribution ionDensityDistribution(electronDensity,
             relDensity);
-        particlePopulations_[i] = std::shared_ptr<ParticlePopulation>(
-            new MaxwellianPopulation(ionMassEv_, i,
-            ionTemperatures[i], ionDensityDistribution));
-        i += 1;
-        maxIonTemp_ = std::max(maxIonTemp_, ionTemperatures[i]);
+        particlePopulations_[q] = std::shared_ptr<ParticlePopulation>(
+            new MaxwellianPopulation(ionMassEv_, q,
+            ionTemperatures[q - 1], ionDensityDistribution));
+        maxIonTemp_ = std::max(maxIonTemp_, ionTemperatures[q - 1]);
+        q += 1;
     }
     particlePopulations_[0] = std::shared_ptr<ParticlePopulation>(
         new MaxwellianPopulation(ELECTRON_MASS_EV, -1, electronTemperature,
             electronDensity));
 
-    maxChargeState_ = particlePopulations_.size() - 1;
+    maxChargeState_ = ionRelativeDensities.size();
 }
 
 SimplePlasmaModel::~SimplePlasmaModel() {
@@ -42,7 +42,6 @@ SimplePlasmaModel::~SimplePlasmaModel() {
 
 void SimplePlasmaModel::populateCollisionReactions(
     CollisionGenerator &generator, simthreadresources *thread_res) const {
-    std::cout << "Populating collision reactions...\n";
     // Populate the electron ionization reaction
     generator.addCollisionReaction(new ElectronIonizationReaction(
         particlePopulations_[0], elementData_.ionizationParameters));
@@ -55,7 +54,7 @@ void SimplePlasmaModel::populateCollisionReactions(
 
     double mbave = Util::getMBAverage(maxIonTemp_, ionMassEv_);
 
-    generator.precomputeReactionRates(8.0*mbave, mbave/100.0, thread_res);
+    generator.precomputeReactionRates(8.0*mbave, mbave/10.0, thread_res);
 }
 
 void SimplePlasmaModel::setCoordinateTransformation(
