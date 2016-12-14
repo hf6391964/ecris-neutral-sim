@@ -32,7 +32,7 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     gridSize_ = grid_.arraySize();
 
     speedStepSize_ = speedStepSize;
-    nSpeedSteps_ = std::ceil(maxSpeed / speedStepSize);
+    nSpeedSteps_ = std::ceil(maxSpeed / speedStepSize) + 1;
 
     _cleanup();
 
@@ -99,30 +99,41 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
 
 double CollisionGenerator::getMeanFreeTime(double particleSpeed) const {
     size_t velIndex = particleSpeed / speedStepSize_;
-    if (velIndex >= nSpeedSteps_) return -1.0;
+    if (velIndex >= nSpeedSteps_ - 1) return -1.0;
 
-    return 1.0 / majorantReactionRate_[velIndex];
+    double t = (particleSpeed - velIndex * speedStepSize_) / speedStepSize_;
+    double interpolatedRate = (1.0 - t) * majorantReactionRate_[velIndex] +
+        t * majorantReactionRate_[velIndex + 1];
+
+    return 1.0 / interpolatedRate;
 }
 
 CollisionReaction *CollisionGenerator::sampleCollision(Rng &rng,
     const Point &p, double particleSpeed, double dt) const {
     size_t velIndex = particleSpeed / speedStepSize_;
     size_t spatialIndex;
-    if (velIndex >= nSpeedSteps_ || !grid_.arrayIndex(p, spatialIndex)) {
+    if (velIndex >= nSpeedSteps_ - 1 || !grid_.arrayIndex(p, spatialIndex)) {
         return NULL;
     }
 
     size_t velSpatialIndex = velIndex * gridSize_ + spatialIndex;
-    double totalRate = totalReactionRate_[velSpatialIndex];
+    size_t velSpatialIndex1 = (velIndex + 1) * gridSize_ + spatialIndex;
+    double t = (particleSpeed - velIndex * speedStepSize_) / speedStepSize_;
+    double totalRate = (1.0 - t) * totalReactionRate_[velSpatialIndex] +
+        t * totalReactionRate_[velSpatialIndex1];
 
     double x = uni01(rng);
     if (x > std::exp(-totalRate * dt)) {  // Reaction happens
         double y = uni01(rng);
         double *pCumulativeProbability =
             &cumulativeProbability_[nReactions_ * velSpatialIndex];
+        double *pCumulativeProbability1 =
+            &cumulativeProbability_[nReactions_ * velSpatialIndex1];
         size_t iReaction;
         for (iReaction = 0; iReaction < nReactions_; ++iReaction) {
-            if (y < pCumulativeProbability[iReaction]) {
+            double prob = (1.0 - t) * pCumulativeProbability[iReaction] +
+                t * pCumulativeProbability1[iReaction];
+            if (y < prob) {
                 break;
             }
         }
