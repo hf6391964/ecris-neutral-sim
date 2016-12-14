@@ -115,6 +115,7 @@ double Util::calculateMBRelativeRateCoeff(double particleSpeed, double T_eV,
     double xl[] = { 0.0, 0.0, -lim };
     double xu[] = { lim, lim, lim };
     double result, absErr;
+    gsl_monte_vegas_init(ms);
     gsl_monte_vegas_integrate(&mfn, xl, xu, 3, N_calls, rng, ms, &result,
         &absErr);
 
