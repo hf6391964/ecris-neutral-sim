@@ -45,10 +45,10 @@ void SimulationModel::runSimulation(CollisionGenerator &collisionGenerator,
     std::vector<Vector*> velocityPointers;
     std::vector<unsigned long*> countPointers;
     sseq.generate(seeds.begin(), seeds.end());
-    for (int i = 0; i < nThreads; i++) {
+    for (int i = 0; i < nThreads; ++i) {
         Vector* velocity = new Vector[arraySize];
         unsigned long* count = new unsigned long[arraySize];
-        for (size_t k = 0; k < arraySize; k++) {
+        for (size_t k = 0; k < arraySize; ++k) {
             velocity[k] = Vector(0.0, 0.0, 0.0);
             count[k] = 0;
         }
@@ -66,10 +66,10 @@ void SimulationModel::runSimulation(CollisionGenerator &collisionGenerator,
 
     Vector* velocity = new Vector[arraySize];
     unsigned long* count = new unsigned long[arraySize];
-    for (size_t j = 0; j < arraySize; j++) {
+    for (size_t j = 0; j < arraySize; ++j) {
         Vector v(0.0, 0.0, 0.0);
         unsigned long c = 0;
-        for (int n = 0; n < nThreads; n++) {
+        for (int n = 0; n < nThreads; ++n) {
             v = v + velocityPointers[n][j];
             c += countPointers[n][j];
         }
@@ -117,14 +117,14 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
         // TODO run simulation separately for each particle species in the
         // spectrum
 
-        for (unsigned long i = 0; i < nParticles; i++) {
+        for (unsigned long i = 0; i < nParticles; ++i) {
             Particle particle;
 
             pSource->generateParticle(particle, thread_res->rng);
 
             if (!particle.findNextIntersection(surfaces_.begin(),
                 surfaces_.end())) {
-                /* std::cout << "Something wrong with intersections" << std::endl; */
+                std::cout << "Something wrong with intersections" << std::endl;
                 continue;
             }
 
@@ -143,6 +143,7 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
                         double speed = particle.getSpeed();
                         double meanFreeTime =
                             collisionGenerator->getMeanFreeTime(speed);
+                        std::cout << "mean free time is " << meanFreeTime << "\n";
 
                         double timestep = std::min(timeRemainder, meanFreeTime);
 
