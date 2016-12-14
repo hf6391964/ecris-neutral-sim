@@ -180,7 +180,6 @@ void ElectronModel::writeDensityToFile(const std::string &filename,
         double volume = std::abs(z2_ - z1_) * M_PI * r0_*r0_;
 
         unsigned long long nParticles = 0;
-        size_t N = grid_.arraySize();
         for (size_t i = 0; i < N; ++i) {
             nParticles += particleCount_[i];
         }
