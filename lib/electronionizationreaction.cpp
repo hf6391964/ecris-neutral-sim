@@ -56,6 +56,6 @@ double ElectronIonizationReaction::crossSection(double v, void *p) {
         bterms = B[i] + bterms*delta;
     }
     bterms *= delta;
-    return (aterm + bterms) / (I*E);
+    return (aterm + bterms) / (I*E) * 1e-17;
 }
 
