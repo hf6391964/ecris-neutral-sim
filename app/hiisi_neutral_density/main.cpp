@@ -25,11 +25,11 @@ int main() {
     SimulationModel simModel;
 
     Surface radial_wall("model/radial_wall.stl",
-        0.0, ROOM_TEMPERATURE_EV, true, 0.1);
+        0.0, ROOM_TEMPERATURE_EV, false, 0.1);
     Surface end1("model/end1.stl",
-        1.0, ROOM_TEMPERATURE_EV, false, 0.1);
-    Surface end2("model/end2.stl",
         1.0, ROOM_TEMPERATURE_EV, true, 0.1);
+    Surface end2("model/end2.stl",
+        1.0, ROOM_TEMPERATURE_EV, false, 0.1);
 
     simModel.addSurface(&radial_wall);
     simModel.addSurface(&end1);
@@ -40,7 +40,7 @@ int main() {
     CollisionGenerator generator(simModel.getGrid(GRID_SIZE));
     plasmamodel.populateCollisionReactions(generator, thread_res);
 
-    simModel.runSimulation(generator, 1000, "test", true, 0.1, 5.0, 2.0, 4);
+    simModel.runSimulation(generator, 1000, "test", true, 0.01, 0.1, 2.0, 4);
 
     Util::deallocateThreadResources(thread_res);
 
