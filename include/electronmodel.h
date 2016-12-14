@@ -107,7 +107,8 @@ class ElectronModel {
         void runMaxwellSimulation(const unsigned long nParticles,
             const double T_eV, const double Becr, Rng& rng);
 
-        void writeDensityToFile(const std::string &filename) const;
+        void writeDensityToFile(const std::string &filename,
+            bool normalize = true) const;
 
         static Vector totalBfield(const Vector vx, const double B0,
             const double r0, const double a[] = SOLENOID_FIELD_AI);

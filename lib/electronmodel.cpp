@@ -171,12 +171,30 @@ double ElectronModel::energyStdDev() const {
     ) / finalEnergies_.size());
 }
 
-void ElectronModel::writeDensityToFile(const std::string &filename) const {
+void ElectronModel::writeDensityToFile(const std::string &filename,
+    bool normalize) const {
     std::ofstream fout(filename);
     grid_.writeDimensions(fout);
     size_t N = grid_.arraySize();
-    for (size_t i = 0; i < N; i++) {
-        fout << particleCount_[i] << std::endl;
+    if (normalize) {
+        double volume = std::abs(z2_ - z1_) * M_PI * r0_*r0_;
+
+        unsigned long long nParticles = 0;
+        size_t N = grid_.arraySize();
+        for (size_t i = 0; i < N; ++i) {
+            nParticles += particleCount_[i];
+        }
+
+        double averageDensity = (double)nParticles / volume,
+               normalizationFactor = 1.0 / averageDensity;
+        for (size_t i = 0; i < N; ++i) {
+            double value = particleCount_[i] * normalizationFactor;
+            fout << value << std::endl;
+        }
+    } else {
+        for (size_t i = 0; i < N; ++i) {
+            fout << particleCount_[i] << std::endl;
+        }
     }
     fout.close();
 }
