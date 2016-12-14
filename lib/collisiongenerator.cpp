@@ -43,6 +43,12 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     cumulativeProbability_ =
         new double[nSpeedSteps_ * gridSize_ * nReactions_];
     majorantReactionRate_ = new double[nSpeedSteps_];
+    double *rateCoeffs = new double[nReactions_];
+
+    std::vector<std::shared_ptr<ParticlePopulation>> reactionPopulations;
+    for (size_t ir = 0; ir < nReactions_; ++ir) {
+        reactionPopulations.push_back(collisionReactions_[ir]->getPopulation());
+    }
 
     std::cout << "Precomputing collision rates...\n";
     for (size_t iv = 0; iv < nSpeedSteps_; ++iv) {
@@ -52,34 +58,38 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
         majorantReactionRate_[iv] = 0.0;
         double particleSpeed = speedStepSize_ * iv;
 
+        for (size_t ir = 0; ir < nReactions_; ++ir) {
+            rateCoeffs[ir] = collisionReactions_[ir]->getRateCoefficient(
+                particleSpeed, thread_res);
+        }
+
         for (size_t i = 0; i < gridSize_; ++i) {
             Point p;
             if (!grid_.getCellMidpoint(i, p)) continue;
 
-            int j = 0;
             double totalRate = 0.0;
-            for (auto iReaction = collisionReactions_.begin();
-                 iReaction != collisionReactions_.end(); ++iReaction) {
-                double rate = (*iReaction)->getReactionRate(p, particleSpeed,
-                    thread_res);
+            for (size_t ir = 0; ir < nReactions_; ++ir) {
+                double rate = reactionPopulations[ir]->getDensityAt(p) *
+                    rateCoeffs[ir];
                 totalRate += rate;
                 // Sum rates to get cumulative rate, will be normalized later
                 // to yield probability
-                pCumulativeProbability[nReactions_ * i + j] = totalRate;
-                j += 1;
+                pCumulativeProbability[nReactions_ * i + ir] = totalRate;
             }
 
             pTotalReactionRate[i] = totalRate;
             majorantReactionRate_[iv] = std::max(majorantReactionRate_[iv],
                 totalRate);
 
-            for (int k = 0; k < j; ++k) {
+            for (size_t k = 0; k < nReactions_; ++k) {
                 // Normalize the previously stored cumulative rates into
                 // probabilities
                 pCumulativeProbability[nReactions_*i + k] /= totalRate;
             }
         }
     }
+
+    delete[] rateCoeffs;
 
     std::cout << "Precomputation done.\n";
 }
