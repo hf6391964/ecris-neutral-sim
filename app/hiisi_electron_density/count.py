@@ -13,8 +13,12 @@ if len(argv) < 2:
     exit('usage: python count.py filename.csv')
 
 prefix = argv[1]
+PLOTDIR = 'plots'
 
 with open(argv[1], 'r') as f:
+    if not path.isdir(PLOTDIR):
+        makedirs(PLOTDIR)
+
     f.readline()
     nIntervals = readCsvLine(f, int)
     f.readline()
@@ -43,7 +47,8 @@ with open(argv[1], 'r') as f:
     XX, YY = np.meshgrid(X, Y)
 
     for i, z in enumerate(zvalues):
-        countPath = 'electron_count_{0}.png'.format(nums[i])
+        countPath = path.join(PLOTDIR,
+                              'electron_count_{0}.png'.format(nums[i]))
         data = slices[i, :, :]
 
         heatmap = plt.pcolormesh(XX, YY, data, edgecolor='face', vmin=0,
@@ -57,5 +62,6 @@ with open(argv[1], 'r') as f:
         plt.title('Z = ' + str(z))
         cb = plt.colorbar(heatmap, drawedges=False)
         cb.set_label('Total particle hit count')
-        plt.show()
+        plt.savefig(countPath, bbox_inches='tight')
+        plt.clf()
 

@@ -5,14 +5,14 @@
 #include "argon_data.h"
 
 int main() {
-    const double ELECTRON_DENSITY = 1e22;
+    const double ELECTRON_DENSITY = 1e17;
     const double ELECTRON_TEMPERATURE = 10e3;
     const ElementData ELEM_DATA = ARGON_DATA;
     const double ION_TEMPERATURE = 4.0;
     std::vector<double> ION_RELATIVE_DENSITIES = {
-        1.0/2.0, 1.0/4.0, 1.0/8.0, 1.0/16.0, 1.0/32.0, 1.0/64.0, 1.0/64.0
+        1.0/4096.0, 1.0/1024.0, 1.0/256.0, 1.0/64.0, 1.0/16.0, 1.0/8.0, 1.0/2.0, 1.0/8.0, 1.0/16.0, 1.0/64.0, 1.0/256.0, 1.0/1024.0, 1.0/4096.0
     };
-    const double GRID_SIZE = 0.01;
+    const double GRID_SIZE = 0.005;
     const size_t N_PARTICLES = 10000000;
 
     std::vector<double> ION_TEMPERATURES(ION_RELATIVE_DENSITIES.size(),
