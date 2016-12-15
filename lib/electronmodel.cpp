@@ -177,14 +177,22 @@ void ElectronModel::writeDensityToFile(const std::string &filename,
     grid_.writeDimensions(fout);
     size_t N = grid_.arraySize();
     if (normalize) {
-        double volume = std::abs(z2_ - z1_) * M_PI * r0_*r0_;
-
-        unsigned long long nParticles = 0;
+        unsigned long maxCount = 0;
         for (size_t i = 0; i < N; ++i) {
-            nParticles += particleCount_[i];
+            maxCount = std::max(maxCount, particleCount_[i]);
         }
 
-        double averageDensity = (double)nParticles / volume,
+        unsigned long long nParticles = 0;
+        unsigned long nPlasmaCells = 0;
+        for (size_t i = 0; i < N; ++i) {
+            if (particleCount_[i] * 10 >= maxCount) {
+                nParticles += particleCount_[i];
+                nPlasmaCells += 1;
+            }
+        }
+
+        double plasmaVolume = grid_.cellVolume() * nPlasmaCells;
+        double averageDensity = (double)nParticles / plasmaVolume,
                normalizationFactor = 1.0 / averageDensity;
         for (size_t i = 0; i < N; ++i) {
             double value = particleCount_[i] * normalizationFactor;

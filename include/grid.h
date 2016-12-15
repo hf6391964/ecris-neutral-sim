@@ -23,6 +23,10 @@ class Grid {
             return std::make_tuple(intervalsX_, intervalsY_, intervalsZ_);
         }
 
+        double cellVolume() const {
+            return gridSize_ * gridSize_ * gridSize_;
+        }
+
         size_t arraySize() const {
             return intervalsX_ * intervalsY_ * intervalsZ_;
         }
