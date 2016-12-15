@@ -149,7 +149,7 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
 
                         double timestep = std::min(timeRemainder, meanFreeTime);
 
-                        if (isectDistance <= timestep) {
+                        if (isectDistance <= speed*timestep) {
                             // TODO this might need some rethinking. If time to
                             // wall intersection is less than mean free time,
                             // currently no collision reactions will be sampled
