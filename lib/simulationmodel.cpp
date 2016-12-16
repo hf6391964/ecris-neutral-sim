@@ -141,6 +141,7 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
                     if (!particle.hasNextIntersection() ||
                         particle.getState() == Particle::Pumped) {
                         moving = false;
+                        destroyedInReaction = true;
                     } else {
                         double isectDistance = particle.distanceToIntersection();
                         double speed = particle.getSpeed();
