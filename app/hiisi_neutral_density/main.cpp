@@ -13,7 +13,7 @@ int main() {
         1.0/4096.0, 1.0/1024.0, 1.0/256.0, 1.0/64.0, 1.0/16.0, 1.0/8.0, 1.0/2.0, 1.0/8.0, 1.0/16.0, 1.0/64.0, 1.0/256.0, 1.0/1024.0, 1.0/4096.0
     };
     const double GRID_SIZE = 0.005;
-    const size_t N_PARTICLES = 10000000;
+    const size_t N_PARTICLES = 100000000;
 
     std::vector<double> ION_TEMPERATURES(ION_RELATIVE_DENSITIES.size(),
         ION_TEMPERATURE);
