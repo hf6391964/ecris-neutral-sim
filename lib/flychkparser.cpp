@@ -1,6 +1,15 @@
 #include <fstream>
+#include <algorithm>
 
 #include "flychkparser.h"
+
+FlychkParser::FlychkParser(std::string filename,
+    std::vector<std::string> datasetHeaders) : datasetHeaders_(datasetHeaders) {
+    // Parse rr and dr datasets
+    for (std::string header : datasetHeaders_) {
+        parseFlychkData(filename, header);
+    }
+}
 
 bool FlychkParser::parseFlychkData(std::string filename,
     std::string dataset) {
@@ -22,6 +31,7 @@ bool FlychkParser::parseFlychkData(std::string filename,
     std::stringstream linestream(line);
     linestream.ignore(header.length());
 
+    // Count the number of fields
     int nFields = 1;
     while (linestream) {
         char c = linestream.get();
@@ -31,14 +41,25 @@ bool FlychkParser::parseFlychkData(std::string filename,
         }
     }
 
+    // Parse lines as long as they have the desired number of fields
     int nParsedLines = 0;
+    std::vector<std::vector<double>> rows;
+    std::vector<double> temperatures;
     while (std::getline(datafile, line)) {
+        std::vector<double> fields;
+        fields.reserve(nFields - 1);
         linestream = std::stringstream(line);
         int nParsedFields = 0;
+        double temperature = 0;
         while (linestream) {
             float f;
             if (linestream >> f) {
                 nParsedFields += 1;
+                if (nParsedFields == 1) {
+                    temperature = f;
+                } else {
+                    fields.push_back(f);
+                }
             } else {
                 break;
             }
@@ -46,13 +67,78 @@ bool FlychkParser::parseFlychkData(std::string filename,
 
         if (nParsedFields == nFields) {
             nParsedLines += 1;
+            rows.push_back(fields);
+            temperatures.push_back(temperature);
         } else {
             break;
         }
     }
 
+    FlychkDataset dset;
+    dset.rateCoefficients = rows;
+    dset.temperatures = temperatures;
+    dset.maxChargeState = nFields;
+
+    datasets_[dataset] = dset;
+
     datafile.close();
 
+    return true;
+}
+
+bool FlychkParser::getRateCoefficient(double T, int chargeState,
+    std::string header, double &result, bool logInterp) const {
+    DatasetMap::const_iterator it = datasets_.find(header);
+    if (it == datasets_.end()) {
+        return false;
+    }
+
+    FlychkDataset dset = (*it).second;
+
+    if (chargeState < 1 || chargeState > dset.maxChargeState) {
+        return false;
+    }
+
+    std::vector<double>::const_iterator temp_it =
+        std::upper_bound(dset.temperatures.begin(), dset.temperatures.end(), T);
+
+    if (temp_it == dset.temperatures.begin() ||
+        temp_it == dset.temperatures.end()) {
+        return false;
+    }
+
+    ptrdiff_t idx = temp_it - dset.temperatures.begin();
+
+    double tempLow = dset.temperatures[idx - 1],
+        tempHigh = dset.temperatures[idx],
+        rcoeffLow = dset.rateCoefficients[idx - 1][chargeState - 1],
+        rcoeffHigh = dset.rateCoefficients[idx][chargeState - 1];
+
+    if (logInterp) {
+        tempLow = std::log(tempLow);
+        tempHigh = std::log(tempHigh);
+        T = std::log(T);
+    }
+
+    double k = (rcoeffHigh - rcoeffLow) / (tempHigh - tempLow);
+    result = (T - tempLow) * k + rcoeffLow;
+
+    return true;
+}
+
+bool FlychkParser::getTotalRateCoefficient(double T, int chargeState,
+    double &result, bool logInterp) const {
+    double res = 0.0;
+    for (auto header : datasetHeaders_) {
+        double tmp;
+        if (getRateCoefficient(T, chargeState, header, tmp, logInterp)) {
+            res += tmp;
+        } else {
+            return false;
+        }
+    }
+
+    result = res;
     return true;
 }
 
