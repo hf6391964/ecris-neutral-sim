@@ -9,7 +9,7 @@
 #include "surface.h"
 #include "particle.h"
 #include "constants.h"
-#include "argon_data.h"
+#include "element_data.h"
 #include "grid.h"
 #include "util.h"
 #include "collisiongenerator.h"

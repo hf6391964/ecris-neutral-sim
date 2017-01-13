@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_map>
+
 // Ionization paramaters as per
 // https://www.nist.gov/sites/default/files/documents/srd/jpcrd347.pdf
 struct IonizationParameters {
@@ -24,4 +26,10 @@ struct ElementData {
 
     IonizationParameters ionizationParameters;
 };
+
+enum Element { ARGON };
+
+extern const ElementData ARGON_DATA;
+
+extern const std::unordered_map<Element, const ElementData *> ELEMENT_DATA;
 
