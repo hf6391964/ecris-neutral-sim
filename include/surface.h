@@ -28,6 +28,7 @@ class Surface {
     double temperature_;
     std::atomic_ulong pumpedParticles_;
     std::unordered_map<Element, double> accommodationCoefficients_;
+    const double DEFAULT_ACCOMMODATION_COEFFICIENT = 1.0;
 
     public:
         Surface() {
@@ -51,7 +52,13 @@ class Surface {
         }
 
         double getAccommodationCoefficient(Element element) const {
-            return accommodationCoefficients_.at(element);
+            std::unordered_map<Element, double>::const_iterator coeff_it =
+                accommodationCoefficients_.find(element);
+            if (coeff_it == accommodationCoefficients_.end()) {
+                return DEFAULT_ACCOMMODATION_COEFFICIENT;
+            }
+
+            return coeff_it->second;
         }
 
         bool loadFromSTL(std::string filename, double avgTriangleArea = -1.0);
