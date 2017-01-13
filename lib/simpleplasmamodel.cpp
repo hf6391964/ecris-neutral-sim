@@ -8,7 +8,9 @@
 SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
     double electronWeight, std::vector<double> ionRelativeDensities,
     double electronTemperature, std::vector<double> ionTemperatures,
-    const ElementData &elementData) : elementData_(elementData) {
+    Element element) : element_(element) {
+    elementData_ = ELEMENT_DATA.at(element_);
+
     particlePopulations_.resize(ionRelativeDensities.size() + 1);
 
     // Calculate the density distributions
@@ -17,7 +19,7 @@ SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
     DensityDistribution electronDensity(electronDensityFilename,
         electronWeight);
 
-    ionMassEv_ = elementData_.mass * ATOMIC_MASS_TO_EV;
+    ionMassEv_ = elementData_->mass * ATOMIC_MASS_TO_EV;
     // Populate the ion densities
     int q = 1;
     maxIonTemp_ = 0.0;
@@ -44,12 +46,12 @@ void SimplePlasmaModel::populateCollisionReactions(
     CollisionGenerator &generator, simthreadresources *thread_res) const {
     // Populate the electron ionization reaction
     generator.addCollisionReaction(new ElectronIonizationReaction(
-        particlePopulations_[0], elementData_.ionizationParameters));
+        particlePopulations_[0], elementData_->ionizationParameters));
 
     // Populate charge exchange reactions
     for (unsigned int q = 1; q <= maxChargeState_; ++q) {
         generator.addCollisionReaction(new ChargeExchangeReaction(
-            particlePopulations_[q], elementData_.ionizationParameters.I_le));
+            particlePopulations_[q], elementData_->ionizationParameters.I_le));
     }
 
     double mbave = Util::getMBAverage(maxIonTemp_, ionMassEv_);

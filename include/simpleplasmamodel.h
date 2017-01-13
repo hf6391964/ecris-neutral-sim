@@ -13,7 +13,8 @@
 class SimplePlasmaModel {
     std::vector<std::shared_ptr<ParticlePopulation>> particlePopulations_;
     unsigned int maxChargeState_ = 0;
-    ElementData elementData_;
+    const ElementData *elementData_;
+    const Element element_;
     double ionMassEv_ = 0.0;
     double maxIonTemp_ = 0.0;
 
@@ -35,7 +36,7 @@ class SimplePlasmaModel {
         SimplePlasmaModel(std::string electronDensityFilename,
             double electronWeight, std::vector<double> ionRelativeDensities,
             double electronTemperature,
-            std::vector<double> ionTemperatures, const ElementData &elementData);
+            std::vector<double> ionTemperatures, Element element);
 
         ~SimplePlasmaModel();
 
