@@ -4,6 +4,6 @@
 
 class NeutralSource {
     public:
-        virtual void generateParticle(Particle& particle, Rng& rng) const = 0;
+        virtual Particle generateParticle(Rng& rng) const = 0;
 };
 

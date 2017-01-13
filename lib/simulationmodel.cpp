@@ -118,9 +118,8 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
         // spectrum
 
         for (unsigned long i = 0; i < nParticles; ++i) {
-            Particle particle;
-
-            pSource->generateParticle(particle, thread_res->rng);
+            Particle particle =
+                pSource->generateParticle(thread_res->rng);
 
             if (!particle.findNextIntersection(surfaces_.begin(),
                 surfaces_.end())) {

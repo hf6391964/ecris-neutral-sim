@@ -1,10 +1,12 @@
 #pragma once
 
-#include "cgal_and_typedefs.h"
-
 #include <string>
 #include <algorithm>
 #include <atomic>
+#include <unordered_map>
+
+#include "cgal_and_typedefs.h"
+#include "element_data.h"
 
 class Surface;
 
@@ -25,11 +27,13 @@ class Surface {
     double pumpingFactor_;
     double temperature_;
     std::atomic_ulong pumpedParticles_;
+    std::unordered_map<Element, double> accommodationCoefficients_;
 
     public:
         Surface() {
             pumpedParticles_ = 0;
         }
+
         Surface(std::string filename, double pumpingFactor, double temperature,
             bool flipNormals = false, double avgTriangleArea = -1.0)
             : pumpingFactor_(pumpingFactor), temperature_(temperature) {
@@ -39,6 +43,11 @@ class Surface {
             computeAreaCDF();
             computeFaceNormals();
             computeFaceRotations(flipNormals);
+        }
+
+        void setAccommodationCoefficients_(
+            std::unordered_map<Element, double> coefficients) {
+            accommodationCoefficients_ = coefficients;
         }
 
         bool loadFromSTL(std::string filename, double avgTriangleArea = -1.0);

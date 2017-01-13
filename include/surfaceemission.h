@@ -15,6 +15,6 @@ class SurfaceEmission : public NeutralSource {
         SurfaceEmission(Surface* pSurface, double emissionRate_,
             Element element_);
 
-        void generateParticle(Particle& particle, Rng& rng) const;
+        Particle generateParticle(Rng& rng) const;
 };
 

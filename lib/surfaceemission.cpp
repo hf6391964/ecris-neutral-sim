@@ -6,9 +6,10 @@ SurfaceEmission::SurfaceEmission(Surface* pSurface, double emissionRate,
     elementData_ = ELEMENT_DATA.at(element_);
 }
 
-void SurfaceEmission::generateParticle(Particle& particle, Rng& rng) const {
+Particle SurfaceEmission::generateParticle(Rng& rng) const {
     Point p;
     face_descriptor fd;
+    Particle particle(element_);
 
     std::tie(p, fd) = pSurface_->getRandomPoint(rng);
     Direction d = pSurface_->generateCosineLawDirection(fd, rng);
@@ -17,5 +18,6 @@ void SurfaceEmission::generateParticle(Particle& particle, Rng& rng) const {
         particle.getMass_eV());
     particle.setPosition(p);
     particle.setVelocity(v, d);
+    return particle;
 }
 

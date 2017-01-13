@@ -7,8 +7,12 @@ class MaxwellianPopulation : public ParticlePopulation {
     double temperature_eV_;
 
     public:
-        MaxwellianPopulation(double particleMass_eV, int chargeState, double
-            temperature_eV, DensityDistribution distr)
+        MaxwellianPopulation(Element element, int chargeState,
+            double temperature_eV, DensityDistribution distr)
+            : ParticlePopulation(element, chargeState, distr),
+              temperature_eV_(temperature_eV) {}
+        MaxwellianPopulation(double particleMass_eV, int chargeState,
+            double temperature_eV, DensityDistribution distr)
             : ParticlePopulation(particleMass_eV, chargeState, distr),
               temperature_eV_(temperature_eV) {}
 

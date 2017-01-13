@@ -27,7 +27,7 @@ struct ElementData {
     IonizationParameters ionizationParameters;
 };
 
-enum Element { ARGON };
+enum Element { ARGON, ELEMENT_NONE };
 
 extern const ElementData ARGON_DATA;
 

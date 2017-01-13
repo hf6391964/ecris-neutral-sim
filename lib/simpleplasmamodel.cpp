@@ -27,7 +27,7 @@ SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
         DensityDistribution ionDensityDistribution(electronDensity,
             relDensity);
         particlePopulations_[q] = std::shared_ptr<ParticlePopulation>(
-            new MaxwellianPopulation(ionMassEv_, q,
+            new MaxwellianPopulation(element_, q,
             ionTemperatures[q - 1], ionDensityDistribution));
         maxIonTemp_ = std::max(maxIonTemp_, ionTemperatures[q - 1]);
         q += 1;

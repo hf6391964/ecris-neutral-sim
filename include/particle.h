@@ -4,14 +4,21 @@
 #include "surface.h"
 #include "util.h"
 #include "constants.h"
+#include "element_data.h"
 
 /* #define DEBUG */
 
 class Particle {
     public:
-        Particle() {};
+        Particle(Element element) : element_(element) {
+            elementData_ = ELEMENT_DATA.at(element_);
+        }
 
         enum State { Free, Pumped };
+
+        Element getElement() const {
+            return element_;
+        }
 
         const Point getPosition() const {
             return position_;
@@ -84,6 +91,8 @@ class Particle {
         Direction direction_;
         double speed_ = 0.0;  // m/s
         double mass_eV_ = 1.0;  // eV
+        Element element_;
+        const ElementData *elementData_;
         State state_ = Free;
         IntersectionPoint nextIntersection_;
 };
