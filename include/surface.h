@@ -45,9 +45,13 @@ class Surface {
             computeFaceRotations(flipNormals);
         }
 
-        void setAccommodationCoefficients_(
+        void setAccommodationCoefficients(
             std::unordered_map<Element, double> coefficients) {
             accommodationCoefficients_ = coefficients;
+        }
+
+        double getAccommodationCoefficient(Element element) const {
+            return accommodationCoefficients_.at(element);
         }
 
         bool loadFromSTL(std::string filename, double avgTriangleArea = -1.0);

@@ -6,9 +6,34 @@ void Particle::goToIntersection(Rng& rng) {
     if (nextIntersection_.pSurface == NULL) return;
 
     position_ = nextIntersection_.point;
-    // TODO accommodation!
-    speed_ = Util::getMBSpeed(rng,
+
+    // Take thermal accommodation in account
+
+    // 1. Calculate a new particle speed in the case of full thermalization
+    // with surface
+    double thermalizedSpeed = Util::getMBSpeed(rng,
         nextIntersection_.pSurface->getTemperature(), mass_eV_);
+    // Energy is quadratic in speed
+    // Scaling by 1/2 * m is ignored here
+    double thermalizedEnergy = thermalizedSpeed*thermalizedSpeed;
+    double currentEnergy = speed_*speed_;
+    // Query accommodation coefficient from the surface
+    double alpha =
+        nextIntersection_.pSurface->getAccommodationCoefficient(element_);
+    // Accommodation coefficient is defined according to
+    // http://prod.sandia.gov/techlib/access-control.cgi/2005/056084.pdf
+    //
+    // alpha = (E_in - E_re) / (E_in - E_w)
+    // where E_in is incident energy flux, E_re reflected energy flux and
+    // E_w energy flux in case of full thermalization with surface. Thus
+    //
+    // E_re = E_in - alpha * (E_in - E_w)
+    double newEnergy = currentEnergy -
+        alpha * (currentEnergy - thermalizedEnergy);
+    // Speed is the square root of energy
+    speed_ = std::sqrt(newEnergy);
+
+    // Cosine law emission
     direction_ = nextIntersection_.pSurface->
         generateCosineLawDirection(nextIntersection_.faceId, rng);
 
