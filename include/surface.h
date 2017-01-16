@@ -31,35 +31,14 @@ class Surface {
     const double DEFAULT_ACCOMMODATION_COEFFICIENT = 1.0;
 
     public:
-        Surface() {
-            pumpedParticles_ = 0;
-        }
-
+        Surface();
         Surface(std::string filename, double pumpingFactor, double temperature,
-            bool flipNormals = false, double avgTriangleArea = -1.0)
-            : pumpingFactor_(pumpingFactor), temperature_(temperature) {
-            pumpedParticles_ = 0;
-            loadFromSTL(filename, avgTriangleArea);
-            buildAABBTree();
-            computeAreaCDF();
-            computeFaceNormals();
-            computeFaceRotations(flipNormals);
-        }
+            bool flipNormals = false, double avgTriangleArea = -1.0);
 
         void setAccommodationCoefficients(
-            std::unordered_map<Element, double> coefficients) {
-            accommodationCoefficients_ = coefficients;
-        }
+            std::unordered_map<Element, double> coefficients);
 
-        double getAccommodationCoefficient(Element element) const {
-            std::unordered_map<Element, double>::const_iterator coeff_it =
-                accommodationCoefficients_.find(element);
-            if (coeff_it == accommodationCoefficients_.end()) {
-                return DEFAULT_ACCOMMODATION_COEFFICIENT;
-            }
-
-            return coeff_it->second;
-        }
+        double getAccommodationCoefficient(Element element) const;
 
         bool loadFromSTL(std::string filename, double avgTriangleArea = -1.0);
         void buildAABBTree();
@@ -70,36 +49,22 @@ class Surface {
         std::tuple<Point, face_descriptor> getRandomPoint(Rng& rng) const;
 
         void computeFirstIntersection(const Ray& r,
-            Ray_intersection& isect) const {
-            isect = tree_.first_intersection(r);
-        }
+            Ray_intersection& isect) const;
 
         void computeAllIntersections(const Ray& r,
-            std::back_insert_iterator<std::vector<Ray_intersection>> it) const {
-            tree_.all_intersections(r, it);
-        }
+            std::back_insert_iterator<std::vector<Ray_intersection>> it) const;
 
         Direction generateCosineLawDirection(face_descriptor fd, Rng& rng) const;
 
-        bool isLoaded() const {
-            return mesh_.is_valid() && !mesh_.is_empty();
-        }
+        bool isLoaded() const;
 
-        double getTemperature() const {
-            return temperature_;
-        }
+        double getTemperature() const;
 
-        unsigned long getPumpedParticles() const {
-            return pumpedParticles_;
-        }
+        unsigned long getPumpedParticles() const;
 
-        bool checkIfPumped(Rng& rng) const {
-            return uni01(rng) < pumpingFactor_;
-        }
+        bool checkIfPumped(Rng& rng) const;
 
-        void addPumpedParticle() {
-            pumpedParticles_ += 1;
-        }
+        void addPumpedParticle();
 
         Bbox bbox() const;
 };

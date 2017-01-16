@@ -1,6 +1,64 @@
 #include "surface.h"
 #include "STL_reader.h"
 
+Surface::Surface() : pumpedParticles_(0) {}
+
+Surface::Surface(std::string filename, double pumpingFactor,
+    double temperature, bool flipNormals, double avgTriangleArea)
+    : pumpingFactor_(pumpingFactor), temperature_(temperature) {
+    pumpedParticles_ = 0;
+    loadFromSTL(filename, avgTriangleArea);
+    buildAABBTree();
+    computeAreaCDF();
+    computeFaceNormals();
+    computeFaceRotations(flipNormals);
+}
+
+void Surface::setAccommodationCoefficients(
+    std::unordered_map<Element, double> coefficients) {
+    accommodationCoefficients_ = coefficients;
+}
+
+double Surface::getAccommodationCoefficient(Element element) const {
+    std::unordered_map<Element, double>::const_iterator coeff_it =
+        accommodationCoefficients_.find(element);
+    if (coeff_it == accommodationCoefficients_.end()) {
+        return DEFAULT_ACCOMMODATION_COEFFICIENT;
+    }
+
+    return coeff_it->second;
+}
+
+void Surface::computeFirstIntersection(const Ray& r,
+    Ray_intersection& isect) const {
+    isect = tree_.first_intersection(r);
+}
+
+void Surface::computeAllIntersections(const Ray& r,
+    std::back_insert_iterator<std::vector<Ray_intersection>> it) const {
+    tree_.all_intersections(r, it);
+}
+
+bool Surface::isLoaded() const {
+    return mesh_.is_valid() && !mesh_.is_empty();
+}
+
+double Surface::getTemperature() const {
+    return temperature_;
+}
+
+unsigned long Surface::getPumpedParticles() const {
+    return pumpedParticles_;
+}
+
+bool Surface::checkIfPumped(Rng& rng) const {
+    return uni01(rng) < pumpingFactor_;
+}
+
+void Surface::addPumpedParticle() {
+    pumpedParticles_ += 1;
+}
+
 void Surface::buildAABBTree() {
     if (!isLoaded()) return;
 
