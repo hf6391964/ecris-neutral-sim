@@ -205,3 +205,23 @@ void ElectronModel::writeDensityToFile(const std::string &filename,
     fout.close();
 }
 
+void ElectronModel::writeElectronEndpoints(const std::string &z1Filename,
+    const std::string &z2Filename, const std::string &radialFilename) const {
+    std::ofstream fout;
+    fout.open(z1Filename);
+    for (Vector pos : z1CollisionPoints()) {
+        fout << pos.x() << CSV_SEP << pos.y() << CSV_SEP << pos.z() << std::endl;
+    }
+    fout.close();
+    fout.open(z2Filename);
+    for (Vector pos : z2CollisionPoints()) {
+        fout << pos.x() << CSV_SEP << pos.y() << CSV_SEP << pos.z() << std::endl;
+    }
+    fout.close();
+    fout.open(radialFilename);
+    for (Vector pos : cylinderCollisionPoints()) {
+        fout << pos.x() << CSV_SEP << pos.y() << CSV_SEP << pos.z() << std::endl;
+    }
+    fout.close();
+}
+

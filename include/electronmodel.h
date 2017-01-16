@@ -117,6 +117,10 @@ class ElectronModel {
         static Vector hexapoleBfield(const double x, const double y,
             const double B0, const double r0);
 
+        void writeElectronEndpoints(const std::string &z1Filename,
+            const std::string &z2Filename,
+            const std::string &radialFilename) const;
+
     private:
         Vector particleVelocity_;
         Vector particlePosition_;
