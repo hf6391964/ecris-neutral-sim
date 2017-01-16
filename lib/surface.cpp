@@ -113,7 +113,12 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
     }
 
     ifs.close();
-    return false;
+
+    if (!ret) {
+        throw std::invalid_argument("Couldn't decode STL file");
+    }
+
+    return ret;
 }
 
 std::tuple<Point, face_descriptor> Surface::getRandomPoint(Rng& rng) const {
