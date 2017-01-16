@@ -72,7 +72,10 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
 
     ifs.open(filename, std::ifstream::in);
 
-    if (!ifs.is_open()) return false;
+    if (!ifs.is_open()) {
+        throw std::invalid_argument("Couldn't open STL file");
+        return false;
+    }
 
     std::vector<std::array<double, 3>> points;
     std::vector<std::array<int, 3>> facets;
