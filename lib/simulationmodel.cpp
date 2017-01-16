@@ -171,7 +171,6 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
                                     reaction->computeReactionProducts(thread_res->rng,
                                     particle.getPosition(), particle);
 
-                                // TODO multiple reaction products?
                                 if (products.size() >= 1) {
                                     particle = products[0];
                                     particle.findNextIntersection(surfaces_.begin(),
