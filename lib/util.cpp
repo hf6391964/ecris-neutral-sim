@@ -12,6 +12,11 @@ void Util::printVector(const Vector &v) {
     std::cout << "(" << v.x() << ", " << v.y() << ", " << v.z() << ")";
 }
 
+int Util::fastFloor(double x) {
+    int i = x;
+    return i - (i > x);
+}
+
 double Util::getMBSpeed(Rng& rng, double T_eV, double mass_eV) {
     // Maxwell-Boltzmann distribution implemented by drawing the three velocity
     // components from normal distribution and taking the resulting magnitude
@@ -147,4 +152,3 @@ void Util::deallocateThreadResources(simthreadresources *thread_res) {
     gsl_rng_free(thread_res->gslrng);
     delete thread_res;
 }
-

@@ -10,78 +10,26 @@
 
 class Particle {
     public:
-        Particle(Element element) : element_(element) {
-            elementData_ = ELEMENT_DATA.at(element_);
-        }
-
         enum State { Free, Pumped };
 
-        Element getElement() const {
-            return element_;
-        }
+        Particle(Element element);
 
-        const Point getPosition() const {
-            return position_;
-        }
-
-        const Direction getDirection() const {
-            return direction_;
-        }
-
-        const Ray getRay() const {
-            return Ray(position_, direction_);
-        }
-
-        void setMass_eV(double mass_eV) {
-            mass_eV_ = mass_eV;
-        }
-
-        double getMass_eV() const {
-            return mass_eV_;
-        }
-
-        State getState() const {
-            return state_;
-        }
-
-        double getSpeed() const {
-            return speed_;
-        }
-
-        void setPosition(const Point &position) {
-            position_ = position;
-        }
-
-        void setVelocity(double speed, const Direction &direction) {
-            speed_ = speed;
-            direction_ = direction;
-        }
-
-        void setVelocity(const Vector &vel) {
-            direction_ = Direction(vel);
-            speed_ = std::sqrt(vel.squared_length());
-        }
-
-        Vector getVelocity() const {
-            return speed_ * direction_.vector();
-        }
-
-        bool hasNextIntersection() {
-            return nextIntersection_.pSurface != NULL;
-        }
-
-        double distanceToIntersection() {
-            return std::sqrt(CGAL::squared_distance(position_,
-                nextIntersection_.point));
-        }
-
+        Element getElement() const;
+        const Point getPosition() const;
+        const Direction getDirection() const;
+        const Ray getRay() const;
+        void setMass_eV(double mass_eV);
+        double getMass_eV() const;
+        State getState() const;
+        double getSpeed() const;
+        void setPosition(const Point &position);
+        void setVelocity(double speed, const Direction &direction);
+        void setVelocity(const Vector &vel);
+        Vector getVelocity() const;
+        bool hasNextIntersection();
+        double distanceToIntersection();
         void goToIntersection(Rng& rng);
-
-        void goForward(double dt) {
-            double stepLength = dt * speed_;
-            position_ = position_ + stepLength * direction_.vector();
-        }
-
+        void goForward(double dt);
         bool findNextIntersection(
             std::vector<Surface*>::const_iterator itSurface,
             std::vector<Surface*>::const_iterator itEnd);
@@ -96,4 +44,3 @@ class Particle {
         State state_ = Free;
         IntersectionPoint nextIntersection_;
 };
-

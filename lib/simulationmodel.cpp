@@ -1,5 +1,18 @@
 #include "simulationmodel.h"
 
+Grid SimulationModel::getGrid(double gridSize) const {
+    return Grid(bbox_, gridSize);
+}
+
+void SimulationModel::addSource(NeutralSource* source) {
+    sources_.push_back(source);
+}
+
+void SimulationModel::addSurface(Surface* surface) {
+    surfaces_.push_back(surface);
+    bbox_ += surface->bbox();
+}
+
 void SimulationModel::runSimulation(CollisionGenerator &collisionGenerator,
     unsigned long nParticles,
     std::string prefix, bool stationary, double gridSize, double maxTime,
@@ -236,4 +249,3 @@ void SimulationModel::writeResults(std::string prefix, Vector* velocity,
 
     f.close();
 }
-

@@ -19,27 +19,13 @@ class Grid {
         Grid(Bbox bbox, double gridSize);
         Grid(std::ifstream &fin);
 
-        std::tuple<unsigned int, unsigned int, unsigned int> dimensions() const {
-            return std::make_tuple(intervalsX_, intervalsY_, intervalsZ_);
-        }
-
-        double cellVolume() const {
-            return gridSize_ * gridSize_ * gridSize_;
-        }
-
-        size_t arraySize() const {
-            return intervalsX_ * intervalsY_ * intervalsZ_;
-        }
-
+        std::tuple<unsigned int, unsigned int, unsigned int> dimensions() const;
+        double cellVolume() const;
+        size_t arraySize() const;
         bool arrayIndex(const Point &p, size_t& i) const;
-
         bool arrayIndex(const double &x, const double &y, const double &z,
-            size_t& i) const {
-            return arrayIndex(Point(x, y, z), i);
-        }
-
+            size_t& i) const;
         bool getCellMidpoint(size_t i, Point &p) const;
-
         void writeDimensions(std::ostream& os) const;
 
         // Set the coordinate transformation which maps coordinates from the
@@ -52,4 +38,3 @@ class Grid {
         // Removes the current coordinate transformation.
         void removeCoordinateTransformation();
 };
-

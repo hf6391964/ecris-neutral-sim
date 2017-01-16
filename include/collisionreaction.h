@@ -10,12 +10,9 @@ class CollisionReaction {
         std::shared_ptr<ParticlePopulation> population_;
 
     public:
-        CollisionReaction(std::shared_ptr<ParticlePopulation> population)
-            : population_(population) {}
+        CollisionReaction(std::shared_ptr<ParticlePopulation> population);
 
-        std::shared_ptr<ParticlePopulation> getPopulation() const {
-            return population_;
-        }
+        std::shared_ptr<ParticlePopulation> getPopulation() const;
 
         virtual double getReactionRate(const Point &p, double particleSpeed,
             simthreadresources *thread_res) const = 0;
@@ -29,4 +26,3 @@ class CollisionReaction {
 
         virtual double getCrossSection(double relativeSpeed) const = 0;
 };
-

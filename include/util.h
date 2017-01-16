@@ -54,10 +54,7 @@ class Util {
 
         static Direction getIsotropicSphereDirection(Rng &rng);
 
-        static int fastFloor(double x) {
-            int i = x;
-            return i - (i > x);
-        }
+        static int fastFloor(double x);
 
         static simthreadresources *allocateThreadResources(uint_least32_t seed);
         static void deallocateThreadResources(simthreadresources *thread_res);
@@ -71,4 +68,3 @@ class Util {
             double T_eV, double mass_eV, gsl_rng *rng, monte_state *ms,
             size_t N_calls = 10000);
 };
-

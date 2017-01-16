@@ -2,6 +2,74 @@
 
 #define USE_ALL_INTERSECTIONS
 
+Particle::Particle(Element element) : element_(element) {
+    elementData_ = ELEMENT_DATA.at(element_);
+}
+
+Element Particle::getElement() const {
+    return element_;
+}
+
+const Point Particle::getPosition() const {
+    return position_;
+}
+
+const Direction Particle::getDirection() const {
+    return direction_;
+}
+
+const Ray Particle::getRay() const {
+    return Ray(position_, direction_);
+}
+
+void Particle::setMass_eV(double mass_eV) {
+    mass_eV_ = mass_eV;
+}
+
+double Particle::getMass_eV() const {
+    return mass_eV_;
+}
+
+Particle::State Particle::getState() const {
+    return state_;
+}
+
+double Particle::getSpeed() const {
+    return speed_;
+}
+
+void Particle::setPosition(const Point &position) {
+    position_ = position;
+}
+
+void Particle::setVelocity(double speed, const Direction &direction) {
+    speed_ = speed;
+    direction_ = direction;
+}
+
+void Particle::setVelocity(const Vector &vel) {
+    direction_ = Direction(vel);
+    speed_ = std::sqrt(vel.squared_length());
+}
+
+Vector Particle::getVelocity() const {
+    return speed_ * direction_.vector();
+}
+
+bool Particle::hasNextIntersection() {
+    return nextIntersection_.pSurface != NULL;
+}
+
+double Particle::distanceToIntersection() {
+    return std::sqrt(CGAL::squared_distance(position_,
+        nextIntersection_.point));
+}
+
+void Particle::goForward(double dt) {
+    double stepLength = dt * speed_;
+    position_ = position_ + stepLength * direction_.vector();
+}
+
 void Particle::goToIntersection(Rng& rng) {
     if (nextIntersection_.pSurface == NULL) return;
 
@@ -83,4 +151,3 @@ bool Particle::findNextIntersection(
 
     return found;
 }
-

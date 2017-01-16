@@ -55,6 +55,23 @@ Grid::Grid(std::ifstream &fin) {
     gridSizeInverse_ = 1.0 / gridSize_;
 }
 
+std::tuple<unsigned int, unsigned int, unsigned int> Grid::dimensions() const {
+    return std::make_tuple(intervalsX_, intervalsY_, intervalsZ_);
+}
+
+double Grid::cellVolume() const {
+    return gridSize_ * gridSize_ * gridSize_;
+}
+
+size_t Grid::arraySize() const {
+    return intervalsX_ * intervalsY_ * intervalsZ_;
+}
+
+bool Grid::arrayIndex(const double &x, const double &y, const double &z,
+    size_t& i) const {
+    return arrayIndex(Point(x, y, z), i);
+}
+
 void Grid::writeDimensions(std::ostream& os) const {
     os << "# No. of X intervals" << CSV_SEP << " Y intervals" <<
         CSV_SEP << " Z intervals" << std::endl;
@@ -110,4 +127,3 @@ bool Grid::getCellMidpoint(size_t i, Point &p) const {
 
     return true;
 }
-

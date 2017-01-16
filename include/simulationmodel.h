@@ -29,18 +29,9 @@ class SimulationModel {
         unsigned long* count, Grid& grid, double t, std::string suffix) const;
 
     public:
-        Grid getGrid(double gridSize) const {
-            return Grid(bbox_, gridSize);
-        }
-
-        void addSource(NeutralSource* source) {
-            sources_.push_back(source);
-        }
-
-        void addSurface(Surface* surface) {
-            surfaces_.push_back(surface);
-            bbox_ += surface->bbox();
-        }
+        Grid getGrid(double gridSize) const;
+        void addSource(NeutralSource* source);
+        void addSurface(Surface* surface);
 
         void runSimulation(CollisionGenerator &collisionGenerator,
             unsigned long nParticles, std::string prefix,
@@ -48,4 +39,3 @@ class SimulationModel {
             double gridSize = 0.1, double maxTime = 0.1,
             double timestepFactor = 2.0, int nThreads = -1);
 };
-
