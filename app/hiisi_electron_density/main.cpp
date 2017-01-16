@@ -22,6 +22,8 @@ int main() {
     model.runMonoenergeticSimulation(N_PARTICLES, 10e3, Becr, rng);
 
     model.writeDensityToFile("electron_density_hiisi.csv");
+    model.writeElectronEndpoints("z1_collision_points.csv",
+        "z2_collision_points.csv", "cylinder_collision_points.csv");
 
     return 0;
 }
