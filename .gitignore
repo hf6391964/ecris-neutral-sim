@@ -14,3 +14,4 @@ main
 *.gch
 tags
 doc/week41/reveal.js-3.3.0
+tmp
