@@ -25,7 +25,7 @@ class FlychkParser {
     bool parseFlychkData(std::string filename, std::string dataset);
 
     public:
-        FlychkParser(std::string filename,
+        FlychkParser(const std::string &filename,
             std::vector<std::string> datasetHeaders = { "rr", "dr" });
 
         bool getRateCoefficient(double T, int chargeState,

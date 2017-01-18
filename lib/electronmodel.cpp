@@ -225,3 +225,30 @@ void ElectronModel::writeElectronEndpoints(const std::string &z1Filename,
     fout.close();
 }
 
+std::vector<Point> ElectronModel::parseElectronEndpoints(
+    const std::string &filename) {
+    std::vector<Point> points;
+    std::ifstream fin;
+    fin.open(filename);
+    if (!fin.is_open()) {
+        throw std::invalid_argument("Couldn't open file " + filename);
+    }
+
+    double x, y, z;
+    while (fin) {
+        if (!(fin >> x)) break;
+        fin.ignore(1);
+        if (!(fin >> y)) break;
+        fin.ignore(1);
+        if (!(fin >> z)) break;
+        fin.ignore(1);
+
+        Point p(x, y, z);
+        std::cout << p << std::endl;
+        points.push_back(p);
+    }
+
+    fin.close();
+    return points;
+}
+

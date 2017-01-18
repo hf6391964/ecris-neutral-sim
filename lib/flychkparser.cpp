@@ -3,7 +3,7 @@
 
 #include "flychkparser.h"
 
-FlychkParser::FlychkParser(std::string filename,
+FlychkParser::FlychkParser(const std::string &filename,
     std::vector<std::string> datasetHeaders) : datasetHeaders_(datasetHeaders) {
     // Parse rr and dr datasets
     for (std::string header : datasetHeaders_) {

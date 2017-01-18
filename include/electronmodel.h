@@ -121,6 +121,9 @@ class ElectronModel {
             const std::string &z2Filename,
             const std::string &radialFilename) const;
 
+        static std::vector<Point> parseElectronEndpoints(
+            const std::string &filename);
+
     private:
         Vector particleVelocity_;
         Vector particlePosition_;
