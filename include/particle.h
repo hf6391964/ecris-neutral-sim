@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cgal_and_typedefs.h"
-#include "surface.h"
+#include "surfacecollection.h"
 #include "util.h"
 #include "constants.h"
 #include "element_data.h"
@@ -30,9 +30,7 @@ class Particle {
         double distanceToIntersection();
         void goToIntersection(Rng& rng);
         void goForward(double dt);
-        bool findNextIntersection(
-            std::vector<Surface*>::const_iterator itSurface,
-            std::vector<Surface*>::const_iterator itEnd);
+        bool findNextIntersection(SurfaceCollection &surfaces);
 
     private:
         Point position_;
@@ -44,3 +42,4 @@ class Particle {
         State state_ = Free;
         IntersectionPoint nextIntersection_;
 };
+

@@ -1,16 +1,15 @@
 #include "simulationmodel.h"
 
+
+SimulationModel::SimulationModel(SurfaceCollection &surfaces)
+    : surfaces_(surfaces) {}
+
 Grid SimulationModel::getGrid(double gridSize) const {
-    return Grid(bbox_, gridSize);
+    return Grid(surfaces_.bbox(), gridSize);
 }
 
 void SimulationModel::addSource(NeutralSource* source) {
     sources_.push_back(source);
-}
-
-void SimulationModel::addSurface(Surface* surface) {
-    surfaces_.push_back(surface);
-    bbox_ += surface->bbox();
 }
 
 void SimulationModel::runSimulation(CollisionGenerator &collisionGenerator,
@@ -40,7 +39,7 @@ void SimulationModel::runSimulation(CollisionGenerator &collisionGenerator,
     unsigned long nSteps = maxTime / dt;
     std::cout << "max steps: " << nSteps << std::endl;
 
-    Grid grid(bbox_, gridSize);
+    Grid grid(surfaces_.bbox(), gridSize);
 
     size_t gSize = grid.arraySize();
     size_t arraySize = gSize;
@@ -134,8 +133,7 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
             Particle particle =
                 pSource->generateParticle(thread_res->rng);
 
-            if (!particle.findNextIntersection(surfaces_.begin(),
-                surfaces_.end())) {
+            if (!particle.findNextIntersection(surfaces_)) {
                 std::cout << "Something wrong with face normals / intersections"
                     << std::endl;
                 continue;
@@ -170,8 +168,7 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
                             // intersection.
                             timeRemainder -= isectDistance / speed;
                             particle.goToIntersection(thread_res->rng);
-                            particle.findNextIntersection(surfaces_.begin(),
-                                surfaces_.end());
+                            particle.findNextIntersection(surfaces_);
                         } else {
                             particle.goForward(timestep);
                             timeRemainder -= timestep;
@@ -186,8 +183,7 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
 
                                 if (products.size() >= 1) {
                                     particle = products[0];
-                                    particle.findNextIntersection(surfaces_.begin(),
-                                        surfaces_.end());
+                                    particle.findNextIntersection(surfaces_);
                                 } else {
                                     // There are no reaction products, we are
                                     // done with this particle.

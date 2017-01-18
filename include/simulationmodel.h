@@ -6,7 +6,7 @@
 #include <fstream>
 
 #include "neutralsource.h"
-#include "surface.h"
+#include "surfacecollection.h"
 #include "particle.h"
 #include "constants.h"
 #include "element_data.h"
@@ -16,7 +16,7 @@
 
 class SimulationModel {
     std::vector<NeutralSource*> sources_;
-    std::vector<Surface*> surfaces_;
+    SurfaceCollection &surfaces_;
     long nParticles_;
     Bbox bbox_;
 
@@ -29,9 +29,10 @@ class SimulationModel {
         unsigned long* count, Grid& grid, double t, std::string suffix) const;
 
     public:
+        SimulationModel(SurfaceCollection &surfaces);
+
         Grid getGrid(double gridSize) const;
         void addSource(NeutralSource* source);
-        void addSurface(Surface* surface);
 
         void runSimulation(CollisionGenerator &collisionGenerator,
             unsigned long nParticles, std::string prefix,
