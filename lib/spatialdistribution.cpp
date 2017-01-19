@@ -56,6 +56,7 @@ DensityDistribution::DensityDistribution(const DensityDistribution &src,
     for (size_t i = 0; i < n; ++i) {
         valueVector_[i] = src.valueVector_[i] * weight;
     }
+    calculateCumulativeDensity();
 }
 
 DensityDistribution::DensityDistribution(std::string filename,
@@ -73,5 +74,17 @@ DensityDistribution::DensityDistribution(std::string filename,
         valueVector_[i] = nParticles * weight;
     }
     fin.close();
+    calculateCumulativeDensity();
+}
+
+void DensityDistribution::calculateCumulativeDensity() {
+    sumDensity_ = 0.0;
+    size_t n = grid_.arraySize();
+    cumulativeDensity_ = std::unique_ptr<double[]>(new double[n]);
+
+    for (size_t i = 0; i < n; ++i) {
+        sumDensity_ += valueVector_[i];
+        cumulativeDensity_[i] = sumDensity_;
+    }
 }
 

@@ -31,6 +31,10 @@ class DensityDistribution : public SpatialDistribution<double> {
     private:
         double getNull() const { return 0.0; }
 
+        double sumDensity_;
+        std::unique_ptr<double[]> cumulativeDensity_;
+        void calculateCumulativeDensity();
+
     public:
         DensityDistribution(std::string filename, double weight = 1.0);
         DensityDistribution(const DensityDistribution &src,
