@@ -21,6 +21,7 @@ class Grid {
 
         std::tuple<unsigned int, unsigned int, unsigned int> dimensions() const;
         double cellVolume() const;
+        double cellSideLength() const;
         size_t arraySize() const;
         bool arrayIndex(const Point &p, size_t& i) const;
         bool arrayIndex(const double &x, const double &y, const double &z,

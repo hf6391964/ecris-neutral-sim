@@ -63,6 +63,10 @@ double Grid::cellVolume() const {
     return gridSize_ * gridSize_ * gridSize_;
 }
 
+double Grid::cellSideLength() const {
+    return gridSize_;
+}
+
 size_t Grid::arraySize() const {
     return intervalsX_ * intervalsY_ * intervalsZ_;
 }

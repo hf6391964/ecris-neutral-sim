@@ -5,8 +5,7 @@ double ParticlePopulation::getDensityAt(const Point &p) const {
 }
 
 Point ParticlePopulation::getRandomParticlePosition(Rng &rng) const {
-    // TODO implementation
-    return Point(0.0, 0.0, 0.0);
+    return densityDistribution_.getRandomPosition(rng);
 }
 
 void ParticlePopulation::setCoordinateTransformation(const Aff_transformation
