@@ -1,3 +1,4 @@
 * Improvement of collision computation in the particle loop
 * Extraction and recombination
     - parse recombination data from FLYCHK database
+* Reaction rates: should they be log interpolated?

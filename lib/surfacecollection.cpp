@@ -12,7 +12,7 @@ Bbox SurfaceCollection::bbox() const {
 }
 
 bool SurfaceCollection::findClosestIntersection(Ray &r,
-    IntersectionPoint &ip) {
+    IntersectionPoint &ip) const {
     bool found = false;
     double nearestDistance = 0.0;
     Point* p = NULL;
