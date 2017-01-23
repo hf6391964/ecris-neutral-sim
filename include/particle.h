@@ -12,7 +12,7 @@ class Particle {
     public:
         enum State { Free, Pumped };
 
-        Particle(Element element);
+        Particle(Element element, double time);
 
         Element getElement() const;
         const Point getPosition() const;
@@ -22,6 +22,7 @@ class Particle {
         double getMass_eV() const;
         State getState() const;
         double getSpeed() const;
+        double getTime() const;
         void setPosition(const Point &position);
         void setVelocity(double speed, const Direction &direction);
         void setVelocity(const Vector &vel);
@@ -31,6 +32,7 @@ class Particle {
         void goToIntersection(Rng& rng);
         void goForward(double dt);
         bool findNextIntersection(SurfaceCollection &surfaces);
+        void setNextIntersection(const IntersectionPoint &ip);
 
     private:
         Point position_;
@@ -38,6 +40,7 @@ class Particle {
         double speed_ = 0.0;  // m/s
         double mass_eV_ = 1.0;  // eV
         Element element_;
+        double time_ = 0.0;
         const ElementData *elementData_;
         State state_ = Free;
         IntersectionPoint nextIntersection_;

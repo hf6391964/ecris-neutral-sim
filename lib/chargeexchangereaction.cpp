@@ -54,7 +54,7 @@ std::vector<Particle> ChargeExchangeReaction::computeReactionProducts(
         Direction dir = Util::getIsotropicSphereDirection(rng);
         Vector productVel = vcm + dir.vector() * momentumNorm / ionMass;
 
-        Particle neutralProduct(population_->getElement());
+        Particle neutralProduct(population_->getElement(), target.getTime());
         neutralProduct.setMass_eV(ionMass);
         neutralProduct.setVelocity(productVel);
 

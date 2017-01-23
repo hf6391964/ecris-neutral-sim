@@ -2,7 +2,8 @@
 
 #define USE_ALL_INTERSECTIONS
 
-Particle::Particle(Element element) : element_(element) {
+Particle::Particle(Element element, double time)
+    : element_(element), time_(time) {
     elementData_ = ELEMENT_DATA.at(element_);
 }
 
@@ -38,6 +39,10 @@ double Particle::getSpeed() const {
     return speed_;
 }
 
+double Particle::getTime() const {
+    return time_;
+}
+
 void Particle::setPosition(const Point &position) {
     position_ = position;
 }
@@ -66,12 +71,18 @@ double Particle::distanceToIntersection() {
 }
 
 void Particle::goForward(double dt) {
+    time_ += dt;
     double stepLength = dt * speed_;
     position_ = position_ + stepLength * direction_.vector();
 }
 
 void Particle::goToIntersection(Rng& rng) {
     if (nextIntersection_.pSurface == NULL) return;
+
+    double distance =
+        std::sqrt(CGAL::squared_distance(position_, nextIntersection_.point));
+    double dt = distance / speed_;
+    time_ += dt;
 
     position_ = nextIntersection_.point;
 

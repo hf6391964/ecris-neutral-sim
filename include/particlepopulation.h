@@ -33,6 +33,7 @@ class ParticlePopulation {
         }
 
         virtual Vector getRandomParticleVelocity(Rng &rng) const = 0;
+        double getRandomParticleSpeed(Rng &rng) const;
         Point getRandomParticlePosition(Rng &rng) const;
 
         double getParticleMass_eV() const { return particleMass_eV_; }

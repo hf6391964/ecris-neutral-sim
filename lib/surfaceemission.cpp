@@ -6,10 +6,10 @@ SurfaceEmission::SurfaceEmission(Surface* pSurface, double emissionRate,
     elementData_ = ELEMENT_DATA.at(element_);
 }
 
-Particle SurfaceEmission::generateParticle(Rng& rng) const {
+Particle SurfaceEmission::generateParticle(Rng& rng, double time) const {
     Point p;
     face_descriptor fd;
-    Particle particle(element_);
+    Particle particle(element_, time);
 
     std::tie(p, fd) = pSurface_->getRandomPoint(rng);
     Direction d = pSurface_->generateCosineLawDirection(fd, rng);
