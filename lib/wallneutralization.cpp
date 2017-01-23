@@ -71,9 +71,8 @@ Particle WallNeutralization::sampleNeutralProduct(Rng &rng,
         sourceParticle.getTime() + decayTime);
 
     // 1. Sample particle position from the wall distribution population
-    double x = uni01(rng);
     size_t i = std::lower_bound(cumulativeNormalizedEndpointCount_.begin(),
-        cumulativeNormalizedEndpointCount_.end(), x) -
+        cumulativeNormalizedEndpointCount_.end(), uni01(rng)) -
         cumulativeNormalizedEndpointCount_.begin();
     std::vector<IntersectionPoint> *points = pointSets_[i];
     size_t j = uni01(rng) * points->size();
