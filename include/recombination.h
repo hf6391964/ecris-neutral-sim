@@ -6,7 +6,7 @@
 #include "particlepopulation.h"
 #include "particle.h"
 
-class Recombination : NeutralizationChannel {
+class Recombination : public NeutralizationChannel {
     std::shared_ptr<ParticlePopulation> population_;
 
     public:

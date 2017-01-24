@@ -7,7 +7,7 @@
 #include "particlepopulation.h"
 #include "particle.h"
 
-class WallNeutralization : NeutralizationChannel {
+class WallNeutralization : public NeutralizationChannel {
     std::vector<IntersectionPoint> wallPoints_, end1Points_, end2Points_;
     std::vector<std::vector<IntersectionPoint> *> pointSets_;
     std::vector<double> cumulativeNormalizedEndpointCount_;

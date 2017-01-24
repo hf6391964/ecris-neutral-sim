@@ -6,12 +6,13 @@
 #include <limits>
 
 #include "cgal_and_typedefs.h"
-#include "particlepopulation.h"
+#include "maxwellianpopulation.h"
 #include "collisiongenerator.h"
 #include "element_data.h"
+#include "neutralizationgenerator.h"
 
 class SimplePlasmaModel {
-    std::vector<std::shared_ptr<ParticlePopulation>> particlePopulations_;
+    std::vector<std::shared_ptr<MaxwellianPopulation>> particlePopulations_;
     unsigned int maxChargeState_ = 0;
     const ElementData *elementData_;
     const Element element_;
@@ -42,6 +43,17 @@ class SimplePlasmaModel {
 
         void populateCollisionReactions(CollisionGenerator &generator,
             simthreadresources *thread_res) const;
+        void populateNeutralizationReactions(
+            NeutralizationGenerator &generator) const;
+        void populateNeutralizationReactions(
+            NeutralizationGenerator &generator,
+            double confinementTime,
+            const std::string &wallFilename,
+            const std::string &end1Filename,
+            const std::string &end2Filename,
+            const std::string &flychkFilename,
+            const SurfaceCollection &surfaces,
+            double averageElectronDensity) const;
 
         void setCoordinateTransformation(const Aff_transformation &tf);
 

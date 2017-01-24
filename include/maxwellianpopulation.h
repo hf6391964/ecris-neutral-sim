@@ -22,5 +22,6 @@ class MaxwellianPopulation : public ParticlePopulation {
         double calculateRateCoefficient(double particleSpeed,
             monte_state *ms, gsl_rng *rng,
             double (*fCrossSection)(double, void *), void *fArgs) const;
+        double getTemperature() const;
 };
 

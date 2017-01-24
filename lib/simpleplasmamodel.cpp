@@ -4,6 +4,9 @@
 #include "spatialdistribution.h"
 #include "chargeexchangereaction.h"
 #include "electronionizationreaction.h"
+#include "flychkparser.h"
+#include "wallneutralization.h"
+#include "recombination.h"
 
 SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
     double electronWeight, std::vector<double> ionRelativeDensities,
@@ -26,13 +29,13 @@ SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
     for (double relDensity : ionRelativeDensities) {
         DensityDistribution ionDensityDistribution(electronDensity,
             relDensity);
-        particlePopulations_[q] = std::shared_ptr<ParticlePopulation>(
+        particlePopulations_[q] = std::shared_ptr<MaxwellianPopulation>(
             new MaxwellianPopulation(element_, q,
             ionTemperatures[q - 1], ionDensityDistribution));
         maxIonTemp_ = std::max(maxIonTemp_, ionTemperatures[q - 1]);
         q += 1;
     }
-    particlePopulations_[0] = std::shared_ptr<ParticlePopulation>(
+    particlePopulations_[0] = std::shared_ptr<MaxwellianPopulation>(
         new MaxwellianPopulation(ELECTRON_MASS_EV, -1, electronTemperature,
             electronDensity));
 
@@ -57,6 +60,35 @@ void SimplePlasmaModel::populateCollisionReactions(
     double mbave = Util::getMBAverage(maxIonTemp_, ionMassEv_);
 
     generator.precomputeReactionRates(8.0*mbave, mbave/100.0, thread_res);
+}
+
+void SimplePlasmaModel::populateNeutralizationReactions(
+    NeutralizationGenerator &generator,
+    double confinementTime,
+    const std::string &wallFilename,
+    const std::string &end1Filename,
+    const std::string &end2Filename,
+    const std::string &flychkFilename,
+    const SurfaceCollection &surfaces,
+    double averageElectronDensity) const {
+    // Wall neutralization
+    generator.addNeutralizationChannel(new WallNeutralization(
+        particlePopulations_[1], confinementTime, wallFilename,
+        end1Filename, end2Filename, surfaces));
+
+    // Recombination: sample recombination rate from FLYCHK data
+    FlychkParser parser(flychkFilename);
+    double recombinationRateCoefficient;
+    if (!parser.getTotalRateCoefficient(
+        particlePopulations_[1]->getTemperature(), 1,
+        recombinationRateCoefficient)) {
+        throw std::invalid_argument(
+            "Couldn't find recombination rate coefficient from FLYCHK");
+    }
+    double recombinationRate =
+        averageElectronDensity * recombinationRateCoefficient;
+    generator.addNeutralizationChannel(
+        new Recombination(particlePopulations_[1], recombinationRate));
 }
 
 void SimplePlasmaModel::setCoordinateTransformation(

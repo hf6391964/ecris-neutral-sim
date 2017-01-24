@@ -17,3 +17,7 @@ double MaxwellianPopulation::calculateRateCoefficient(double particleSpeed,
         particleMass_eV_, rng, ms, fCrossSection, fArgs);
 }
 
+double MaxwellianPopulation::getTemperature() const {
+    return temperature_eV_;
+}
+
