@@ -134,8 +134,11 @@ void SimulationModel::simulationThread(
         // spectrum
 
         for (unsigned long i = 0; i < nParticles; ++i) {
+            // Do this to spread the gas pulse evenly across the whole timestep
+            // in time dependent simulations
+            double timeRemainder = uni01(thread_res->rng)*dt;
             Particle particle =
-                pSource->generateParticle(thread_res->rng);
+                pSource->generateParticle(thread_res->rng, timeRemainder);
 
             if (!particle.findNextIntersection(surfaces_)) {
                 std::cout << "Something wrong with face normals / intersections"
@@ -145,9 +148,6 @@ void SimulationModel::simulationThread(
 
             bool destroyedInReaction = false;
 
-            // Do this to spread the gas pulse evenly across the whole timestep
-            // in time dependent simulations
-            double timeRemainder = uni01(thread_res->rng)*dt;
             for (unsigned long step = 0; step < maxSteps; ++step) {
                 bool moving = true;
 
@@ -215,7 +215,12 @@ void SimulationModel::simulationThread(
                 size_t arrIndex;
                 if (grid.arrayIndex(particle.getPosition(), arrIndex)) {
                     if (!stationary) {
-                        arrIndex += step*gridSize;
+                        size_t timestep = particle.getTime() / dt;
+                        if (timestep < maxSteps) {
+                            arrIndex += step*gridSize;
+                        } else {
+                            break;
+                        }
                     }
                     count[arrIndex] += 1;
                     velocity[arrIndex] = velocity[arrIndex] +
