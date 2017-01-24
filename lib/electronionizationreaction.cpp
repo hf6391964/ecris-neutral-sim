@@ -20,9 +20,9 @@ double ElectronIonizationReaction::getRateCoefficient(
         thread_res->gslrng, crossSection, (void *)&ionizationParameters_);
 }
 
-std::vector<Particle> ElectronIonizationReaction::computeReactionProducts(
+CollisionProducts ElectronIonizationReaction::computeReactionProducts(
     Rng &, const Point &, const Particle &) const {
-    return std::vector<Particle>();
+    return std::make_pair(std::vector<Particle>(), 1);
 }
 
 double ElectronIonizationReaction::getCrossSection(double speed) const {

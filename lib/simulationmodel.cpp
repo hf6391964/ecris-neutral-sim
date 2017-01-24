@@ -12,7 +12,9 @@ void SimulationModel::addSource(NeutralSource* source) {
     sources_.push_back(source);
 }
 
-void SimulationModel::runSimulation(CollisionGenerator &collisionGenerator,
+void SimulationModel::runSimulation(
+    CollisionGenerator &collisionGenerator,
+    NeutralizationGenerator &neutralizationGenerator,
     unsigned long nParticles,
     std::string prefix, bool stationary, double gridSize, double maxTime,
     double timestepFactor, int nThreads) {
@@ -67,7 +69,7 @@ void SimulationModel::runSimulation(CollisionGenerator &collisionGenerator,
         velocityPointers.push_back(velocity);
         countPointers.push_back(count);
         threads.push_back(std::thread(&SimulationModel::simulationThread,
-            this, &collisionGenerator,
+            this, &collisionGenerator, &neutralizationGenerator,
             particlesInChunk, nSteps, dt, grid, seeds[i],
             velocity, count, stationary));
     }
@@ -117,7 +119,9 @@ void SimulationModel::runSimulation(CollisionGenerator &collisionGenerator,
     delete[] count;
 }
 
-void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
+void SimulationModel::simulationThread(
+    CollisionGenerator *collisionGenerator,
+    NeutralizationGenerator *neutralizationGenerator,
     unsigned long nParticles,
     unsigned long maxSteps, double dt, const Grid &grid, uint_least32_t seed,
     Vector* velocity, unsigned long* count, bool stationary) const {
@@ -177,16 +181,22 @@ void SimulationModel::simulationThread(CollisionGenerator *collisionGenerator,
                                     thread_res->rng, particle.getPosition(),
                                     speed, timestep);
                             if (reaction != NULL) {
-                                std::vector<Particle> products =
+                                CollisionProducts products =
                                     reaction->computeReactionProducts(thread_res->rng,
                                     particle.getPosition(), particle);
 
-                                if (products.size() >= 1) {
-                                    particle = products[0];
+                                std::vector<Particle> neutralProducts =
+                                    products.first;
+                                unsigned int ionProducts = products.second;
+                                if (neutralProducts.size() >= 1) {
+                                    particle = neutralProducts[0];
                                     particle.findNextIntersection(surfaces_);
-                                } else {
+                                } else if (ionProducts == 1) {
                                     // There are no reaction products, we are
                                     // done with this particle.
+                                    particle =
+                                        neutralizationGenerator->sampleNeutralizationReaction(thread_res->rng, particle);
+                                } else {
                                     destroyedInReaction = true;
                                 }
                             }

@@ -13,6 +13,7 @@
 #include "grid.h"
 #include "util.h"
 #include "collisiongenerator.h"
+#include "neutralizationgenerator.h"
 
 class SimulationModel {
     std::vector<NeutralSource*> sources_;
@@ -20,7 +21,9 @@ class SimulationModel {
     long nParticles_;
     Bbox bbox_;
 
-    void simulationThread(CollisionGenerator *collisionGenerator,
+    void simulationThread(
+        CollisionGenerator *collisionGenerator,
+        NeutralizationGenerator *neutralizationGenerator,
         unsigned long nParticles, unsigned long maxSteps,
         double dt, const Grid &grid, uint_least32_t seed, Vector* velocity,
         unsigned long* count, bool stationary) const;
@@ -34,7 +37,9 @@ class SimulationModel {
         Grid getGrid(double gridSize) const;
         void addSource(NeutralSource* source);
 
-        void runSimulation(CollisionGenerator &collisionGenerator,
+        void runSimulation(
+            CollisionGenerator &collisionGenerator,
+            NeutralizationGenerator &neutralizationGenerator,
             unsigned long nParticles, std::string prefix,
             bool stationary = true,
             double gridSize = 0.1, double maxTime = 0.1,

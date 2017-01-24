@@ -8,7 +8,7 @@ void NeutralizationGenerator::addNeutralizationChannel(
 
 Particle NeutralizationGenerator::sampleNeutralizationReaction(Rng &rng,
     const Particle &sourceParticle) const {
-    if (channels_.size() < 1) {
+    if (channels_.size() == 0) {
         throw std::length_error(
             "Cannot sample neutralization: no reactions added");
     }

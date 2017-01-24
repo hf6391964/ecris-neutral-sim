@@ -4,6 +4,8 @@
 #include "particlepopulation.h"
 #include "particle.h"
 
+typedef std::pair<std::vector<Particle>, unsigned int> CollisionProducts;
+
 // Base class for a general collision reaction
 class CollisionReaction {
     protected:
@@ -20,8 +22,9 @@ class CollisionReaction {
         virtual double getRateCoefficient(double particleSpeed,
             simthreadresources *thread_res) const = 0;
 
-        // TODO count energy and particles "lost" in the plasma
-        virtual std::vector<Particle> computeReactionProducts(Rng &rng,
+        // computeReactionProducts returns a vector of neutral reaction
+        // products and the number of ionized reaction products
+        virtual CollisionProducts computeReactionProducts(Rng &rng,
             const Point &p, const Particle &target) const = 0;
 
         virtual double getCrossSection(double relativeSpeed) const = 0;
