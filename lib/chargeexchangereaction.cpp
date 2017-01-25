@@ -5,6 +5,7 @@ ChargeExchangeReaction::ChargeExchangeReaction(
     double ionizationPotentialEv)
     : CollisionReaction(population),
       ionizationPotentialEv_(ionizationPotentialEv) {
+    label_ = "charge exchange";
     chargeState_ = population_->getChargeState();
     mullerSalzbornCrossSection_ = 1.43e-16 *
         std::pow((double)chargeState_, 1.17) *

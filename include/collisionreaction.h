@@ -10,11 +10,14 @@ typedef std::pair<std::vector<Particle>, unsigned int> CollisionProducts;
 class CollisionReaction {
     protected:
         std::shared_ptr<ParticlePopulation> population_;
+        std::string label_ = "";
 
     public:
         CollisionReaction(std::shared_ptr<ParticlePopulation> population);
 
         std::shared_ptr<ParticlePopulation> getPopulation() const;
+
+        std::string getLabel() const;
 
         virtual double getReactionRate(const Point &p, double particleSpeed,
             simthreadresources *thread_res) const = 0;

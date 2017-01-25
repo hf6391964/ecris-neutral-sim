@@ -38,6 +38,10 @@ class ParticlePopulation {
             return element_;
         }
 
+        std::string getLabel() const {
+            return label_;
+        }
+
         virtual Vector getRandomParticleVelocity(Rng &rng) const = 0;
         double getRandomParticleSpeed(Rng &rng) const;
         Point getRandomParticlePosition(Rng &rng) const;
