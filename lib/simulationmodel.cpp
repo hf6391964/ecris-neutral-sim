@@ -221,7 +221,8 @@ void SimulationModel::simulationThread(
                                     products.first;
                                 unsigned int ionProducts = products.second;
 #ifdef DIAGNOSTIC
-                                log << "sampled a collision reaction with " <<
+                                log << "sampled a collision reaction, label = " <<
+                                    reaction->getLabel() << ", " <<
                                     neutralProducts.size() <<
                                     " neutral products and " <<
                                     ionProducts << " ionized products " <<
