@@ -58,7 +58,8 @@ bool FlychkParser::parseFlychkData(std::string filename,
                 if (nParsedFields == 1) {
                     temperature = f;
                 } else {
-                    fields.push_back(f);
+                    // The data are in cm3/s, normalize to m3/s
+                    fields.push_back(f * 1e-6);
                 }
             } else {
                 break;
