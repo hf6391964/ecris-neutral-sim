@@ -128,3 +128,7 @@ bool Particle::findNextIntersection(SurfaceCollection &surfaces) {
     return surfaces.findClosestIntersection(r, nextIntersection_);
 }
 
+void Particle::setNextIntersection(const IntersectionPoint &ip) {
+    nextIntersection_ = ip;
+}
+
