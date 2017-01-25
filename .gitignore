@@ -1,7 +1,6 @@
 *.a
 *.o
 *.blend1
-*.csv
 __pycache__
 plots
 main
