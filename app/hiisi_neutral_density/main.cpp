@@ -42,8 +42,14 @@ int main() {
 
     CollisionGenerator generator(simModel.getGrid(GRID_SIZE));
     plasmamodel.populateCollisionReactions(generator, thread_res);
+    NeutralizationGenerator ngenerator;
+    plasmamodel.populateNeutralizationReactions(ngenerator, 1e-6,
+        "cylinder_collision_points.csv",
+        "z1_collision_points.csv", "z2_collision_points.csv",
+        "rt.018.dat", surfaces, ELECTRON_DENSITY);
 
-    simModel.runSimulation(generator, N_PARTICLES, "test", true, GRID_SIZE, 0.1, 2.0, 4);
+    simModel.runSimulation(generator, ngenerator,
+        N_PARTICLES, "test", true, GRID_SIZE, 0.1, 2.0, 4);
 
     Util::deallocateThreadResources(thread_res);
 
