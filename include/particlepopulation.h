@@ -11,12 +11,18 @@ class ParticlePopulation {
         double particleMass_eV_;
         int chargeState_;
         DensityDistribution densityDistribution_;
+        std::string label_ = "";
 
     public:
         ParticlePopulation(Element element, int chargeState,
             DensityDistribution densityDistribution)
             : element_(element), chargeState_(chargeState),
               densityDistribution_(densityDistribution) {
+            if (chargeState_ == -1) {
+                label_ = "electrons";
+            } else {
+                label_ = chargeState_ + "+ ions";
+            }
             particleMass_eV_ = ELEMENT_DATA.at(element_)->mass *
                 ATOMIC_MASS_TO_EV;
         }
