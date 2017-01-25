@@ -13,7 +13,7 @@ int main() {
                  gridSize = 0.005,
                  Becr = 0.643;
     const double Ai[] = { 0.413286, 0.954437, 52.1123, -74.7674, -1258.17, 2994.75, 22469.9 };
-    const unsigned long N_PARTICLES = 100000;
+    const unsigned long N_PARTICLES = 10000;
 
     // B0, r0, dt, z1, z2
     ElectronModel model(B0, r0, dt, z1, z2, gridSize, confinementTime, Ai);
