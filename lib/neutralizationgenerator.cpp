@@ -13,7 +13,6 @@ Particle NeutralizationGenerator::sampleNeutralizationReaction(Rng &rng,
             "Cannot sample neutralization: no reactions added");
     }
 
-    std::vector<double> decayTimes(channels_.size());
     NeutralizationChannel *chosenChannel = channels_[0].get();
     double minTime = channels_[0]->timeToReaction(rng);
     double time;
