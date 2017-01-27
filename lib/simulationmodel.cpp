@@ -205,7 +205,10 @@ void SimulationModel::simulationThread(
                             particle.goForward(timestep);
                             timeRemainder -= timestep;
 #ifdef DIAGNOSTIC
-                            log << "Stepped forward by " << timestep << std::endl;
+                            Point p = particle.getPosition();
+                            log << "Stepped forward by " << timestep <<
+                                ", position is (" << p.x() << ", " << p.y() <<
+                                ", " << p.z() << ')' << std::endl;
 #endif
                             CollisionReaction *reaction =
                                 collisionGenerator->sampleCollision(
