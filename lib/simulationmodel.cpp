@@ -201,6 +201,13 @@ void SimulationModel::simulationThread(
                             timeRemainder -= isectDistance / speed;
                             particle.goToIntersection(thread_res->rng);
                             particle.findNextIntersection(surfaces_);
+#ifdef DIAGNOSTIC
+                            const Surface *pSurface = particle.nextIntersectedSurface();
+                            if (pSurface != NULL) {
+                                std::cout << "Next intersected surface: " <<
+                                    pSurface->getLabel();
+                            }
+#endif
                         } else {
                             particle.goForward(timestep);
                             timeRemainder -= timestep;
@@ -235,6 +242,13 @@ void SimulationModel::simulationThread(
                                 if (neutralProducts.size() >= 1) {
                                     particle = neutralProducts[0];
                                     particle.findNextIntersection(surfaces_);
+#ifdef DIAGNOSTIC
+                                    const Surface *pSurface = particle.nextIntersectedSurface();
+                                    if (pSurface != NULL) {
+                                        std::cout << "Next intersected surface: " <<
+                                            pSurface->getLabel();
+                                    }
+#endif
                                 } else if (ionProducts == 1) {
                                     // There are no reaction products, we are
                                     // done with this particle.
