@@ -1,11 +1,11 @@
 #include "surface.h"
 #include "STL_reader.h"
 
-Surface::Surface() : pumpedParticles_(0) {}
 
-Surface::Surface(std::string filename, double pumpingFactor,
-    double temperature, bool flipNormals, double avgTriangleArea)
-    : pumpingFactor_(pumpingFactor), temperature_(temperature) {
+Surface::Surface(std::string filename, double pumpingFactor, double temperature,
+    std::string label, bool flipNormals, double avgTriangleArea)
+    : pumpingFactor_(pumpingFactor), temperature_(temperature),
+      pumpedParticles_(0), label_(label) {
     pumpedParticles_ = 0;
     loadFromSTL(filename, avgTriangleArea);
     buildAABBTree();
@@ -125,7 +125,6 @@ void Surface::computeAreaCDF() {
 
 bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
     std::ifstream ifs;
-    Surface surf;
     Surface_mesh mesh;
 
     ifs.open(filename, std::ifstream::in);
@@ -183,7 +182,6 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
 }
 
 std::tuple<Point, face_descriptor> Surface::getRandomPoint(Rng& rng) const {
-
     double rnd = uni01(rng);
 
 #ifdef DEBUG
@@ -239,5 +237,9 @@ Direction Surface::generateCosineLawDirection(face_descriptor fd, Rng& rng) cons
 
 Bbox Surface::bbox() const {
     return CGAL::Polygon_mesh_processing::bbox_3(mesh_);
+}
+
+std::string Surface::getLabel() const {
+    return label_;
 }
 

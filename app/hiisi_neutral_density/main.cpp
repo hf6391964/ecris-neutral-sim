@@ -26,11 +26,11 @@ int main() {
     simthreadresources *thread_res = Util::allocateThreadResources(13122016);
 
     Surface radial_wall("model/radial_wall.stl",
-        0.0, ROOM_TEMPERATURE_EV, false, 0.1);
+        0.0, ROOM_TEMPERATURE_EV, "radial_wall", false, 0.1);
     Surface end1("model/end1.stl",
-        1.0, ROOM_TEMPERATURE_EV, true, 0.1);
+        1.0, ROOM_TEMPERATURE_EV, "end1", true, 0.1);
     Surface end2("model/end2.stl",
-        1.0, ROOM_TEMPERATURE_EV, false, 0.1);
+        1.0, ROOM_TEMPERATURE_EV, "end2", false, 0.1);
     SurfaceCollection surfaces;
     surfaces.addSurface(&radial_wall);
     surfaces.addSurface(&end1);

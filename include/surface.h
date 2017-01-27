@@ -29,11 +29,12 @@ class Surface {
     std::atomic_ulong pumpedParticles_;
     std::unordered_map<Element, double> accommodationCoefficients_;
     const double DEFAULT_ACCOMMODATION_COEFFICIENT = 1.0;
+    std::string label_;
 
     public:
-        Surface();
         Surface(std::string filename, double pumpingFactor, double temperature,
-            bool flipNormals = false, double avgTriangleArea = -1.0);
+            std::string label, bool flipNormals = false,
+            double avgTriangleArea = -1.0);
 
         void setAccommodationCoefficients(
             std::unordered_map<Element, double> coefficients);
@@ -67,5 +68,7 @@ class Surface {
         void addPumpedParticle();
 
         Bbox bbox() const;
+
+        std::string getLabel() const;
 };
 
