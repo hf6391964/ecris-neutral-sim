@@ -29,7 +29,7 @@ WallNeutralization::WallNeutralization(
             wallPoints_.push_back(ip);
         }
     }
-    pointSets_.push_back(&wallPoints_);
+    pointSets_.push_back(std::move(wallPoints_));
 
     // Find intersections with end 1
     for (Point p : end1Endpoints) {
@@ -40,7 +40,7 @@ WallNeutralization::WallNeutralization(
             end1Points_.push_back(ip);
         }
     }
-    pointSets_.push_back(&end1Points_);
+    pointSets_.push_back(std::move(end1Points_));
 
     // Find intersections with end 2
     for (Point p : end2Endpoints) {
@@ -51,12 +51,13 @@ WallNeutralization::WallNeutralization(
             end2Points_.push_back(ip);
         }
     }
-    pointSets_.push_back(&end2Points_);
+    pointSets_.push_back(std::move(end2Points_));
 
     unsigned long count = 0;
-    std::vector<unsigned long> countVector(pointSets_.size());
-    for (std::vector<IntersectionPoint> *points : pointSets_) {
-        count += points->size();
+    std::vector<unsigned long> countVector;
+    for (EndpointSetVector::const_iterator itPoints = pointSets_.begin();
+        itPoints != pointSets_.end(); ++itPoints) {
+        count += (*itPoints).size();
         countVector.push_back(count);
     }
 
@@ -74,9 +75,8 @@ Particle WallNeutralization::sampleNeutralProduct(Rng &rng,
     size_t i = std::lower_bound(cumulativeNormalizedEndpointCount_.begin(),
         cumulativeNormalizedEndpointCount_.end(), uni01(rng)) -
         cumulativeNormalizedEndpointCount_.begin();
-    std::vector<IntersectionPoint> *points = pointSets_[i];
-    size_t j = uni01(rng) * points->size();
-    IntersectionPoint ip = points->at(j);
+    size_t j = uni01(rng) * pointSets_.at(i).size();
+    IntersectionPoint ip = pointSets_.at(i).at(j);
     result.setNextIntersection(ip);
     result.setPosition(ip.point);
 

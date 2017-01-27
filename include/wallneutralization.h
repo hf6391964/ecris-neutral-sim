@@ -7,9 +7,11 @@
 #include "particlepopulation.h"
 #include "particle.h"
 
+typedef std::vector<std::vector<IntersectionPoint>> EndpointSetVector;
+
 class WallNeutralization : public NeutralizationChannel {
     std::vector<IntersectionPoint> wallPoints_, end1Points_, end2Points_;
-    std::vector<std::vector<IntersectionPoint> *> pointSets_;
+    EndpointSetVector pointSets_;
     std::vector<double> cumulativeNormalizedEndpointCount_;
     std::shared_ptr<ParticlePopulation> population_;
     double confinementTime_;
