@@ -61,13 +61,17 @@ Vector Particle::getVelocity() const {
     return speed_ * direction_.vector();
 }
 
-bool Particle::hasNextIntersection() {
+bool Particle::hasNextIntersection() const {
     return nextIntersection_.pSurface != NULL;
 }
 
-double Particle::distanceToIntersection() {
+double Particle::distanceToIntersection() const {
     return std::sqrt(CGAL::squared_distance(position_,
         nextIntersection_.point));
+}
+
+const Surface * Particle::nextIntersectedSurface() const {
+    return nextIntersection_.pSurface;
 }
 
 void Particle::goForward(double dt) {
@@ -77,7 +81,7 @@ void Particle::goForward(double dt) {
 }
 
 void Particle::goToIntersection(Rng& rng) {
-    if (nextIntersection_.pSurface == NULL) return;
+    if (!hasNextIntersection()) return;
 
     double distance =
         std::sqrt(CGAL::squared_distance(position_, nextIntersection_.point));
@@ -131,4 +135,6 @@ bool Particle::findNextIntersection(SurfaceCollection &surfaces) {
 void Particle::setNextIntersection(const IntersectionPoint &ip) {
     nextIntersection_ = ip;
 }
+
+
 

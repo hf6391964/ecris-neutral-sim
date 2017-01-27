@@ -27,12 +27,13 @@ class Particle {
         void setVelocity(double speed, const Direction &direction);
         void setVelocity(const Vector &vel);
         Vector getVelocity() const;
-        bool hasNextIntersection();
-        double distanceToIntersection();
+        bool hasNextIntersection() const;
+        double distanceToIntersection() const;
         void goToIntersection(Rng& rng);
         void goForward(double dt);
         bool findNextIntersection(SurfaceCollection &surfaces);
         void setNextIntersection(const IntersectionPoint &ip);
+        const Surface * nextIntersectedSurface() const;
 
     private:
         Point position_;
