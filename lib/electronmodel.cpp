@@ -244,7 +244,6 @@ std::vector<Point> ElectronModel::parseElectronEndpoints(
         fin.ignore(1);
 
         Point p(x, y, z);
-        std::cout << p << std::endl;
         points.push_back(p);
     }
 
