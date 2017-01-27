@@ -70,10 +70,6 @@ double Particle::distanceToIntersection() const {
         nextIntersection_.point));
 }
 
-const Surface * Particle::nextIntersectedSurface() const {
-    return nextIntersection_.pSurface;
-}
-
 void Particle::goForward(double dt) {
     time_ += dt;
     double stepLength = dt * speed_;
@@ -136,5 +132,7 @@ void Particle::setNextIntersection(const IntersectionPoint &ip) {
     nextIntersection_ = ip;
 }
 
-
+IntersectionPoint Particle::getNextIntersection() const {
+    return nextIntersection_;
+}
 

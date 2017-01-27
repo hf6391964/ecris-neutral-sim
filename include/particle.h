@@ -33,7 +33,7 @@ class Particle {
         void goForward(double dt);
         bool findNextIntersection(SurfaceCollection &surfaces);
         void setNextIntersection(const IntersectionPoint &ip);
-        const Surface * nextIntersectedSurface() const;
+        IntersectionPoint getNextIntersection() const;
 
     private:
         Point position_;
