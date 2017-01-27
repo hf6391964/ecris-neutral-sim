@@ -205,7 +205,7 @@ void SimulationModel::simulationThread(
 #ifdef DIAGNOSTIC
                             IntersectionPoint ip = particle.getNextIntersection();
                             if (ip.pSurface != NULL) {
-                                std::cout << "Next intersected surface: " <<
+                                log << "Next intersected surface: " <<
                                     ip.pSurface->getLabel() << ", point is (" <<
                                     ip.point.x() << ", " << ip.point.y() <<
                                     ", " << ip.point.z() << ")" << std::endl;
@@ -248,7 +248,7 @@ void SimulationModel::simulationThread(
 #ifdef DIAGNOSTIC
                                     IntersectionPoint ip = particle.getNextIntersection();
                                     if (ip.pSurface != NULL) {
-                                        std::cout << "Next intersected surface: " <<
+                                        log << "Next intersected surface: " <<
                                             ip.pSurface->getLabel() << ", point is (" <<
                                             ip.point.x() << ", " << ip.point.y() <<
                                             ", " << ip.point.z() << ")" << std::endl;
