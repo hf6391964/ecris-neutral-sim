@@ -184,6 +184,7 @@ void SimulationModel::simulationThread(
                         double speed = particle.getSpeed();
                         double meanFreeTime =
                             collisionGenerator->getMeanFreeTime(speed);
+
                         double timestep = std::min(timeRemainder, meanFreeTime);
 #ifdef DIAGNOSTIC
                         log << "Moving, isectDistance = " << isectDistance <<

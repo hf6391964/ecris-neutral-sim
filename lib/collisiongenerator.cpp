@@ -99,7 +99,11 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
 
 double CollisionGenerator::getMeanFreeTime(double particleSpeed) const {
     size_t velIndex = particleSpeed / speedStepSize_;
-    if (velIndex >= nSpeedSteps_ - 1) return -1.0;
+    if (velIndex >= nSpeedSteps_ - 1) {
+        std::string error = "Couldn't get mean free time for particle speed ";
+        error += speed;
+        throw std::out_of_range(error);
+    }
 
     double t = (particleSpeed - velIndex * speedStepSize_) / speedStepSize_;
     double interpolatedRate = (1.0 - t) * majorantReactionRate_[velIndex] +
