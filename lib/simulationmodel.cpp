@@ -149,7 +149,8 @@ void SimulationModel::simulationThread(
             Particle particle =
                 pSource->generateParticle(thread_res->rng, timeRemainder);
 #ifdef DIAGNOSTIC
-            log << "Particle generated with timeRemainder = " <<
+            log << "Particle number " << i <<
+                " generated with timeRemainder = " <<
                 timeRemainder << std::endl;
 #endif
 
@@ -202,10 +203,12 @@ void SimulationModel::simulationThread(
                             particle.goToIntersection(thread_res->rng);
                             particle.findNextIntersection(surfaces_);
 #ifdef DIAGNOSTIC
-                            const Surface *pSurface = particle.nextIntersectedSurface();
-                            if (pSurface != NULL) {
+                            IntersectionPoint ip = particle.getNextIntersection();
+                            if (ip.pSurface != NULL) {
                                 std::cout << "Next intersected surface: " <<
-                                    pSurface->getLabel();
+                                    ip.pSurface->getLabel() << ", point is (" <<
+                                    ip.point.x() << ", " << ip.point.y() <<
+                                    ", " << ip.point.z() << ")" << std::endl;
                             }
 #endif
                         } else {
@@ -243,10 +246,12 @@ void SimulationModel::simulationThread(
                                     particle = neutralProducts[0];
                                     particle.findNextIntersection(surfaces_);
 #ifdef DIAGNOSTIC
-                                    const Surface *pSurface = particle.nextIntersectedSurface();
-                                    if (pSurface != NULL) {
+                                    IntersectionPoint ip = particle.getNextIntersection();
+                                    if (ip.pSurface != NULL) {
                                         std::cout << "Next intersected surface: " <<
-                                            pSurface->getLabel();
+                                            ip.pSurface->getLabel() << ", point is (" <<
+                                            ip.point.x() << ", " << ip.point.y() <<
+                                            ", " << ip.point.z() << ")" << std::endl;
                                     }
 #endif
                                 } else if (ionProducts == 1) {
