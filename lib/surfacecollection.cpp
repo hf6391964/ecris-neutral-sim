@@ -18,6 +18,7 @@ bool SurfaceCollection::findClosestIntersection(Ray &r,
     Point* p = NULL;
     Ray_intersection intersection;
     Point position = r.point(0);
+    ip.pSurface = NULL;
 
     for (Surface *pSurface : surfaces_) {
 #ifdef USE_ALL_INTERSECTIONS
