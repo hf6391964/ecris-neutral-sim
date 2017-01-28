@@ -3,10 +3,9 @@
 #define USE_ALL_INTERSECTIONS
 
 Particle::Particle(Element element, double time)
-    : element_(element), time_(time) {
-    elementData_ = ELEMENT_DATA.at(element_);
-    mass_eV_ = elementData_->mass * ATOMIC_MASS_TO_EV;
-}
+    : element_(element), elementData_(ELEMENT_DATA.at(element_)),
+      mass_eV_(elementData_->mass * ATOMIC_MASS_TO_EV),
+      time_(time) {}
 
 Element Particle::getElement() const {
     return element_;
@@ -22,10 +21,6 @@ const Direction Particle::getDirection() const {
 
 const Ray Particle::getRay() const {
     return Ray(position_, direction_);
-}
-
-void Particle::setMass_eV(double mass_eV) {
-    mass_eV_ = mass_eV;
 }
 
 double Particle::getMass_eV() const {

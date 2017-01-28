@@ -41,6 +41,7 @@ CollisionProducts ChargeExchangeReaction::computeReactionProducts(
         // Projectile particle velocity is isotropic Maxwell-Boltzmann:
         Vector ionVelocity = population_->getRandomParticleVelocity(rng);
         Vector neutralVelocity = target.getVelocity();
+        double ionMass = population_->getParticleMass_eV();
         double neutralMass = target.getMass_eV();
 
         Vector vcm = (ionMass * ionVelocity + neutralMass * neutralVelocity) /

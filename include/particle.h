@@ -18,7 +18,6 @@ class Particle {
         const Point getPosition() const;
         const Direction getDirection() const;
         const Ray getRay() const;
-        void setMass_eV(double mass_eV);
         double getMass_eV() const;
         State getState() const;
         double getSpeed() const;
@@ -39,10 +38,10 @@ class Particle {
         Point position_;
         Direction direction_;
         double speed_ = 0.0;  // m/s
-        double mass_eV_ = 1.0;  // eV
         Element element_;
-        double time_ = 0.0;
         const ElementData *elementData_;
+        double mass_eV_;  // eV
+        double time_ = 0.0;
         State state_ = Free;
         IntersectionPoint nextIntersection_;
 };

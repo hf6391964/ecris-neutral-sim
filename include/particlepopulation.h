@@ -8,7 +8,7 @@
 class ParticlePopulation {
     protected:
         Element element_ = ELEMENT_NONE;
-        double particleMass_eV_;
+        const double particleMass_eV_;
         int chargeState_;
         DensityDistribution densityDistribution_;
         std::string label_ = "";
@@ -16,15 +16,14 @@ class ParticlePopulation {
     public:
         ParticlePopulation(Element element, int chargeState,
             DensityDistribution densityDistribution)
-            : element_(element), chargeState_(chargeState),
-              densityDistribution_(densityDistribution) {
+            : element_(element),
+              particleMass_eV_(ELEMENT_DATA.at(element_)->mass * ATOMIC_MASS_TO_EV),
+              chargeState_(chargeState), densityDistribution_(densityDistribution) {
             if (chargeState_ == -1) {
                 label_ = "electrons";
             } else {
                 label_ = chargeState_ + "+ ions";
             }
-            particleMass_eV_ = ELEMENT_DATA.at(element_)->mass *
-                ATOMIC_MASS_TO_EV;
         }
 
         ParticlePopulation(double particleMass_eV, int chargeState,
