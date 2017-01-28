@@ -13,7 +13,6 @@ Particle SurfaceEmission::generateParticle(Rng& rng, double time) const {
 
     std::tie(p, fd) = pSurface_->getRandomPoint(rng);
     Direction d = pSurface_->generateCosineLawDirection(fd, rng);
-    particle.setMass_eV(elementData_->mass * ATOMIC_MASS_TO_EV);
     double v = Util::getMBSpeed(rng, pSurface_->getTemperature(),
         particle.getMass_eV());
     particle.setPosition(p);

@@ -5,6 +5,7 @@
 Particle::Particle(Element element, double time)
     : element_(element), time_(time) {
     elementData_ = ELEMENT_DATA.at(element_);
+    mass_eV_ = elementData_->mass * ATOMIC_MASS_TO_EV;
 }
 
 Element Particle::getElement() const {
