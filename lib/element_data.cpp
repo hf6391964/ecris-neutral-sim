@@ -2,7 +2,7 @@
 
 const ElementData ARGON_DATA = {
     18,  // Z
-    39.962384,  // mass in eV
+    39.962384,  // mass in atomic mass units
     {
         15.8, 2.532, { -2.672, 2.543, -0.769, 0.008, 0.006 },  // low energy parameters
         4.131,  // impact energy limit
