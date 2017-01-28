@@ -23,8 +23,7 @@ class ParticlePopulation {
             } else {
                 label_ = chargeState_ + "+ ions";
             }
-            particleMass_eV_ = ELEMENT_DATA.at(element_)->mass *
-                ATOMIC_MASS_TO_EV;
+            particleMass_eV_ = ELEMENT_DATA.at(element_)->mass;
         }
 
         ParticlePopulation(double particleMass_eV, int chargeState,
