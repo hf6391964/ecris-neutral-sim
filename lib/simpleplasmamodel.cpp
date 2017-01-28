@@ -46,7 +46,8 @@ SimplePlasmaModel::~SimplePlasmaModel() {
 }
 
 void SimplePlasmaModel::populateCollisionReactions(
-    CollisionGenerator &generator, simthreadresources *thread_res) const {
+    CollisionGenerator &generator, simthreadresources *thread_res, double
+    speedStepSize) const {
     // Populate the electron ionization reaction
     generator.addCollisionReaction(new ElectronIonizationReaction(
         particlePopulations_[0], elementData_->ionizationParameters));
@@ -59,7 +60,7 @@ void SimplePlasmaModel::populateCollisionReactions(
 
     double mbave = Util::getMBAverage(maxIonTemp_, ionMassEv_);
 
-    generator.precomputeReactionRates(8.0*mbave, mbave/100.0, thread_res);
+    generator.precomputeReactionRates(8.0*mbave, speedStepSize * mbave, thread_res);
 }
 
 void SimplePlasmaModel::populateNeutralizationReactions(

@@ -151,7 +151,8 @@ void SimulationModel::simulationThread(
 #ifdef DIAGNOSTIC
             log << "Particle number " << i <<
                 " generated with timeRemainder = " <<
-                timeRemainder << std::endl;
+                timeRemainder << ", mass = " << particle.getMass_eV() <<
+                " eV" << std::endl;
 #endif
 
             if (!particle.findNextIntersection(surfaces_)) {

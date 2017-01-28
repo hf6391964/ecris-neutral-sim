@@ -42,9 +42,7 @@ class SimplePlasmaModel {
         ~SimplePlasmaModel();
 
         void populateCollisionReactions(CollisionGenerator &generator,
-            simthreadresources *thread_res) const;
-        void populateNeutralizationReactions(
-            NeutralizationGenerator &generator) const;
+            simthreadresources *thread_res, double speedStepSize = 0.01) const;
         void populateNeutralizationReactions(
             NeutralizationGenerator &generator,
             double confinementTime,
