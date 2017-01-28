@@ -22,7 +22,7 @@ SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
     DensityDistribution electronDensity(electronDensityFilename,
         electronWeight);
 
-    ionMassEv_ = elementData_->mass;
+    ionMassEv_ = elementData_->mass * ATOMIC_MASS_TO_EV;
     // Populate the ion densities
     int q = 1;
     maxIonTemp_ = 0.0;
@@ -59,7 +59,7 @@ void SimplePlasmaModel::populateCollisionReactions(
 
     double mbave = Util::getMBAverage(maxIonTemp_, ionMassEv_);
 
-    generator.precomputeReactionRates(8.0*mbave, mbave/10.0, thread_res);
+    generator.precomputeReactionRates(8.0*mbave, mbave/100.0, thread_res);
 }
 
 void SimplePlasmaModel::populateNeutralizationReactions(

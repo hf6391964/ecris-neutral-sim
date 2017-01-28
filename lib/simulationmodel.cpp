@@ -42,7 +42,7 @@ void SimulationModel::runSimulation(
     // sampled frames) and the particle simulation timestep (determined in the
     // particle loop based on reaction rate majorant estimate)
     double averageSpeed = Util::getMBAverage(ROOM_TEMPERATURE_EV,
-        ARGON_DATA.mass);
+        ARGON_DATA.mass * ATOMIC_MASS_TO_EV);
     double dt = timestepFactor * gridSize / averageSpeed;
     unsigned long nSteps = maxTime / dt;
     std::cout << "max steps: " << nSteps << std::endl;
@@ -239,7 +239,7 @@ void SimulationModel::simulationThread(
                                     reaction->getLabel() << ", " <<
                                     neutralProducts.size() <<
                                     " neutral products and " <<
-                                    ionProducts << " ionized products" <<
+                                    ionProducts << " ionized products " <<
                                     std::endl;
 #endif
 
@@ -256,11 +256,11 @@ void SimulationModel::simulationThread(
                                     }
 #endif
                                 } else if (ionProducts == 1) {
+                                    // There are no reaction products, we are
+                                    // done with this particle.
                                     particle =
                                         neutralizationGenerator->sampleNeutralizationReaction(thread_res->rng, particle);
                                 } else {
-                                    // There are no reaction products, we are
-                                    // done with this particle.
                                     destroyedInReaction = true;
                                 }
                             }

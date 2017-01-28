@@ -101,7 +101,7 @@ double CollisionGenerator::getMeanFreeTime(double particleSpeed) const {
     size_t velIndex = particleSpeed / speedStepSize_;
     if (velIndex >= nSpeedSteps_ - 1) {
         std::string error = "Couldn't get mean free time for particle speed ";
-        error += std::to_string(particleSpeed);
+        error += speed;
         throw std::out_of_range(error);
     }
 
