@@ -11,7 +11,8 @@ WallNeutralization::WallNeutralization(
     const std::string &end1Filename,
     const std::string &end2Filename,
     const SurfaceCollection &surfaces)
-    : NeutralizationChannel(confinementTime), population_(population) {
+    : NeutralizationChannel(confinementTime, "wall neutralization"),
+      population_(population) {
     std::vector<Point> wallEndpoints =
         ElectronModel::parseElectronEndpoints(wallFilename);
     std::vector<Point> end1Endpoints =

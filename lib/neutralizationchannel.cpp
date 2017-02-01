@@ -7,3 +7,7 @@ double NeutralizationChannel::timeToReaction(Rng &rng) const {
     return -decayTime_ * std::log(x * decayTime_);
 }
 
+std::string NeutralizationChannel::getLabel() const {
+    return label_;
+}
+

@@ -1,4 +1,5 @@
 #include "neutralizationgenerator.h"
+#include "logger.h"
 
 
 void NeutralizationGenerator::addNeutralizationChannel(
@@ -18,11 +19,16 @@ Particle NeutralizationGenerator::sampleNeutralizationReaction(Rng &rng,
     double time;
     for (auto i = channels_.begin() + 1; i != channels_.end(); ++i) {
         time = (*i)->timeToReaction(rng);
+        logger << "Neutralization channel " << (*i)->getLabel() <<
+            ", decay time = " << time;
         if (time < minTime) {
             minTime = time;
             chosenChannel = (*i).get();
         }
     }
+
+    logger << "Chosen neutralization channel " << chosenChannel->getLabel() <<
+        ", decay time = " << minTime;
 
     return chosenChannel->sampleNeutralProduct(rng, sourceParticle, minTime);
 }

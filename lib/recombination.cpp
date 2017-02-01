@@ -3,7 +3,8 @@
 
 Recombination::Recombination(std::shared_ptr<ParticlePopulation> population,
     double reactionRate) :
-    NeutralizationChannel(1.0 / reactionRate), population_(population) {}
+    NeutralizationChannel(1.0 / reactionRate, "recombination"),
+    population_(population) {}
 
 Particle Recombination::sampleNeutralProduct(Rng &rng,
     const Particle &sourceParticle, double decayTime) const {
