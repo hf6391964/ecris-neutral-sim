@@ -21,3 +21,7 @@ void Logger::setLogging(bool logging) {
     logging_ = logging;
 }
 
+bool Logger::isLogging() const {
+    return logging_;
+}
+

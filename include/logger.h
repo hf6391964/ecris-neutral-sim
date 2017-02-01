@@ -13,6 +13,8 @@ class Logger {
 
         void setLogging(bool logging);
 
+        bool isLogging() const;
+
         template<typename T>
         friend Logger& operator<<(Logger &out, const T& value);
 };
