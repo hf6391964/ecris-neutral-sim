@@ -5,8 +5,7 @@
 Surface::Surface(std::string filename, double pumpingFactor, double temperature,
     std::string label, bool flipNormals, double avgTriangleArea)
     : pumpingFactor_(pumpingFactor), temperature_(temperature),
-      pumpedParticles_(0), label_(label) {
-    pumpedParticles_ = 0;
+      pumpedParticles_(0), collisionCounter_(0), label_(label) {
     loadFromSTL(filename, avgTriangleArea);
     buildAABBTree();
     computeAreaCDF();
@@ -241,5 +240,13 @@ Bbox Surface::bbox() const {
 
 std::string Surface::getLabel() const {
     return label_;
+}
+
+void Surface::incrementCollisionCounter() {
+    collisionCounter_ += 1;
+}
+
+unsigned long Surface::getCollisionCount() const {
+    return collisionCounter_;
 }
 

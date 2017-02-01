@@ -111,6 +111,7 @@ void Particle::goToIntersection(Rng& rng) {
     // Cosine law emission
     direction_ = nextIntersection_.pSurface->
         generateCosineLawDirection(nextIntersection_.faceId, rng);
+    nextIntersection_.pSurface->incrementCollisionCounter();
 
     if (nextIntersection_.pSurface->checkIfPumped(rng)) {
         nextIntersection_.pSurface->addPumpedParticle();

@@ -4,6 +4,7 @@
 
 #include "cgal_and_typedefs.h"
 #include "surface.h"
+#include "logger.h"
 
 class SurfaceCollection {
     std::vector<Surface*> surfaces_;
@@ -17,5 +18,7 @@ class SurfaceCollection {
         void addSurface(Surface *surface);
 
         bool findClosestIntersection(Ray &r, IntersectionPoint &p) const;
+
+        void writeStatistics(Logger& log) const;
 };
 

@@ -27,6 +27,7 @@ class Surface {
     double pumpingFactor_;
     double temperature_;
     std::atomic_ulong pumpedParticles_;
+    std::atomic_ulong collisionCounter_;
     std::unordered_map<Element, double> accommodationCoefficients_;
     const double DEFAULT_ACCOMMODATION_COEFFICIENT = 1.0;
     std::string label_;
@@ -66,6 +67,10 @@ class Surface {
         bool checkIfPumped(Rng& rng) const;
 
         void addPumpedParticle();
+
+        void incrementCollisionCounter();
+
+        unsigned long getCollisionCount() const;
 
         Bbox bbox() const;
 

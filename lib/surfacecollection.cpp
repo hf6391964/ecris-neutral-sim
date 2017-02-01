@@ -48,3 +48,13 @@ bool SurfaceCollection::findClosestIntersection(Ray &r,
     return found;
 }
 
+void SurfaceCollection::writeStatistics(Logger &log) const {
+    log << "Surface pumping and collision statistics:\n";
+    for (Surface *pSurface : surfaces_) {
+        log << pSurface->getLabel() << ": " << pSurface->getCollisionCount() <<
+            " collisions, " << pSurface->getPumpedParticles() <<
+            " particles pumped\n";
+    }
+    log << '\n';
+}
+
