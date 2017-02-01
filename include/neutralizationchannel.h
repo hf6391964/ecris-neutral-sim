@@ -9,9 +9,7 @@ class NeutralizationChannel {
 
     public:
         NeutralizationChannel(double decayTime, const std::string& label)
-            : decayTime_(decayTime), label_(label) {
-            reactionCounter_ = 0;
-        }
+            : decayTime_(decayTime), label_(label), reactionCounter_(0) {}
 
         double timeToReaction(Rng &rng) const;
 
