@@ -4,9 +4,12 @@
 
 #include "collisionreaction.h"
 #include "grid.h"
+#include "logger.h"
+
+typedef std::vector<std::unique_ptr<CollisionReaction>> CollisionReactionVector;
 
 class CollisionGenerator {
-    std::vector<std::unique_ptr<CollisionReaction>> collisionReactions_;
+    CollisionReactionVector collisionReactions_;
     Grid grid_;
     double *totalReactionRate_ = NULL;
     double *cumulativeProbability_ = NULL;
@@ -33,5 +36,7 @@ class CollisionGenerator {
 
         CollisionReaction *sampleCollision(Rng &rng, const Point &p,
             double particleSpeed, double dt) const;
+
+        void writeStatistics(Logger &log) const;
 };
 

@@ -35,3 +35,13 @@ Particle NeutralizationGenerator::sampleNeutralizationReaction(Rng &rng,
     return chosenChannel->sampleNeutralProduct(rng, sourceParticle, minTime);
 }
 
+void NeutralizationGenerator::writeStatistics(Logger& log) const {
+    log << "Neutralization channel statistics:\n";
+    for (NeutralizationChannelVector::const_iterator it = channels_.begin();
+        it != channels_.end(); ++it) {
+        log << (*it)->getLabel() << ": " << (*it)->getReactionCount() <<
+            " neutralization reactions\n";
+    }
+    log << '\n';
+}
+

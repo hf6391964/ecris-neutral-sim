@@ -148,3 +148,13 @@ CollisionReaction *CollisionGenerator::sampleCollision(Rng &rng,
     return NULL;
 }
 
+void CollisionGenerator::writeStatistics(Logger &log) const {
+    log << "Collision reaction statistics:\n";
+    for (CollisionReactionVector::const_iterator it = collisionReactions_.begin();
+        it != collisionReactions_.end(); ++it) {
+        log << (*it)->getLabel() << ": " << (*it)->getReactionCount() <<
+            " reactions\n";
+    }
+    log << '\n';
+}
+
