@@ -11,3 +11,11 @@ std::string NeutralizationChannel::getLabel() const {
     return label_;
 }
 
+void NeutralizationChannel::incrementReactionCounter() {
+    reactionCounter_ += 1;
+}
+
+unsigned long NeutralizationChannel::getReactionCount() const {
+    return reactionCounter_;
+}
+

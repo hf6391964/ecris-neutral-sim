@@ -30,6 +30,8 @@ Particle NeutralizationGenerator::sampleNeutralizationReaction(Rng &rng,
     logger << "Chosen neutralization channel " << chosenChannel->getLabel() <<
         ", decay time = " << minTime;
 
+    chosenChannel->incrementReactionCounter();
+
     return chosenChannel->sampleNeutralProduct(rng, sourceParticle, minTime);
 }
 
