@@ -8,6 +8,9 @@ typedef std::pair<std::vector<Particle>, unsigned int> CollisionProducts;
 
 // Base class for a general collision reaction
 class CollisionReaction {
+    private:
+        std::atomic_ulong reactionCounter_(0);
+
     protected:
         std::shared_ptr<ParticlePopulation> population_;
         std::string label_ = "";
@@ -31,4 +34,8 @@ class CollisionReaction {
             const Point &p, const Particle &target) const = 0;
 
         virtual double getCrossSection(double relativeSpeed) const = 0;
+
+        void incrementReactionCounter();
+
+        unsigned long getReactionCount() const;
 };

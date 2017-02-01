@@ -141,6 +141,7 @@ CollisionReaction *CollisionGenerator::sampleCollision(Rng &rng,
                 break;
             }
         }
+        collisionReactions_[iReaction]->incrementReactionCounter();
         return collisionReactions_[iReaction].get();
     }
 
