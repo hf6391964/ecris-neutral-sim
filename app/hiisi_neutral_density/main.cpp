@@ -3,8 +3,11 @@
 #include "surface.h"
 #include "surfaceemission.h"
 #include "element_data.h"
+#include "logger.h"
 
 int main() {
+    logger.setLogging(true);
+
     const double ELECTRON_DENSITY = 1e17;
     const double ELECTRON_TEMPERATURE = 10e3;
     const Element ELEMENT = ARGON;
@@ -14,7 +17,7 @@ int main() {
         1.0/8.0, 1.0/16.0, 1.0/64.0, 1.0/256.0, 1.0/1024.0, 1.0/4096.0
     };
     const double GRID_SIZE = 0.005;
-    const size_t N_PARTICLES = 100000000;
+    const size_t N_PARTICLES = 20;//100000000;
 
     std::vector<double> ION_TEMPERATURES(ION_RELATIVE_DENSITIES.size(),
         ION_TEMPERATURE);
@@ -41,12 +44,12 @@ int main() {
     simModel.addSource(&gasFeed);
 
     CollisionGenerator generator(simModel.getGrid(GRID_SIZE));
-    plasmamodel.populateCollisionReactions(generator, thread_res);
     NeutralizationGenerator ngenerator;
     plasmamodel.populateNeutralizationReactions(ngenerator, 1e-6,
         "cylinder_collision_points.csv",
         "z1_collision_points.csv", "z2_collision_points.csv",
         "rt.018.dat", surfaces, ELECTRON_DENSITY);
+    plasmamodel.populateCollisionReactions(generator, thread_res, 0.1);
 
     simModel.runSimulation(generator, ngenerator,
         N_PARTICLES, "test", true, GRID_SIZE, 0.1, 2.0, 4);
