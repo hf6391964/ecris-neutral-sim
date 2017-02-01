@@ -6,7 +6,6 @@
 #include "constants.h"
 #include "element_data.h"
 
-/* #define DEBUG */
 
 class Particle {
     public:

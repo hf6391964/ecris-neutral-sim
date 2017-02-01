@@ -1,6 +1,5 @@
 #include "simulationmodel.h"
-
-#define DIAGNOSTIC
+#include "logger.h"
 
 
 SimulationModel::SimulationModel(SurfaceCollection &surfaces)
@@ -20,17 +19,15 @@ void SimulationModel::runSimulation(
     unsigned long nParticles,
     std::string prefix, bool stationary, double gridSize, double maxTime,
     double timestepFactor, int nThreads) {
-#ifdef DIAGNOSTIC
-    nThreads = 1;
-#else
-    if (nThreads <= 0) {
+    if (logger.isLogging()) {
+        nThreads = 1;
+    } else if (nThreads <= 0) {
         nThreads = std::thread::hardware_concurrency();
         if (nThreads == 0) {
             nThreads = 1;
         }
         nThreads = 2*nThreads + 1;
     }
-#endif
 
     long particlesInChunk = nParticles / nThreads;
 
@@ -131,9 +128,7 @@ void SimulationModel::simulationThread(
     unsigned long nParticles,
     unsigned long maxSteps, double dt, const Grid &grid, uint_least32_t seed,
     Vector* velocity, unsigned long* count, bool stationary) const {
-#ifdef DIAGNOSTIC
-    std::ofstream log("simulationthread_diagnostic.txt");
-#endif
+
     simthreadresources *thread_res = Util::allocateThreadResources(seed);
 
     size_t gridSize = grid.arraySize();
@@ -148,18 +143,15 @@ void SimulationModel::simulationThread(
             double timeRemainder = uni01(thread_res->rng)*dt;
             Particle particle =
                 pSource->generateParticle(thread_res->rng, timeRemainder);
-#ifdef DIAGNOSTIC
-            log << "Particle number " << i <<
+
+            logger << "Particle number " << i <<
                 " generated with timeRemainder = " <<
                 timeRemainder << ", mass = " << particle.getMass_eV() <<
-                " eV" << std::endl;
-#endif
+                " eV\n";
+
 
             if (!particle.findNextIntersection(surfaces_)) {
-#ifdef DIAGNOSTIC
-                log << "ERR: generated particle doesn't have intersections"
-                    << std::endl;
-#endif
+                logger << "ERR: generated particle doesn't have intersections\n";
                 continue;
             }
 
@@ -169,17 +161,16 @@ void SimulationModel::simulationThread(
                 bool moving = true;
 
                 while (moving) {
-                    if (!particle.hasNextIntersection() ||
-                        particle.getState() == Particle::Pumped) {
-#ifdef DIAGNOSTIC
-                        if (particle.getState() == Particle::Pumped) {
-                            log << "Particle pumped out" << std::endl;
-                        } else {
-                            log << "Particle doesn't have intersections" << std::endl;
-                        }
-#endif
+                    if (!particle.hasNextIntersection()) {
+                        logger << "Particle doesn't have intersections\n";
                         moving = false;
                         destroyedInReaction = true;
+                        break;
+                    } else if (particle.getState() == Particle::Pumped) {
+                        logger << "Particle pumped out\n";
+                        moving = false;
+                        destroyedInReaction = true;
+                        break;
                     } else {
                         double isectDistance = particle.distanceToIntersection();
                         double speed = particle.getSpeed();
@@ -187,13 +178,11 @@ void SimulationModel::simulationThread(
                             collisionGenerator->getMeanFreeTime(speed);
 
                         double timestep = std::min(timeRemainder, meanFreeTime);
-#ifdef DIAGNOSTIC
-                        log << "Moving, isectDistance = " << isectDistance <<
+
+                        logger << "Moving, isectDistance = " << isectDistance <<
                             ", speed = " << speed <<
                             ", mft = " << meanFreeTime <<
-                            ", particle time = " << particle.getTime() <<
-                            std::endl;
-#endif
+                            ", particle time = " << particle.getTime() << '\n';
 
                         if (isectDistance <= speed*timestep) {
                             // TODO this might need some rethinking. If time to
@@ -204,24 +193,23 @@ void SimulationModel::simulationThread(
                             timeRemainder -= isectDistance / speed;
                             particle.goToIntersection(thread_res->rng);
                             particle.findNextIntersection(surfaces_);
-#ifdef DIAGNOSTIC
+
                             IntersectionPoint ip = particle.getNextIntersection();
                             if (ip.pSurface != NULL) {
-                                log << "Next intersected surface: " <<
+                                logger << "Next intersected surface: " <<
                                     ip.pSurface->getLabel() << ", point is (" <<
                                     ip.point.x() << ", " << ip.point.y() <<
-                                    ", " << ip.point.z() << ")" << std::endl;
+                                    ", " << ip.point.z() << ")\n";
                             }
-#endif
                         } else {
                             particle.goForward(timestep);
                             timeRemainder -= timestep;
-#ifdef DIAGNOSTIC
+
                             Point p = particle.getPosition();
-                            log << "Stepped forward by " << timestep <<
+                            logger << "Stepped forward by " << timestep <<
                                 ", position is (" << p.x() << ", " << p.y() <<
-                                ", " << p.z() << ')' << std::endl;
-#endif
+                                ", " << p.z() << ")\n";
+
                             CollisionReaction *reaction =
                                 collisionGenerator->sampleCollision(
                                     thread_res->rng, particle.getPosition(),
@@ -235,27 +223,24 @@ void SimulationModel::simulationThread(
                                 std::vector<Particle> neutralProducts =
                                     products.first;
                                 unsigned int ionProducts = products.second;
-#ifdef DIAGNOSTIC
-                                log << "sampled a collision reaction, label = " <<
+
+                                logger << "sampled a collision reaction, label = " <<
                                     reaction->getLabel() << ", " <<
                                     neutralProducts.size() <<
                                     " neutral products and " <<
-                                    ionProducts << " ionized products " <<
-                                    std::endl;
-#endif
+                                    ionProducts << " ionized products\n";
 
                                 if (neutralProducts.size() >= 1) {
                                     particle = neutralProducts[0];
                                     particle.findNextIntersection(surfaces_);
-#ifdef DIAGNOSTIC
+
                                     IntersectionPoint ip = particle.getNextIntersection();
                                     if (ip.pSurface != NULL) {
-                                        log << "Next intersected surface: " <<
+                                        logger << "Next intersected surface: " <<
                                             ip.pSurface->getLabel() << ", point is (" <<
                                             ip.point.x() << ", " << ip.point.y() <<
-                                            ", " << ip.point.z() << ")" << std::endl;
+                                            ", " << ip.point.z() << ")\n";
                                     }
-#endif
                                 } else if (ionProducts == 1) {
                                     // There are no reaction products, we are
                                     // done with this particle.
@@ -292,15 +277,11 @@ void SimulationModel::simulationThread(
                         particle.getVelocity();
                 }
 
-                if (!particle.hasNextIntersection() ||
-                    particle.getState() == Particle::Pumped) {
-#ifdef DIAGNOSTIC
-                    if (particle.getState() == Particle::Pumped) {
-                        log << "Particle pumped out" << std::endl;
-                    } else {
-                        log << "Particle doesn't have intersections" << std::endl;
-                    }
-#endif
+                if (!particle.hasNextIntersection()) {
+                    logger << "Particle doesn't have intersections\n";
+                    break;
+                } else if (particle.getState() == Particle::Pumped) {
+                    logger << "Particle pumped out\n";
                     break;
                 }
 
@@ -310,10 +291,6 @@ void SimulationModel::simulationThread(
     }
 
     Util::deallocateThreadResources(thread_res);
-
-#ifdef DIAGNOSTIC
-    log.close();
-#endif
 }
 
 void SimulationModel::writeResults(std::string prefix, Vector* velocity,
@@ -336,3 +313,4 @@ void SimulationModel::writeResults(std::string prefix, Vector* velocity,
 
     f.close();
 }
+
