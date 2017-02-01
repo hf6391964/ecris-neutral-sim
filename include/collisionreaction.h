@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 #include "cgal_and_typedefs.h"
 #include "particlepopulation.h"
 #include "particle.h"
@@ -9,7 +11,7 @@ typedef std::pair<std::vector<Particle>, unsigned int> CollisionProducts;
 // Base class for a general collision reaction
 class CollisionReaction {
     private:
-        std::atomic_ulong reactionCounter_(0);
+        std::atomic_ulong reactionCounter_;
 
     protected:
         std::shared_ptr<ParticlePopulation> population_;

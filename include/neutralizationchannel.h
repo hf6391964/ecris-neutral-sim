@@ -5,11 +5,13 @@
 class NeutralizationChannel {
     double decayTime_ = 0.0;
     std::string label_;
-    std::atomic_ulong reactionCounter_(0);
+    std::atomic_ulong reactionCounter_;
 
     public:
         NeutralizationChannel(double decayTime, const std::string& label)
-            : decayTime_(decayTime), label_(label) {}
+            : decayTime_(decayTime), label_(label) {
+            reactionCounter_ = 0;
+        }
 
         double timeToReaction(Rng &rng) const;
 
