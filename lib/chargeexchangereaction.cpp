@@ -5,8 +5,8 @@ ChargeExchangeReaction::ChargeExchangeReaction(
     double ionizationPotentialEv)
     : CollisionReaction(population),
       ionizationPotentialEv_(ionizationPotentialEv) {
-    label_ = "charge exchange";
     chargeState_ = population_->getChargeState();
+    label_ = "charge exchange " + std::to_string(chargeState_) + '+';
     mullerSalzbornCrossSection_ = 1.43e-16 *
         std::pow((double)chargeState_, 1.17) *
         std::pow(ionizationPotentialEv_, -2.76);
@@ -34,10 +34,9 @@ double ChargeExchangeReaction::crossSection(double, void *args) {
 
 CollisionProducts ChargeExchangeReaction::computeReactionProducts(
     Rng &rng, const Point &, const Particle &target) const {
-    // Elastic collision kinematics calculated in center of mass frame
     std::vector<Particle> products;
-
     if (chargeState_ == 1) {
+        // Elastic collision kinematics calculated in center of mass frame
         // Projectile particle velocity is isotropic Maxwell-Boltzmann:
         Vector ionVelocity = population_->getRandomParticleVelocity(rng);
         Vector neutralVelocity = target.getVelocity();
@@ -59,8 +58,13 @@ CollisionProducts ChargeExchangeReaction::computeReactionProducts(
         neutralProduct.setVelocity(productVel);
 
         products.push_back(neutralProduct);
+
+        return std::make_pair(products, 0);
     }
 
-    return std::make_pair(products, 0);
+    // If the bombarding population is greater than 1+, there are no neutral
+    // products but the neutral is ionized and plasma charge state is offset by
+    // one
+    return std::make_pair(products, 1);
 }
 
