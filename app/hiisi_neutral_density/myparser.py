@@ -31,9 +31,9 @@ def parseData(prefix, dimensions):
     nz = nIntervals[2]
     nxyz = nx*ny*nz
     nDecimals = int(log10(nz) + 1)
-    xvalues = [xyzMin[0] + i*(xyzMax[0] - xyzMin[0]) for i in range(nx)]
-    yvalues = [xyzMin[1] + i*(xyzMax[1] - xyzMin[1]) for i in range(ny)]
-    zvalues = [xyzMin[2] + i*(xyzMax[2] - xyzMin[2]) for i in range(nz)]
+    xvalues = [xyzMin[0] + i/nx*(xyzMax[0] - xyzMin[0]) for i in range(nx)]
+    yvalues = [xyzMin[1] + i/ny*(xyzMax[1] - xyzMin[1]) for i in range(ny)]
+    zvalues = [xyzMin[2] + i/nz*(xyzMax[2] - xyzMin[2]) for i in range(nz)]
     nums = [str(iz).zfill(nDecimals) for iz in range(nz)]
     slices = np.empty((nxyz, 4))
 
