@@ -6,7 +6,7 @@ ElectronIonizationReaction::ElectronIonizationReaction(
     const IonizationParameters &ip)
     : CollisionReaction(population),
       ionizationParameters_(ip) {
-    label_ = "electron ionization";
+    label_ = "ionization";
 }
 
 double ElectronIonizationReaction::getReactionRate(const Point &p,

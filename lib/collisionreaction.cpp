@@ -9,7 +9,7 @@ std::shared_ptr<ParticlePopulation> CollisionReaction::getPopulation() const {
 }
 
 std::string CollisionReaction::getLabel() const {
-    return label_ + ' ' + population_->getLabel();
+    return label_ + " (" + population_->getLabel() + ')';
 }
 
 void CollisionReaction::incrementReactionCounter() {

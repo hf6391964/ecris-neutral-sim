@@ -19,7 +19,7 @@ class ParticlePopulation {
             : element_(element),
               particleMass_eV_(ELEMENT_DATA.at(element_)->mass * ATOMIC_MASS_TO_EV),
               chargeState_(chargeState), densityDistribution_(densityDistribution) {
-            if (chargeState_ == 0) {
+            if (chargeState_ == -1) {
                 label_ = "electrons";
             } else {
                 label_ = std::to_string(chargeState_) + "+ ions";
@@ -29,7 +29,13 @@ class ParticlePopulation {
         ParticlePopulation(double particleMass_eV, int chargeState,
             DensityDistribution densityDistribution)
             : particleMass_eV_(particleMass_eV), chargeState_(chargeState),
-              densityDistribution_(densityDistribution) {}
+              densityDistribution_(densityDistribution) {
+            if (chargeState_ == -1) {
+                label_ = "electrons";
+            } else {
+                label_ = std::to_string(chargeState_) + "+ ions";
+            }
+        }
 
         virtual ~ParticlePopulation() {};
 
