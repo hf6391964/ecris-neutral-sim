@@ -14,21 +14,27 @@ Particle NeutralizationGenerator::sampleNeutralizationReaction(Rng &rng,
             "Cannot sample neutralization: no reactions added");
     }
 
-    NeutralizationChannel *chosenChannel = channels_[0].get();
-    double minTime = channels_[0]->timeToReaction(rng);
+    NeutralizationChannel *chosenChannel = NULL;
+    double maxRate = 0.0;
     double time;
-    for (auto i = channels_.begin() + 1; i != channels_.end(); ++i) {
+    for (auto i = channels_.begin(); i != channels_.end(); ++i) {
         time = (*i)->timeToReaction(rng);
         logger << "Neutralization channel " << (*i)->getLabel() <<
-            ", decay time = " << time;
-        if (time < minTime) {
-            minTime = time;
+            ", decay time = " << time << '\n';
+        double rate = 1.0 / time;
+        if (1.0 / time > maxRate) {
+            maxRate = rate;
             chosenChannel = (*i).get();
         }
     }
 
+    if (chosenChannel == NULL) {
+        throw std::range_error("No neutralization reactions specified, can't continue");
+    }
+
+    double minTime = 1.0 / maxRate;
     logger << "Chosen neutralization channel " << chosenChannel->getLabel() <<
-        ", decay time = " << minTime;
+        ", decay time = " << minTime << '\n';
 
     chosenChannel->incrementReactionCounter();
 
