@@ -144,7 +144,7 @@ void SimulationModel::simulationThread(
             Particle particle =
                 pSource->generateParticle(thread_res->rng, timeRemainder);
 
-            logger << "Particle number " << i <<
+            logger << "\nParticle number " << i <<
                 " generated with timeRemainder = " <<
                 timeRemainder << ", mass = " << particle.getMass_eV() <<
                 " eV\n";
