@@ -19,10 +19,10 @@ class ParticlePopulation {
             : element_(element),
               particleMass_eV_(ELEMENT_DATA.at(element_)->mass * ATOMIC_MASS_TO_EV),
               chargeState_(chargeState), densityDistribution_(densityDistribution) {
-            if (chargeState_ == -1) {
+            if (chargeState_ == 0) {
                 label_ = "electrons";
             } else {
-                label_ = chargeState_ + "+ ions";
+                label_ = std::to_string(chargeState_) + "+ ions";
             }
         }
 
