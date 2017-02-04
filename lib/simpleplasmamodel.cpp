@@ -81,7 +81,7 @@ void SimplePlasmaModel::populateNeutralizationReactions(
     FlychkParser parser(flychkFilename);
     double recombinationRateCoefficient;
     if (!parser.getTotalRateCoefficient(
-        particlePopulations_[1]->getTemperature(), 1,
+        particlePopulations_[0]->getTemperature(), 1,
         recombinationRateCoefficient)) {
         throw std::invalid_argument(
             "Couldn't find recombination rate coefficient from FLYCHK");
