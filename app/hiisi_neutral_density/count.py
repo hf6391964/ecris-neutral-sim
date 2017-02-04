@@ -13,6 +13,7 @@ PLOTDIR = 'plots'
 def makePlots(prefix, dimensions, parsedData, sliceAx):
     nIntervals, xyzMin, xyzMax = dimensions
     xvalues, yvalues, zvalues, nums, slices = parsedData
+    axValuesArr = [xvalues, yvalues, zvalues]
 
     if not path.isdir(PLOTDIR):
         makedirs(PLOTDIR)
@@ -21,26 +22,25 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
 
     sliceAx = max(min(int(sliceAx), 2), 0)
 
-    if sliceAx == 2:
-        ax1 = 1
-        ax2 = 0
-        axvalues = zvalues
-    elif sliceAx == 1:
-        ax1 = 0
-        ax2 = 2
-        axvalues = yvalues
-        slices = np.transpose(slices, axes=[2, 0, 1, 3])
-    else:
+    if sliceAx == 0:
         ax1 = 2
         ax2 = 1
-        axvalues = xvalues
-        slices = np.transpose(slices, axes=[1, 2, 0, 3])
+    elif sliceAx == 1:
+        ax1 = 2
+        ax2 = 0
+    else:
+        ax1 = 0
+        ax2 = 1
 
     axNames = ['X', 'Y', 'Z']
 
     if abs(xyzMax[ax1] - xyzMin[ax1]) < abs(xyzMax[ax2] - xyzMin[ax2]):
         ax1, ax2 = ax2, ax1
-        slices = np.transpose(slices, axes=[0, 2, 1, 3])
+
+    dimidx = [2, 1, 0]
+    slices = np.transpose(slices,
+                          axes=[dimidx[sliceAx], dimidx[ax2], dimidx[ax1], 3])
+    axvalues = axValuesArr[sliceAx]
 
     X = np.linspace(xyzMin[ax1], xyzMax[ax1], nIntervals[ax1] + 1)
     Y = np.linspace(xyzMin[ax2], xyzMax[ax2], nIntervals[ax2] + 1)
