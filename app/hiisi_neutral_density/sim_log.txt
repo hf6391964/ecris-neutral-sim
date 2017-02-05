@@ -1,0 +1,25 @@
+Surface pumping and collision statistics:
+radial_wall: 61954036 collisions, 0 particles pumped
+end1: 5395689 collisions, 5395689 particles pumped
+end2: 4604300 collisions, 4604300 particles pumped
+
+Collision reaction statistics:
+ionization (electrons): 18948330 reactions
+charge exchange (1+ ions): 16 reactions
+charge exchange (2+ ions): 160 reactions
+charge exchange (3+ ions): 1005 reactions
+charge exchange (4+ ions): 5651 reactions
+charge exchange (5+ ions): 29307 reactions
+charge exchange (6+ ions): 72362 reactions
+charge exchange (7+ ions): 346191 reactions
+charge exchange (8+ ions): 101730 reactions
+charge exchange (9+ ions): 57809 reactions
+charge exchange (10+ ions): 16481 reactions
+charge exchange (11+ ions): 4507 reactions
+charge exchange (12+ ions): 1285 reactions
+charge exchange (13+ ions): 363 reactions
+
+Neutralization channel statistics:
+wall neutralization: 19585181 neutralization reactions
+recombination: 0 neutralization reactions
+

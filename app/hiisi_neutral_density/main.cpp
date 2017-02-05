@@ -15,8 +15,8 @@ int main() {
         1.0/4096.0, 1.0/1024.0, 1.0/256.0, 1.0/64.0, 1.0/16.0, 1.0/8.0, 1.0/2.0,
         1.0/8.0, 1.0/16.0, 1.0/64.0, 1.0/256.0, 1.0/1024.0, 1.0/4096.0
     };
-    const double GRID_SIZE = 0.005;
-    const size_t N_PARTICLES = 10000;//100000000;
+    const double GRID_SIZE = 0.0025;
+    const size_t N_PARTICLES = 10000000;//000;
 
     std::vector<double> ION_TEMPERATURES(ION_RELATIVE_DENSITIES.size(),
         ION_TEMPERATURE);
@@ -52,7 +52,7 @@ int main() {
 
     logger.setLogging(PARTICLE_LOOP_LOGGING);
     simModel.runSimulation(generator, ngenerator,
-        N_PARTICLES, "test", true, GRID_SIZE, 0.1, 2.0, 4);
+        N_PARTICLES, "test", 0, GRID_SIZE, 0.0005);
     Util::deallocateThreadResources(thread_res);
 
     logger.setLogging(true);
