@@ -17,42 +17,27 @@ void SimulationModel::runSimulation(
     CollisionGenerator &collisionGenerator,
     NeutralizationGenerator &neutralizationGenerator,
     unsigned long nParticles,
-    std::string prefix, bool stationary, double gridSize, double maxTime,
-    double timestepFactor, int nThreads) {
+    std::string prefix, unsigned int nTimeSamples, double gridSize,
+    double samplingInterval, double cutoffTime, int nThreads) {
     if (logger.isLogging()) {
         nThreads = 1;
     } else if (nThreads <= 0) {
-        nThreads = std::thread::hardware_concurrency();
-        if (nThreads == 0) {
-            nThreads = 1;
-        }
-        nThreads = 2*nThreads + 1;
+        nThreads = std::thread::hardware_concurrency() + 1;
     }
 
-    long particlesInChunk = nParticles / nThreads;
+    bool stationary = nTimeSamples == 0;
 
-    // TODO figure out typical particle parameters (e.g. average of present
-    // particle masses and surface temperatures)
-    //
-    // There will be two separate choices of timestep length:
-    // the density sampling timestep (long, to reduce correlation between
-    // sampled frames) and the particle simulation timestep (determined in the
-    // particle loop based on reaction rate majorant estimate)
-    double averageSpeed = Util::getMBAverage(ROOM_TEMPERATURE_EV,
-        ARGON_DATA.mass * ATOMIC_MASS_TO_EV);
-    double dt = timestepFactor * gridSize / averageSpeed;
-    unsigned long nSteps = maxTime / dt;
-    std::cout << "max steps: " << nSteps << std::endl;
+    long particlesInChunk = nParticles / nThreads;
 
     Grid grid(surfaces_.bbox(), gridSize);
 
     size_t gSize = grid.arraySize();
     size_t arraySize = gSize;
     if (!stationary) {
-        arraySize *= nSteps;
+        arraySize *= nTimeSamples;
     }
 
-    std::cout << "Timestep: " << dt << std::endl;
+    std::cout << "Sampling interval: " << samplingInterval << std::endl;
     std::cout << "Running with " << nThreads << " thread(s)..." << std::endl;
 
     std::seed_seq sseq = {2016, 9, 19};
@@ -73,8 +58,8 @@ void SimulationModel::runSimulation(
         countPointers.push_back(count);
         threads.push_back(std::thread(&SimulationModel::simulationThread,
             this, &collisionGenerator, &neutralizationGenerator,
-            particlesInChunk, nSteps, dt, grid, seeds[i],
-            velocity, count, stationary));
+            particlesInChunk, samplingInterval, nTimeSamples, grid, seeds[i],
+            velocity, count, stationary, cutoffTime));
     }
 
     for (auto it = threads.begin(); it != threads.end(); ++it) {
@@ -103,12 +88,12 @@ void SimulationModel::runSimulation(
     if (stationary) {
         writeResults(prefix, velocity, count, grid, 0.0, "stationary");
     } else {
-        int nDigits = std::log10(nSteps) + 1;
-        for (unsigned long step = 0; step < nSteps; step++) {
+        int nDigits = std::log10(nTimeSamples) + 1;
+        for (unsigned long step = 0; step < nTimeSamples; step++) {
             std::stringstream suffix;
             suffix << std::setw(nDigits) << std::setfill('0') << step;
             writeResults(prefix, velocity + step*gSize, count + step*gSize,
-                grid, step * dt, suffix.str());
+                grid, step * samplingInterval, suffix.str());
         }
     }
 
@@ -125,167 +110,158 @@ void SimulationModel::runSimulation(
 void SimulationModel::simulationThread(
     CollisionGenerator *collisionGenerator,
     NeutralizationGenerator *neutralizationGenerator,
-    unsigned long nParticles,
-    unsigned long maxSteps, double dt, const Grid &grid, uint_least32_t seed,
-    Vector* velocity, unsigned long* count, bool stationary) const {
+    unsigned long nParticles, double samplingInterval,
+    long nTimeSamples, const Grid &grid, uint_least32_t seed,
+    Vector* velocity, unsigned long* count, bool stationary,
+    double cutoffTime) const {
 
     simthreadresources *thread_res = Util::allocateThreadResources(seed);
 
-    size_t gridSize = grid.arraySize();
+    const size_t gridSize = grid.arraySize();
 
     for (NeutralSource* pSource : sources_) {
         // TODO run simulation separately for each particle species in the
         // spectrum
 
         for (unsigned long i = 0; i < nParticles; ++i) {
-            // Do this to spread the gas pulse evenly across the whole timestep
+            // Spread the gas pulse evenly across the whole sample interval
             // in time dependent simulations
-            double timeRemainder = uni01(thread_res->rng)*dt;
+            double initialTime = -uni01(thread_res->rng) * samplingInterval;
             Particle particle =
-                pSource->generateParticle(thread_res->rng, timeRemainder);
+                pSource->generateParticle(thread_res->rng, initialTime);
+            long nextSampleIndex = 0;
 
             logger << "\nParticle number " << i <<
-                " generated with timeRemainder = " <<
-                timeRemainder << ", mass = " << particle.getMass_eV() <<
-                " eV\n";
-
+                " generated with initial time = " << initialTime <<
+                ", mass = " << particle.getMass_eV() << " eV\n";
 
             if (!particle.findNextIntersection(surfaces_)) {
                 logger << "ERR: generated particle doesn't have intersections\n";
                 continue;
             }
 
-            bool destroyedInReaction = false;
+            while (particle.getTime() < cutoffTime &&
+                   (stationary || nextSampleIndex < nTimeSamples)) {
+                double isectDistance = particle.distanceToIntersection();
+                double speed = particle.getSpeed();
+                double timeToIntersection = isectDistance / speed;
+                // This mean free time is determined by the reaction with
+                // the greatest rate, so in principle it should suffice
+                // for accurate enough sampling of collision reactions
+                double meanFreeTime =
+                    collisionGenerator->getMeanFreeTime(speed);
 
-            for (unsigned long step = 0; step < maxSteps; ++step) {
-                bool moving = true;
+                double timeToSampleBoundary = nextSampleIndex * samplingInterval -
+                    particle.getTime();
 
-                while (moving) {
-                    if (!particle.hasNextIntersection()) {
-                        logger << "Particle doesn't have intersections\n";
-                        moving = false;
-                        destroyedInReaction = true;
-                        break;
-                    } else if (particle.getState() == Particle::Pumped) {
-                        logger << "Particle pumped out\n";
-                        moving = false;
-                        destroyedInReaction = true;
-                        break;
+                // If temporally close to the sample boundary, ensure that we step
+                // right there
+                double timestep = std::min(meanFreeTime, timeToSampleBoundary +
+                    0.001 * samplingInterval);
+
+                logger << "Moving forward by step = " << timestep <<
+                    ", isectDistance = " << isectDistance <<
+                    ", speed = " << speed <<
+                    ", mft = " << meanFreeTime <<
+                    ", particle time = " << particle.getTime() << '\n';
+
+                if (timeToIntersection < timestep) {
+                    // Approximation: if time to intersection is smaller than
+                    // the mean free time, just go directly to the intersection
+                    particle.goToIntersection(thread_res->rng);
+                    particle.findNextIntersection(surfaces_);
+
+                    IntersectionPoint ip = particle.getNextIntersection();
+                    if (ip.pSurface != NULL) {
+                        logger << "Next intersected surface: " <<
+                            ip.pSurface->getLabel() << ", point is (" <<
+                            ip.point.x() << ", " << ip.point.y() <<
+                            ", " << ip.point.z() << ")\n";
+                    }
+                } else {
+                    particle.goForward(timestep);
+
+                    Point p = particle.getPosition();
+                    logger << "Stepped forward by " << timestep <<
+                        ", position is (" << p.x() << ", " << p.y() <<
+                        ", " << p.z() << ")\n";
+
+                    CollisionReaction *reaction =
+                        collisionGenerator->sampleCollision(thread_res->rng,
+                            p, speed, timestep);
+
+                    if (reaction != NULL) {
+                        CollisionProducts products =
+                            reaction->computeReactionProducts(thread_res->rng,
+                            p, particle);
+
+                        std::vector<Particle> neutralProducts =
+                            products.first;
+                        unsigned int ionProducts = products.second;
+
+                        logger << "sampled a collision reaction, label = " <<
+                            reaction->getLabel() << ", " <<
+                            neutralProducts.size() <<
+                            " neutral products and " <<
+                            ionProducts << " ionized products\n";
+
+                        if (neutralProducts.size() > 0) {
+                            particle = neutralProducts[0];
+                        } else if (ionProducts == 1) {
+                            // One ionized product produced, sample a neutralization reaction
+                            particle =
+                                neutralizationGenerator->sampleNeutralizationReaction(thread_res->rng, particle);
+                        } else {
+                            // There are no reaction products, we are
+                            // done with this particle.
+                            particle.setState(Particle::DestroyedInReaction);
+                            logger << "No reaction products, particle marked as destroyed\n";
+                        }
+
+                        particle.findNextIntersection(surfaces_);
+
+                        IntersectionPoint ip = particle.getNextIntersection();
+                        if (ip.pSurface != NULL) {
+                            logger << "Next intersected surface: " <<
+                                ip.pSurface->getLabel() << ", point is (" <<
+                                ip.point.x() << ", " << ip.point.y() <<
+                                ", " << ip.point.z() << ")\n";
+                        }
+                    }
+                }
+
+                Particle::State particleState = particle.getState();
+                if (!particle.hasNextIntersection() ||
+                    particleState != Particle::Free) {
+                    std::string logStr;
+                    if (particleState == Particle::Pumped) {
+                        logStr = "Particle pumped out\n";
+                    } else if (particleState == Particle::DestroyedInReaction) {
+                        logStr = "Particle was destroyed in a reaction\n";
                     } else {
-                        double isectDistance = particle.distanceToIntersection();
-                        double speed = particle.getSpeed();
-                        double meanFreeTime =
-                            collisionGenerator->getMeanFreeTime(speed);
+                        logStr = "Particle doesn't have intersections\n";
+                    }
+                    logger << logStr;
+                    break;
+                }
 
-                        double timestep = std::min(timeRemainder, meanFreeTime);
-
-                        logger << "Moving, isectDistance = " << isectDistance <<
-                            ", speed = " << speed <<
-                            ", mft = " << meanFreeTime <<
-                            ", particle time = " << particle.getTime() << '\n';
-
-                        if (isectDistance <= speed*timestep) {
-                            // TODO this might need some rethinking. If time to
-                            // wall intersection is less than mean free time,
-                            // currently no collision reactions will be sampled
-                            // but the particle will be directly brought to the
-                            // intersection.
-                            timeRemainder -= isectDistance / speed;
-                            particle.goToIntersection(thread_res->rng);
-                            particle.findNextIntersection(surfaces_);
-
-                            IntersectionPoint ip = particle.getNextIntersection();
-                            if (ip.pSurface != NULL) {
-                                logger << "Next intersected surface: " <<
-                                    ip.pSurface->getLabel() << ", point is (" <<
-                                    ip.point.x() << ", " << ip.point.y() <<
-                                    ", " << ip.point.z() << ")\n";
-                            }
-                        } else {
-                            particle.goForward(timestep);
-                            timeRemainder -= timestep;
-
-                            Point p = particle.getPosition();
-                            logger << "Stepped forward by " << timestep <<
-                                ", position is (" << p.x() << ", " << p.y() <<
-                                ", " << p.z() << ")\n";
-
-                            CollisionReaction *reaction =
-                                collisionGenerator->sampleCollision(
-                                    thread_res->rng, particle.getPosition(),
-                                    speed, timestep);
-
-                            if (reaction != NULL) {
-                                CollisionProducts products =
-                                    reaction->computeReactionProducts(thread_res->rng,
-                                    particle.getPosition(), particle);
-
-                                std::vector<Particle> neutralProducts =
-                                    products.first;
-                                unsigned int ionProducts = products.second;
-
-                                logger << "sampled a collision reaction, label = " <<
-                                    reaction->getLabel() << ", " <<
-                                    neutralProducts.size() <<
-                                    " neutral products and " <<
-                                    ionProducts << " ionized products\n";
-
-                                if (neutralProducts.size() >= 1) {
-                                    particle = neutralProducts[0];
-                                    particle.findNextIntersection(surfaces_);
-
-                                    IntersectionPoint ip = particle.getNextIntersection();
-                                    if (ip.pSurface != NULL) {
-                                        logger << "Next intersected surface: " <<
-                                            ip.pSurface->getLabel() << ", point is (" <<
-                                            ip.point.x() << ", " << ip.point.y() <<
-                                            ", " << ip.point.z() << ")\n";
-                                    }
-                                } else if (ionProducts == 1) {
-                                    // There are no reaction products, we are
-                                    // done with this particle.
-                                    particle =
-                                        neutralizationGenerator->sampleNeutralizationReaction(thread_res->rng, particle);
-                                } else {
-                                    destroyedInReaction = true;
-                                }
+                // Check if we should sample
+                long sampleIndex = Util::fastFloor(particle.getTime() / samplingInterval);
+                if (sampleIndex >= nextSampleIndex) {
+                    nextSampleIndex = sampleIndex + 1;
+                    logger << "Sampled particle at t = " << particle.getTime() << '\n';
+                    size_t arrIndex;
+                    if (grid.arrayIndex(particle.getPosition(), arrIndex)) {
+                        if (!stationary) {
+                            if (sampleIndex < nTimeSamples) {
+                                arrIndex += sampleIndex*gridSize;
                             }
                         }
-
-                        if (timeRemainder <= 0.0) {
-                            moving = false;
-                        }
+                        count[arrIndex] += 1;
+                        velocity[arrIndex] = velocity[arrIndex] +
+                            particle.getVelocity();
                     }
                 }
-
-                if (destroyedInReaction) {
-                    break;
-                }
-
-                size_t arrIndex;
-                if (grid.arrayIndex(particle.getPosition(), arrIndex)) {
-                    if (!stationary) {
-                        size_t timestep = particle.getTime() / dt;
-                        if (timestep < maxSteps) {
-                            arrIndex += step*gridSize;
-                        } else {
-                            break;
-                        }
-                    }
-                    count[arrIndex] += 1;
-                    velocity[arrIndex] = velocity[arrIndex] +
-                        particle.getVelocity();
-                }
-
-                if (!particle.hasNextIntersection()) {
-                    logger << "Particle doesn't have intersections\n";
-                    break;
-                } else if (particle.getState() == Particle::Pumped) {
-                    logger << "Particle pumped out\n";
-                    break;
-                }
-
-                timeRemainder = dt;
             }
         }
     }
@@ -313,4 +289,3 @@ void SimulationModel::writeResults(std::string prefix, Vector* velocity,
 
     f.close();
 }
-

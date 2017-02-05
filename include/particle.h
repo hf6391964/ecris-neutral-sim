@@ -9,7 +9,7 @@
 
 class Particle {
     public:
-        enum State { Free, Pumped };
+        enum State { Free, Pumped, DestroyedInReaction };
 
         Particle(Element element, double time);
 
@@ -19,6 +19,7 @@ class Particle {
         const Ray getRay() const;
         double getMass_eV() const;
         State getState() const;
+        void setState(State state);
         double getSpeed() const;
         double getTime() const;
         void setPosition(const Point &position);
@@ -44,4 +45,3 @@ class Particle {
         State state_ = Free;
         IntersectionPoint nextIntersection_;
 };
-

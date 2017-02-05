@@ -133,3 +133,6 @@ IntersectionPoint Particle::getNextIntersection() const {
     return nextIntersection_;
 }
 
+void Particle::setState(Particle::State state) {
+    state_ = state;
+}
