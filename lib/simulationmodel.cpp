@@ -218,14 +218,15 @@ void SimulationModel::simulationThread(
                             logger << "No reaction products, particle marked as destroyed\n";
                         }
 
-                        particle.findNextIntersection(surfaces_);
-
-                        IntersectionPoint ip = particle.getNextIntersection();
-                        if (ip.pSurface != NULL) {
-                            logger << "Next intersected surface: " <<
-                                ip.pSurface->getLabel() << ", point is (" <<
-                                ip.point.x() << ", " << ip.point.y() <<
-                                ", " << ip.point.z() << ")\n";
+                        if (particle.getState() != Particle::DestroyedInReaction) {
+                            particle.findNextIntersection(surfaces_);
+                            IntersectionPoint ip = particle.getNextIntersection();
+                            if (ip.pSurface != NULL) {
+                                logger << "Next intersected surface: " <<
+                                    ip.pSurface->getLabel() << ", point is (" <<
+                                    ip.point.x() << ", " << ip.point.y() <<
+                                    ", " << ip.point.z() << ")\n";
+                            }
                         }
                     }
                 }
