@@ -219,6 +219,13 @@ void SimulationModel::simulationThread(
                         }
 
                         if (particle.getState() != Particle::DestroyedInReaction) {
+                            // The particle might have transitioned in time, so
+                            // adjust nextSampleIndex so that the next sampling
+                            // will be aligned again to sample boundaries
+                            // (otherwise the particle could get sampled immediately)
+                            long sampleIndex = particle.getTime() / samplingInterval;
+                            nextSampleIndex = sampleIndex + 1;
+
                             particle.findNextIntersection(surfaces_);
                             IntersectionPoint ip = particle.getNextIntersection();
                             if (ip.pSurface != NULL) {
