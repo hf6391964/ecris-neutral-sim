@@ -2,6 +2,7 @@ from sys import argv, exit
 from os import makedirs, path
 
 import numpy as np
+import numpy.ma as ma
 from matplotlib import pyplot as plt
 
 import myparser
@@ -18,6 +19,9 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
     if not path.isdir(PLOTDIR):
         makedirs(PLOTDIR)
 
+    slices = ma.masked_values(slices, 0)
+
+    cMin = np.min(slices[:, :, :, 3])
     cMax = np.max(slices[:, :, :, 3])
 
     sliceAx = max(min(int(sliceAx), 2), 0)
@@ -53,30 +57,41 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
         data = slices[i, :, :, 3]
 
         heatmap = plt.pcolormesh(XX, YY, data, edgecolor='face', vmin=0,
-                                 vmax=cMax)
+                                 vmax=cMax, cmap=plt.get_cmap('inferno'))
 
         plt.xlabel('${0}$ [m]'.format(axNames[ax1]))
         plt.ylabel('${0}$ [m]'.format(axNames[ax2]))
         plt.xlim(xyzMin[ax1], xyzMax[ax1])
         plt.ylim(xyzMin[ax2], xyzMax[ax2])
         plt.gca().set_aspect('equal')
+        plt.gca().set_facecolor((0, 0, 0))
         plt.title('{0} = {1:.3f}'.format(axNames[sliceAx], z))
         cb = plt.colorbar(heatmap, drawedges=False)
         cb.set_label('Total particle hit count')
-        plt.savefig(countPath, bbox_inches='tight')
+        plt.savefig(countPath, bbox_inches='tight', dpi=300)
         plt.clf()
 
 
 if len(argv) < 2:
-    exit('usage: python count.py <prefix> <slice axis x/y/z>')
+    exit('usage: python count.py <prefix> <slice axis x/y/z/all>')
 
 prefix = argv[1]
 
-sliceAxes = {'x': 0, 'y': 1, 'z': 2}
-sliceAx = sliceAxes[argv[2].lower()]
+sliceAxes = {'x': 0, 'y': 1, 'z': 2, 'all': 3}
 
-dimensions = myparser.readDimensions(prefix)
-parsedData = myparser.parseData(prefix, dimensions)
+ax = argv[2].lower()
+if not ax in sliceAxes:
+    exit('usage: python count.py <prefix> <slice axis x/y/z/all>')
 
-makePlots(prefix, dimensions, parsedData, sliceAx)
+sliceAx = sliceAxes[ax]
+if sliceAx == 3:
+    print('plotting all axes')
+    for x in range(0, 3):
+        dimensions = myparser.readDimensions(prefix)
+        parsedData = myparser.parseData(prefix, dimensions)
+        makePlots(prefix, dimensions, parsedData, x)
+else:
+    dimensions = myparser.readDimensions(prefix)
+    parsedData = myparser.parseData(prefix, dimensions)
+    makePlots(prefix, dimensions, parsedData, sliceAx)
 
