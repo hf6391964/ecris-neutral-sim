@@ -22,6 +22,7 @@ class Particle {
         void setState(State state);
         double getSpeed() const;
         double getTime() const;
+        void setTime(double time);
         void setPosition(const Point &position);
         void setVelocity(double speed, const Direction &direction);
         void setVelocity(const Vector &vel);

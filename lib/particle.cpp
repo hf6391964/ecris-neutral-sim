@@ -39,6 +39,10 @@ double Particle::getTime() const {
     return time_;
 }
 
+void Particle::setTime(double time) {
+    time_ = time;
+}
+
 void Particle::setPosition(const Point &position) {
     position_ = position;
 }
