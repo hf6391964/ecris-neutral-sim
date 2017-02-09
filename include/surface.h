@@ -38,7 +38,7 @@ class Surface {
             double avgTriangleArea = -1.0);
 
         void setAccommodationCoefficients(
-            std::unordered_map<Element, double> coefficients);
+            std::unordered_map<Element, double, element_hash> coefficients);
 
         double getAccommodationCoefficient(Element element) const;
 
