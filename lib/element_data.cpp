@@ -10,7 +10,7 @@ const ElementData ARGON_DATA = {
     }
 };
 
-const std::unordered_map<Element, const ElementData *> ELEMENT_DATA {
+const std::unordered_map<Element, const ElementData *, element_hash> ELEMENT_DATA {
     { ARGON, &ARGON_DATA }
 };
 

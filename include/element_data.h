@@ -29,7 +29,11 @@ struct ElementData {
 
 enum Element { ARGON, ELEMENT_NONE };
 
+struct element_hash {
+    size_t operator()(const Element &el) const { return el; };
+};
+
 extern const ElementData ARGON_DATA;
 
-extern const std::unordered_map<Element, const ElementData *> ELEMENT_DATA;
+extern const std::unordered_map<Element, const ElementData *, element_hash> ELEMENT_DATA;
 
