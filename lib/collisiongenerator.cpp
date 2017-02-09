@@ -36,7 +36,8 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
 
     _cleanup();
 
-    size_t nBytes = nSpeedSteps_ * (1 + gridSize_ * (1 + nReactions_));
+    size_t nBytes = nSpeedSteps_ * (1 + gridSize_ * (1 + nReactions_)) *
+        sizeof(double);
     std::cout << "Precomputed values will take up " << nBytes << " bytes\n";
     // Allocate necessary resources
     totalReactionRate_ = new double[nSpeedSteps_ * gridSize_];
