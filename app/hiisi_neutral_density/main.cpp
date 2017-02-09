@@ -5,18 +5,21 @@
 #include "element_data.h"
 #include "logger.h"
 
-int main() {
+void doRun(size_t N_PARTICLES) {
     const bool PARTICLE_LOOP_LOGGING = false;
     const double ELECTRON_DENSITY = 1e17;
     const double ELECTRON_TEMPERATURE = 10e3;
     const Element ELEMENT = ARGON;
     const double ION_TEMPERATURE = 4.0;
     std::vector<double> ION_RELATIVE_DENSITIES = {
-        1.0/4096.0, 1.0/1024.0, 1.0/256.0, 1.0/64.0, 1.0/16.0, 1.0/8.0, 1.0/2.0,
-        1.0/8.0, 1.0/16.0, 1.0/64.0, 1.0/256.0, 1.0/1024.0, 1.0/4096.0
+        0.0729343,   0.04383817,  0.03905347,  0.03666112,  0.0586578,   0.05133851,
+        0.06074164,  0.13743072,  0.1514723,   0.13927348,  0.10523982,  0.06349422,
+        0.02817102,  0.00892281,  0.00243114,  0.00033945
     };
-    const double GRID_SIZE = 0.0025;
-    const size_t N_PARTICLES = 10000000;//000;
+    const double GRID_SIZE = 0.001;
+    const double SAMPLING_INTERVAL = 0.0005;
+    const size_t N_TIME_SAMPLES = 0;  // 0 for stationary
+    const double ESCAPE_TIME = 1e-5;
 
     std::vector<double> ION_TEMPERATURES(ION_RELATIVE_DENSITIES.size(),
         ION_TEMPERATURE);
@@ -44,21 +47,36 @@ int main() {
 
     CollisionGenerator generator(simModel.getGrid(GRID_SIZE));
     NeutralizationGenerator ngenerator;
-    plasmamodel.populateNeutralizationReactions(ngenerator, 1e-6,
+    plasmamodel.populateNeutralizationReactions(ngenerator, ESCAPE_TIME,
         "cylinder_collision_points.csv",
         "z1_collision_points.csv", "z2_collision_points.csv",
         "rt.018.dat", surfaces, ELECTRON_DENSITY);
-    plasmamodel.populateCollisionReactions(generator, thread_res, 0.1);
+    plasmamodel.populateCollisionReactions(generator, thread_res, 0.5);
 
+    std::string name = "test" + std::to_string(N_PARTICLES);
     logger.setLogging(PARTICLE_LOOP_LOGGING);
     simModel.runSimulation(generator, ngenerator,
-        N_PARTICLES, "test", 0, GRID_SIZE, 0.0005);
+        N_PARTICLES, name, N_TIME_SAMPLES, GRID_SIZE, SAMPLING_INTERVAL, 1.0, 1);
     Util::deallocateThreadResources(thread_res);
 
     logger.setLogging(true);
     surfaces.writeStatistics(logger);
     generator.writeStatistics(logger);
     ngenerator.writeStatistics(logger);
+}
+
+int main() {
+    /*std::vector<size_t> runs = {
+        1000000, 2000000, 5000000, 10000000, 20000000, 50000000,
+        100000000, 200000000
+    };
+
+    for (size_t size : runs) {
+        std::cout << "Running with " << size << " particles" << std::endl;
+        doRun(size);
+    }*/
+
+    doRun(1000000);
 
     return 0;
 }
