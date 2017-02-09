@@ -48,12 +48,12 @@ bool FlychkParser::parseFlychkData(std::string filename,
     while (std::getline(datafile, line)) {
         std::vector<double> fields;
         fields.reserve(nFields - 1);
-        linestream = std::stringstream(line);
+        std::stringstream linestream1(line);
         int nParsedFields = 0;
         double temperature = 0;
-        while (linestream) {
+        while (linestream1) {
             float f;
-            if (linestream >> f) {
+            if (linestream1 >> f) {
                 nParsedFields += 1;
                 if (nParsedFields == 1) {
                     temperature = f;
