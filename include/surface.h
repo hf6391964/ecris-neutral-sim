@@ -28,7 +28,7 @@ class Surface {
     double temperature_;
     std::atomic_ulong pumpedParticles_;
     std::atomic_ulong collisionCounter_;
-    std::unordered_map<Element, double> accommodationCoefficients_;
+    std::unordered_map<Element, double, element_hash> accommodationCoefficients_;
     const double DEFAULT_ACCOMMODATION_COEFFICIENT = 1.0;
     std::string label_;
 
