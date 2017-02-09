@@ -14,12 +14,12 @@ Surface::Surface(std::string filename, double pumpingFactor, double temperature,
 }
 
 void Surface::setAccommodationCoefficients(
-    std::unordered_map<Element, double> coefficients) {
+    std::unordered_map<Element, double, element_data> coefficients) {
     accommodationCoefficients_ = coefficients;
 }
 
 double Surface::getAccommodationCoefficient(Element element) const {
-    std::unordered_map<Element, double>::const_iterator coeff_it =
+    std::unordered_map<Element, double, element_data>::const_iterator coeff_it =
         accommodationCoefficients_.find(element);
     if (coeff_it == accommodationCoefficients_.end()) {
         return DEFAULT_ACCOMMODATION_COEFFICIENT;
