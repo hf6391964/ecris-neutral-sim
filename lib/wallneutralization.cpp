@@ -26,8 +26,8 @@ WallNeutralization::WallNeutralization(
 
     for (Point p : wallEndpoints) {
         double theta = std::min(M_PI, std::max(-M_PI, std::atan2(p.y(), p.x())));
-        double thetaBinned = angularResolution_ * Util::fastFloor(theta / angularResolution);
-        double zBinned = spatialResolution_ * Util::fastFloor(p.z() / spatialResolution);
+        double thetaBinned = angularResolution_ * Util::fastFloor(theta / angularResolution_);
+        double zBinned = spatialResolution_ * Util::fastFloor(p.z() / spatialResolution_);
         double r = std::sqrt(p.x()*p.x() + p.y()*p.y());
         Endpoint ep = { r, thetaBinned, zBinned };
         wallPoints_.push_back(ep);
@@ -75,38 +75,39 @@ Particle WallNeutralization::sampleNeutralProduct(Rng &rng,
         cumulativeNormalizedEndpointCount_.begin();
     size_t j = uni01(rng) * pointSets_.at(i).size();
     Endpoint ep = pointSets_.at(i).at(j);
-    Point p;
+    Ray ray;
     if (i == 0) {
         // Endpoint is on the radial wall
         double r = ep.coord1,
-               theta = ep.coord2 + uni01(rng) * angularResolution_;
+               theta = ep.coord2 + uni01(rng) * angularResolution_,
+               z = ep.coord3 + uni01(rng) * spatialResolution_;
 
-        p = Point(
+        ray = Ray(Point(0.0, 0.0, z), Point(
             r * std::cos(theta),
             r * std::sin(theta),
-            ep.coord3 + uni01(rng) * spatialResolution_
-        );
+            z
+        ));
     } else {
         // Endpoint is on either of the ends
-        p = Point(
+        ray = Ray(Point(0.0, 0.0, 0.0), Point(
             ep.coord1 + uni01(rng) * spatialResolution_,
             ep.coord2 + uni01(rng) * spatialResolution_,
             ep.coord3
-        );
+        ));
     }
 
-    // 2. Sample particle position from the plasma 1+ distribution
-    Point pos = population_->getRandomParticlePosition(rng);
+    // 2. Sample particle speed from the plasma 1+ distribution
     double speed = population_->getRandomParticleSpeed(rng);
 
     // Ray from the particle start point to the wall endpoint
-    Ray r(pos, p);
     IntersectionPoint ip;
-    if (!surfaces_.findClosestIntersection(r, ip)) {
-        throw std::out_of_range("Could not find wall intersection point");
+    if (!surfaces_.findClosestIntersection(ray, ip)) {
+        std::cout << i << std::endl;
+        std::cout << "ray = " << ray << "\n";
+        throw std::out_of_range("Could not find wall intersection point ");
     }
 
-    result.setVelocity(speed, r.direction());
+    result.setVelocity(speed, ray.direction());
     result.setNextIntersection(ip);
 
     // 3. Thermal accommodation (handled by Surface)

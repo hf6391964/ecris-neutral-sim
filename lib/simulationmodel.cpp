@@ -33,6 +33,8 @@ void SimulationModel::runSimulation(
 
     size_t gSize = grid.arraySize();
     size_t arraySize = gSize;
+    std::cout << "grid has " << gSize << " cells\n";
+    std::cout << "Need " << ((sizeof(Vector) + sizeof(unsigned long)) * arraySize) << " bytes\n";
     if (!stationary) {
         arraySize *= nTimeSamples;
     }
