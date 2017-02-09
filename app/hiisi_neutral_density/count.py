@@ -16,8 +16,10 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
     xvalues, yvalues, zvalues, nums, slices = parsedData
     axValuesArr = [xvalues, yvalues, zvalues]
 
-    if not path.isdir(PLOTDIR):
-        makedirs(PLOTDIR)
+    plotdir = PLOTDIR + ' ' + prefix
+
+    if not path.isdir(plotdir):
+        makedirs(plotdir)
 
     slices = ma.masked_values(slices, 0)
 
@@ -51,7 +53,7 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
     XX, YY = np.meshgrid(X, Y)
 
     for i, z in enumerate(axvalues):
-        countPath = path.join(PLOTDIR,
+        countPath = path.join(plotdir,
             '{0}_count_{1}_{2}.png'.format(prefix, axNames[sliceAx], nums[i])
         )
         data = slices[i, :, :, 3]
@@ -71,27 +73,27 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
         plt.savefig(countPath, bbox_inches='tight', dpi=300)
         plt.clf()
 
+if __name__ == '__main__':
+    if len(argv) < 2:
+        exit('usage: python count.py <prefix> <slice axis x/y/z/all>')
 
-if len(argv) < 2:
-    exit('usage: python count.py <prefix> <slice axis x/y/z/all>')
+    prefix = argv[1]
 
-prefix = argv[1]
+    sliceAxes = {'x': 0, 'y': 1, 'z': 2, 'all': 3}
 
-sliceAxes = {'x': 0, 'y': 1, 'z': 2, 'all': 3}
+    ax = argv[2].lower()
+    if not ax in sliceAxes:
+        exit('usage: python count.py <prefix> <slice axis x/y/z/all>')
 
-ax = argv[2].lower()
-if not ax in sliceAxes:
-    exit('usage: python count.py <prefix> <slice axis x/y/z/all>')
-
-sliceAx = sliceAxes[ax]
-if sliceAx == 3:
-    print('plotting all axes')
-    for x in range(0, 3):
+    sliceAx = sliceAxes[ax]
+    if sliceAx == 3:
+        print('plotting all axes')
+        for x in range(0, 3):
+            dimensions = myparser.readDimensions(prefix)
+            parsedData = myparser.parseData(prefix, dimensions)
+            makePlots(prefix, dimensions, parsedData, x)
+    else:
         dimensions = myparser.readDimensions(prefix)
         parsedData = myparser.parseData(prefix, dimensions)
-        makePlots(prefix, dimensions, parsedData, x)
-else:
-    dimensions = myparser.readDimensions(prefix)
-    parsedData = myparser.parseData(prefix, dimensions)
-    makePlots(prefix, dimensions, parsedData, sliceAx)
+        makePlots(prefix, dimensions, parsedData, sliceAx)
 
