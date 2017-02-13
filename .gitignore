@@ -14,3 +14,7 @@ main
 tags
 doc/week41/reveal.js-3.3.0
 tmp
+app/hiisi_neutral_density/real-model/stl-external
+sim_log.txt
+*.csv
+!results

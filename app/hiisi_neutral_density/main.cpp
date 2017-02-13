@@ -11,10 +11,10 @@ void doRun(size_t N_PARTICLES) {
     const double ELECTRON_TEMPERATURE = 10e3;
     const Element ELEMENT = ARGON;
     const double ION_TEMPERATURE = 4.0;
-    std::vector<double> ION_RELATIVE_DENSITIES = {
-        0.0729343,   0.04383817,  0.03905347,  0.03666112,  0.0586578,   0.05133851,
-        0.06074164,  0.13743072,  0.1514723,   0.13927348,  0.10523982,  0.06349422,
-        0.02817102,  0.00892281,  0.00243114,  0.00033945
+    std::vector<double> ION_RELATIVE_DENSITIES {
+        0.0729343, 0.04383817, 0.03905347, 0.03666112, 0.0586578, 0.05133851,
+        0.06074164, 0.13743072, 0.1514723, 0.13927348, 0.10523982, 0.06349422,
+        0.02817102, 0.00892281, 0.00243114, 0.00033945
     };
     const double GRID_SIZE = 0.001;
     const double SAMPLING_INTERVAL = 0.0005;
@@ -56,7 +56,7 @@ void doRun(size_t N_PARTICLES) {
     std::string name = "test" + std::to_string(N_PARTICLES);
     logger.setLogging(PARTICLE_LOOP_LOGGING);
     simModel.runSimulation(generator, ngenerator,
-        N_PARTICLES, name, N_TIME_SAMPLES, GRID_SIZE, SAMPLING_INTERVAL, 1.0, 1);
+        N_PARTICLES, name, N_TIME_SAMPLES, GRID_SIZE, SAMPLING_INTERVAL);
     Util::deallocateThreadResources(thread_res);
 
     logger.setLogging(true);
@@ -76,7 +76,7 @@ int main() {
         doRun(size);
     }*/
 
-    doRun(1000000);
+    doRun(100000);
 
     return 0;
 }
