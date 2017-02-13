@@ -4,6 +4,7 @@
 #include <random>
 #include <iomanip>
 #include <fstream>
+#include <mutex>
 
 #include "neutralsource.h"
 #include "surfacecollection.h"
@@ -24,6 +25,7 @@ class SimulationModel {
     void simulationThread(
         CollisionGenerator *collisionGenerator,
         NeutralizationGenerator *neutralizationGenerator,
+        std::mutex &writeMutex,
         unsigned long nParticles, double samplingInterval, long nTimeSamples,
         const Grid &grid, uint_least32_t seed, Vector* velocity,
         unsigned long* count, bool stationary, double cutoffTime) const;

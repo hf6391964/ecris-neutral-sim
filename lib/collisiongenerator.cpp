@@ -43,6 +43,7 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
 
     std::cout << "Precomputing collision rates...\n";
     for (size_t iv = 0; iv < nSpeedSteps_; ++iv) {
+        std::cout << "Precomputation: speed step " << iv << '/' << nSpeedSteps_ << '\n';
         double particleSpeed = speedStepSize_ * iv;
         double *rateCoeffs = &rateCoefficients_[iv * nReactions_];
 

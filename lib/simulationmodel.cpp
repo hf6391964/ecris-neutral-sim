@@ -1,7 +1,6 @@
 #include "simulationmodel.h"
 #include "logger.h"
 
-
 SimulationModel::SimulationModel(SurfaceCollection &surfaces)
     : surfaces_(surfaces) {}
 
@@ -42,24 +41,24 @@ void SimulationModel::runSimulation(
     std::cout << "Sampling interval: " << samplingInterval << std::endl;
     std::cout << "Running with " << nThreads << " thread(s)..." << std::endl;
 
+    std::mutex writeMutex;
     std::seed_seq sseq = {2016, 9, 19};
     std::vector<std::thread> threads;
     std::vector<uint_least32_t> seeds(nThreads);
-    // TODO extend and use SpatialDistribution here
-    std::vector<Vector*> velocityPointers;
-    std::vector<unsigned long*> countPointers;
     sseq.generate(seeds.begin(), seeds.end());
+
+    Vector* velocity = new Vector[arraySize];
+    unsigned long* count = new unsigned long[arraySize];
+    for (size_t k = 0; k < arraySize; ++k) {
+        velocity[k] = Vector(0.0, 0.0, 0.0);
+        count[k] = 0;
+    }
+
+    // TODO extend and use SpatialDistribution here
     for (int i = 0; i < nThreads; ++i) {
-        Vector* velocity = new Vector[arraySize];
-        unsigned long* count = new unsigned long[arraySize];
-        for (size_t k = 0; k < arraySize; ++k) {
-            velocity[k] = Vector(0.0, 0.0, 0.0);
-            count[k] = 0;
-        }
-        velocityPointers.push_back(velocity);
-        countPointers.push_back(count);
         threads.push_back(std::thread(&SimulationModel::simulationThread,
             this, &collisionGenerator, &neutralizationGenerator,
+            std::ref(writeMutex),
             particlesInChunk, samplingInterval, nTimeSamples, grid, seeds[i],
             velocity, count, stationary, cutoffTime));
     }
@@ -68,19 +67,10 @@ void SimulationModel::runSimulation(
         it->join();
     }
 
-    Vector* velocity = new Vector[arraySize];
-    unsigned long* count = new unsigned long[arraySize];
     for (size_t j = 0; j < arraySize; ++j) {
-        Vector v(0.0, 0.0, 0.0);
-        unsigned long c = 0;
-        for (int n = 0; n < nThreads; ++n) {
-            v = v + velocityPointers[n][j];
-            c += countPointers[n][j];
+        if (count[j] > 0) {
+            velocity[j] = velocity[j] / count[j];
         }
-        if (c > 0) {
-            velocity[j] = v / c;
-        }
-        count[j] = c;
     }
 
     std::ofstream dim(prefix + "_dimensions.csv");
@@ -99,12 +89,6 @@ void SimulationModel::runSimulation(
         }
     }
 
-    for (auto p : velocityPointers) {
-        delete[] p;
-    }
-    for (auto p : countPointers) {
-        delete[] p;
-    }
     delete[] velocity;
     delete[] count;
 }
@@ -112,6 +96,7 @@ void SimulationModel::runSimulation(
 void SimulationModel::simulationThread(
     CollisionGenerator *collisionGenerator,
     NeutralizationGenerator *neutralizationGenerator,
+    std::mutex &writeMutex,
     unsigned long nParticles, double samplingInterval,
     long nTimeSamples, const Grid &grid, uint_least32_t seed,
     Vector* velocity, unsigned long* count, bool stationary,
@@ -267,6 +252,8 @@ void SimulationModel::simulationThread(
                                 arrIndex += sampleIndex*gridSize;
                             }
                         }
+
+                        std::lock_guard<std::mutex> writeGuard(writeMutex);
                         count[arrIndex] += 1;
                         velocity[arrIndex] = velocity[arrIndex] +
                             particle.getVelocity();
