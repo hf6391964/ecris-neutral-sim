@@ -41,6 +41,16 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     majorantReactionRate_ = new double[nSpeedSteps_];
     rateCoefficients_ = new double[nReactions_ * nSpeedSteps_];
 
+    std::vector<double> densityMaxima(nReactions_, 0.0);
+    for (size_t i = 0; i < gridSize; ++i) {
+        Point p;
+        if (!grid_.getCellMidpoint(i, p)) continue;
+        for (size_t ir = 0; ir < nReactions_; ++ir) {
+            densityMaxima[ir] = std::max(densityMaxima[ir],
+                collisionReactions_[ir]->getPopulation()->getDensityAt(p));
+        }
+    }
+
     std::cout << "Precomputing collision rates...\n";
     for (size_t iv = 0; iv < nSpeedSteps_; ++iv) {
         std::cout << "Precomputation: speed step " << iv << '/' << nSpeedSteps_ << '\n';
@@ -55,19 +65,8 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
 
         // Find the majorant reaction rate at the given velocity
         majorantReactionRate_[iv] = 0.0;
-        for (size_t i = 0; i < gridSize; ++i) {
-            Point p;
-            if (!grid_.getCellMidpoint(i, p)) continue;
-
-            double totalRate = 0.0;
-            for (size_t ir = 0; ir < nReactions_; ++ir) {
-                double rate = collisionReactions_[ir]->getPopulation()->getDensityAt(p) *
-                    rateCoeffs[ir];
-                totalRate += rate;
-            }
-
-            majorantReactionRate_[iv] = std::max(majorantReactionRate_[iv],
-                totalRate);
+        for (size_t ir = 0; ir < nReactions_; ++ir) {
+            majorantReactionRate_[iv] = densityMaxima[ir] * rateCoeffs[ir];
         }
     }
 
