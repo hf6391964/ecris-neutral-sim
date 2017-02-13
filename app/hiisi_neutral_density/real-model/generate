@@ -1,4 +1,4 @@
 #!/bin/sh
 
-openscad -o surrounding-cylinder.stl -D PARTNO=2 ecr3.scad
+openscad -o surrounding_cylinder.stl -D PARTNO=2 ecr3.scad
 openscad -o injection_surface.stl -D PARTNO=3 ecr3.scad
