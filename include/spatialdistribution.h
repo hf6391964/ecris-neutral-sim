@@ -20,7 +20,7 @@ class SpatialDistribution {
         void initializeTo(T value);
         void initializeToNull();
 
-        T getValueAt(const Point &p) const;
+        virtual T getValueAt(const Point &p) const;
 
         void setCoordinateTransformation(const Aff_transformation
             &transformation);
@@ -43,6 +43,8 @@ class DensityDistribution : public SpatialDistribution<double> {
             double weight = 1.0);
         DensityDistribution(std::shared_ptr<DensityDistribution> src,
             double weight = 1.0);
+
+        double getValueAt(const Point &p) const;
 
         Point getRandomPosition(Rng &rng) const;
 };

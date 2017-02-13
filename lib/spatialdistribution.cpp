@@ -123,3 +123,11 @@ Point DensityDistribution::getRandomPosition(Rng &rng) const {
     );
 }
 
+double DensityDistribution::getValueAt(const Point &p) const {
+    if (sourceDistribution_) {
+        return sourceDistributionWeight_ * sourceDistribution_->getValueAt(p);
+    }
+
+    return SpatialDistribution::getValueAt(p);
+}
+
