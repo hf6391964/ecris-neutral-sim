@@ -10,14 +10,13 @@ CollisionGenerator::~CollisionGenerator() {
 
 void CollisionGenerator::_cleanup() {
     // Deallocate previously allocated resources
-    if (totalReactionRate_ != NULL) {
-        delete[] totalReactionRate_;
-    }
-    if (cumulativeProbability_ != NULL) {
-        delete[] cumulativeProbability_;
+    if (rateCoefficients_ != NULL) {
+        delete[] rateCoefficients_;
+        rateCoefficients_ = NULL;
     }
     if (majorantReactionRate_ != NULL) {
         delete[] majorantReactionRate_;
+        majorantReactionRate_ = NULL;
     }
 }
 
@@ -29,71 +28,47 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     double speedStepSize, simthreadresources *thread_res) {
 
     nReactions_ = collisionReactions_.size();
-    gridSize_ = grid_.arraySize();
+    size_t gridSize = grid_.arraySize();
 
     speedStepSize_ = speedStepSize;
     nSpeedSteps_ = std::ceil(maxSpeed / speedStepSize) + 1;
 
     _cleanup();
 
-    size_t nBytes = nSpeedSteps_ * (1 + gridSize_ * (1 + nReactions_)) *
-        sizeof(double);
+    size_t nBytes = nSpeedSteps_ * (1 + nReactions_) * sizeof(double);
     std::cout << "Precomputed values will take up " << nBytes << " bytes\n";
     // Allocate necessary resources
-    totalReactionRate_ = new double[nSpeedSteps_ * gridSize_];
-    cumulativeProbability_ =
-        new double[nSpeedSteps_ * gridSize_ * nReactions_];
     majorantReactionRate_ = new double[nSpeedSteps_];
-    double *rateCoeffs = new double[nReactions_];
-
-    std::vector<std::shared_ptr<ParticlePopulation>> reactionPopulations;
-    for (size_t ir = 0; ir < nReactions_; ++ir) {
-        reactionPopulations.push_back(collisionReactions_[ir]->getPopulation());
-    }
+    rateCoefficients_ = new double[nReactions_ * nSpeedSteps_];
 
     std::cout << "Precomputing collision rates...\n";
     for (size_t iv = 0; iv < nSpeedSteps_; ++iv) {
-        double *pTotalReactionRate = &totalReactionRate_[iv * gridSize_];
-        double *pCumulativeProbability =
-            &cumulativeProbability_[iv * gridSize_ * nReactions_];
-        majorantReactionRate_[iv] = 0.0;
         double particleSpeed = speedStepSize_ * iv;
+        double *rateCoeffs = &rateCoefficients_[iv * nReactions_];
 
+        // Calculate rate coefficients separately for each reaction
         for (size_t ir = 0; ir < nReactions_; ++ir) {
-            rateCoeffs[ir] = collisionReactions_[ir]->getRateCoefficient(
-                particleSpeed, thread_res);
-            /* std::cout << "rate coeff " << ir << ": " << rateCoeffs[ir] << std::endl; */
+            rateCoeffs[ir] =
+                collisionReactions_[ir]->getRateCoefficient(particleSpeed, thread_res);
         }
 
-        for (size_t i = 0; i < gridSize_; ++i) {
+        // Find the majorant reaction rate at the given velocity
+        majorantReactionRate_[iv] = 0.0;
+        for (size_t i = 0; i < gridSize; ++i) {
             Point p;
             if (!grid_.getCellMidpoint(i, p)) continue;
 
             double totalRate = 0.0;
             for (size_t ir = 0; ir < nReactions_; ++ir) {
-                double rate = reactionPopulations[ir]->getDensityAt(p) *
+                double rate = collisionReactions_[ir]->getPopulation()->getDensityAt(p) *
                     rateCoeffs[ir];
                 totalRate += rate;
-                // Sum rates to get cumulative rate, will be normalized later
-                // to yield probability
-                pCumulativeProbability[nReactions_ * i + ir] = totalRate;
             }
 
-            pTotalReactionRate[i] = totalRate;
             majorantReactionRate_[iv] = std::max(majorantReactionRate_[iv],
                 totalRate);
-
-            for (size_t k = 0; k < nReactions_; ++k) {
-                // Normalize the previously stored cumulative rates into
-                // probabilities
-                pCumulativeProbability[nReactions_*i + k] /= totalRate;
-            }
         }
-
-        /* std::cout << "Majorant rate for v = " << particleSpeed << " is " << majorantReactionRate_[iv] << "\n"; */
     }
-
-    delete[] rateCoeffs;
 
     std::cout << "Precomputation done.\n";
 }
@@ -121,24 +96,30 @@ CollisionReaction *CollisionGenerator::sampleCollision(Rng &rng,
         return NULL;
     }
 
-    size_t velSpatialIndex = velIndex * gridSize_ + spatialIndex;
-    size_t velSpatialIndex1 = (velIndex + 1) * gridSize_ + spatialIndex;
+    double totalReactionRate1 = 0.0, totalReactionRate2 = 0.0;
+    std::vector<double> cumulativeReactionRate1(nReactions_),
+        cumulativeReactionRate2(nReactions_);
+    for (size_t ir = 0; ir < nReactions_; ++ir) {
+        double density = collisionReactions_[ir]->getPopulation()->getDensityAt(p);
+        double rate1 = density * rateCoefficients_[velIndex * nReactions_ + ir],
+            rate2 = density * rateCoefficients_[(velIndex+1) * nReactions_ + ir];
+        totalReactionRate1 += rate1;
+        totalReactionRate2 += rate2;
+        cumulativeReactionRate1[ir] = totalReactionRate1;
+        cumulativeReactionRate2[ir] = totalReactionRate2;
+    }
+
     double t = (particleSpeed - velIndex * speedStepSize_) / speedStepSize_;
-    double totalRate = (1.0 - t) * totalReactionRate_[velSpatialIndex] +
-        t * totalReactionRate_[velSpatialIndex1];
+    double totalRate = (1.0 - t) * totalReactionRate1 + t * totalReactionRate2;
 
     double x = uni01(rng);
     if (x > std::exp(-totalRate * dt)) {  // Reaction happens
-        double y = uni01(rng);
-        double *pCumulativeProbability =
-            &cumulativeProbability_[nReactions_ * velSpatialIndex];
-        double *pCumulativeProbability1 =
-            &cumulativeProbability_[nReactions_ * velSpatialIndex1];
+        double y = uni01(rng) * totalRate;
         size_t iReaction;
         for (iReaction = 0; iReaction < nReactions_; ++iReaction) {
-            double prob = (1.0 - t) * pCumulativeProbability[iReaction] +
-                t * pCumulativeProbability1[iReaction];
-            if (y < prob) {
+            double probability = (1.0 - t) * cumulativeReactionRate1[iReaction] +
+                t * cumulativeReactionRate2[iReaction];
+            if (y < probability) {
                 break;
             }
         }

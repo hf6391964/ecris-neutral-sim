@@ -11,13 +11,11 @@ typedef std::vector<std::unique_ptr<CollisionReaction>> CollisionReactionVector;
 class CollisionGenerator {
     CollisionReactionVector collisionReactions_;
     Grid grid_;
-    double *totalReactionRate_ = NULL;
-    double *cumulativeProbability_ = NULL;
+    double *rateCoefficients_ = NULL;
     double *majorantReactionRate_ = NULL;
     size_t nSpeedSteps_ = 0;
     double speedStepSize_ = 0.0;
     size_t nReactions_ = 0;
-    size_t gridSize_ = 0;
 
     void _cleanup();
 
