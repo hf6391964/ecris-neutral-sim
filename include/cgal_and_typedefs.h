@@ -21,6 +21,7 @@
 #include <CGAL/Polygon_mesh_processing/measure.h>
 #include <CGAL/Polygon_mesh_processing/compute_normal.h>
 #include <CGAL/Polygon_mesh_processing/bbox.h>
+#include <CGAL/Polygon_mesh_processing/repair.h>
 
 typedef CGAL::Simple_cartesian<double> K;
 typedef K::FT FT;
@@ -28,6 +29,7 @@ typedef K::Point_3 Point;
 typedef K::Vector_3 Vector;
 typedef K::Direction_3 Direction;
 typedef K::Ray_3 Ray;
+typedef K::Triangle_3 Triangle;
 typedef K::Aff_transformation_3 Aff_transformation;
 typedef CGAL::Bbox_3 Bbox;
 typedef CGAL::Surface_mesh<Point> Surface_mesh;

@@ -153,6 +153,24 @@ bool Surface::loadFromSTL(std::string filename, double scale,
         }
     }
 
+    // Remove degenerate triangles
+    size_t nRemovedTriangles = 0;
+    for (std::vector<std::array<int, 3>>::iterator it = facets.begin();
+        it < facets.end(); ) {
+        size_t i0 = (*it)[0], i1 = (*it)[1], i2 = (*it)[2];
+        Point p0(points[i0][0], points[i0][1], points[i0][2]);
+        Point p1(points[i1][0], points[i1][1], points[i1][2]);
+        Point p2(points[i2][0], points[i2][1], points[i2][2]);
+        Triangle t(p0, p1, p2);
+        if (t.is_degenerate()) {
+            facets.erase(it);
+            nRemovedTriangles += 1;
+        } else {
+            ++it;
+        }
+    }
+    std::cout << nRemovedTriangles << " degenerate triangles removed\n";
+
     if (ret) {
         std::cout << "orient_polygon_soup...\n";
         ret =
@@ -170,6 +188,8 @@ bool Surface::loadFromSTL(std::string filename, double scale,
         std::cout << "polygon_soup_to_polygon_mesh...\n";
         CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(points,
             facets, mesh);
+        int nRemoved = CGAL::Polygon_mesh_processing::remove_isolated_vertices(mesh);
+        std::cout << nRemoved << " isolated vertices removed\n";
         ret = mesh.is_valid(true) && !mesh.is_empty();
     }
 
