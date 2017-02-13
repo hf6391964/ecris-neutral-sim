@@ -53,8 +53,6 @@ class SimplePlasmaModel {
             const SurfaceCollection &surfaces,
             double averageElectronDensity) const;
 
-        void setCoordinateTransformation(const Aff_transformation &tf);
-
         // Here ion densities are indexed such that i = q.
         // A special case is i = 0 which corresponds to electron density.
         double getIonDensityAt(const Point &p, unsigned int chargeState) const;

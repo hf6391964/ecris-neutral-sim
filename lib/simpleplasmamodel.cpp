@@ -19,16 +19,16 @@ SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
     // Calculate the density distributions
     // TODO insert check for validity of the distribution
     // i.e. if the reading succeeded
-    DensityDistribution electronDensity(electronDensityFilename,
-        electronWeight);
+    std::shared_ptr<DensityDistribution> electronDensity(
+        new DensityDistribution(electronDensityFilename, electronWeight));
 
     ionMassEv_ = elementData_->mass * ATOMIC_MASS_TO_EV;
     // Populate the ion densities
     int q = 1;
     maxIonTemp_ = 0.0;
     for (double relDensity : ionRelativeDensities) {
-        DensityDistribution ionDensityDistribution(electronDensity,
-            relDensity);
+        std::shared_ptr<DensityDistribution> ionDensityDistribution(
+            new DensityDistribution(electronDensity, relDensity));
         particlePopulations_[q] = std::shared_ptr<MaxwellianPopulation>(
             new MaxwellianPopulation(element_, q,
             ionTemperatures[q - 1], ionDensityDistribution));
@@ -90,14 +90,6 @@ void SimplePlasmaModel::populateNeutralizationReactions(
         averageElectronDensity * recombinationRateCoefficient;
     generator.addNeutralizationChannel(
         new Recombination(particlePopulations_[1], recombinationRate));
-}
-
-void SimplePlasmaModel::setCoordinateTransformation(
-    const Aff_transformation &tf) {
-    for (auto iPopulation = particlePopulations_.begin();
-         iPopulation != particlePopulations_.end(); ++iPopulation) {
-        (*iPopulation)->setCoordinateTransformation(tf);
-    }
 }
 
 double SimplePlasmaModel::getIonDensityAt(const Point &p,

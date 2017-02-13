@@ -32,12 +32,16 @@ class DensityDistribution : public SpatialDistribution<double> {
         double getNull() const { return 0.0; }
 
         double sumDensity_;
-        std::vector<double> cumulativeDensity_;
+        std::shared_ptr<std::vector<double>> cumulativeDensity_;
         void calculateCumulativeDensity();
+        std::shared_ptr<DensityDistribution> sourceDistribution_;
+        double sourceDistributionWeight_;
 
     public:
         DensityDistribution(std::string filename, double weight = 1.0);
         DensityDistribution(const DensityDistribution &src,
+            double weight = 1.0);
+        DensityDistribution(std::shared_ptr<DensityDistribution> src,
             double weight = 1.0);
 
         Point getRandomPosition(Rng &rng) const;
