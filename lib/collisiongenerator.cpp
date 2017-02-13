@@ -53,20 +53,17 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
 
     std::cout << "Precomputing collision rates...\n";
     for (size_t iv = 0; iv < nSpeedSteps_; ++iv) {
-        std::cout << "Precomputation: speed step " << iv << '/' << nSpeedSteps_ << '\n';
+        std::cout << "Precomputation: speed step " << (iv+1) << '/' << nSpeedSteps_ << '\n';
         double particleSpeed = speedStepSize_ * iv;
         double *rateCoeffs = &rateCoefficients_[iv * nReactions_];
 
         // Calculate rate coefficients separately for each reaction
-        for (size_t ir = 0; ir < nReactions_; ++ir) {
-            rateCoeffs[ir] =
-                collisionReactions_[ir]->getRateCoefficient(particleSpeed, thread_res);
-        }
-
         // Find the majorant reaction rate at the given velocity
         majorantReactionRate_[iv] = 0.0;
         for (size_t ir = 0; ir < nReactions_; ++ir) {
-            majorantReactionRate_[iv] = densityMaxima[ir] * rateCoeffs[ir];
+            rateCoeffs[ir] =
+                collisionReactions_[ir]->getRateCoefficient(particleSpeed, thread_res);
+            majorantReactionRate_[iv] += densityMaxima[ir] * rateCoeffs[ir];
         }
     }
 
