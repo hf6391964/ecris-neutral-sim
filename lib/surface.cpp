@@ -3,12 +3,15 @@
 
 
 Surface::Surface(std::string filename, double pumpingFactor, double temperature,
-    std::string label, bool flipNormals, double avgTriangleArea)
+    std::string label, bool flipNormals, double scale,  double avgTriangleArea)
     : pumpingFactor_(pumpingFactor), temperature_(temperature),
       pumpedParticles_(0), collisionCounter_(0), label_(label) {
-    loadFromSTL(filename, avgTriangleArea);
+    loadFromSTL(filename, scale, avgTriangleArea);
+    std::cout << "Building AABB tree...\n";
     buildAABBTree();
+    std::cout << "Computing area cumulative distribution function...\n";
     computeAreaCDF();
+    std::cout << "Computing face normals...\n";
     computeFaceNormals();
     computeFaceRotations(flipNormals);
 }
@@ -122,7 +125,8 @@ void Surface::computeAreaCDF() {
     }
 }
 
-bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
+bool Surface::loadFromSTL(std::string filename, double scale,
+    double avgTriangleArea) {
     std::ifstream ifs;
     Surface_mesh mesh;
 
@@ -133,19 +137,48 @@ bool Surface::loadFromSTL(std::string filename, double avgTriangleArea) {
         return false;
     }
 
+    std::cout << "Loading surface " << filename << "...\n";
     std::vector<std::array<double, 3>> points;
     std::vector<std::array<int, 3>> facets;
 
     bool ret = CGAL::read_STL(ifs, points, facets, true);
+    std::cout << "File has " << points.size() << " points and " <<
+        facets.size() << " facets\n";
+
+    if (scale != 1.0) {
+        for (size_t i = 0; i < points.size(); ++i) {
+            points[i][0] *= scale;
+            points[i][1] *= scale;
+            points[i][2] *= scale;
+        }
+    }
+
     if (ret) {
+        std::cout << "orient_polygon_soup...\n";
         ret =
             CGAL::Polygon_mesh_processing::orient_polygon_soup(points, facets);
     }
     if (ret) {
+        if (CGAL::Polygon_mesh_processing::is_polygon_soup_a_polygon_mesh(facets)) {
+            std::cout << "The input is a polygon mesh\n";
+        } else {
+            throw std::invalid_argument("The input is not a polygon mesh");
+        }
+    }
+
+    if (ret) {
+        std::cout << "polygon_soup_to_polygon_mesh...\n";
         CGAL::Polygon_mesh_processing::polygon_soup_to_polygon_mesh(points,
             facets, mesh);
-        ret = mesh.is_valid() && !mesh.is_empty();
+        ret = mesh.is_valid(true) && !mesh.is_empty();
     }
+
+    if (ret) {
+        std::cout << "Mesh assembly ok\n";
+    } else {
+        throw std::invalid_argument("Mesh assembly failed");
+    }
+
     if (ret) {
         if (avgTriangleArea > 0.0) {
             double totalArea = 0.0;
