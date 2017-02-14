@@ -39,7 +39,6 @@ void SimulationModel::runSimulation(
     }
 
     std::cout << "Sampling interval: " << samplingInterval << std::endl;
-    std::cout << "Running with " << nThreads << " thread(s)..." << std::endl;
 
     std::mutex writeMutex;
     std::seed_seq sseq = {2016, 9, 19};
@@ -47,6 +46,7 @@ void SimulationModel::runSimulation(
     std::vector<uint_least32_t> seeds(nThreads);
     sseq.generate(seeds.begin(), seeds.end());
 
+    std::cout << "Allocating memory...\n";
     Vector* velocity = new Vector[arraySize];
     unsigned long* count = new unsigned long[arraySize];
     for (size_t k = 0; k < arraySize; ++k) {
@@ -54,8 +54,10 @@ void SimulationModel::runSimulation(
         count[k] = 0;
     }
 
+    std::cout << "Running with " << nThreads << " thread(s)..." << std::endl;
     // TODO extend and use SpatialDistribution here
     for (int i = 0; i < nThreads; ++i) {
+        std::cout << "Starting thread " << i << std::endl;
         threads.push_back(std::thread(&SimulationModel::simulationThread,
             this, &collisionGenerator, &neutralizationGenerator,
             std::ref(writeMutex),
