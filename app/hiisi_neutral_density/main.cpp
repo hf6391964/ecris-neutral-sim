@@ -30,17 +30,17 @@ void doRun(size_t N_PARTICLES) {
 
     simthreadresources *thread_res = Util::allocateThreadResources(13122016);
 
-    Surface radial_wall("model/radial_wall.stl",
-        0.0, ROOM_TEMPERATURE_EV, "radial_wall", false, 0.1);
-    Surface end1("model/end1.stl",
-        1.0, ROOM_TEMPERATURE_EV, "end1", true, 0.1);
-    Surface end2("model/end2.stl",
-        1.0, ROOM_TEMPERATURE_EV, "end2", false, 0.1);
+    Surface chamber("real-model/stl-external/plasmannakemat2-trimmed.stl",
+        0.0, ROOM_TEMPERATURE_EV, "chamber wall", false, 0.001, 0.05);
+    Surface surrounding_cylinder("real-model/surrounding_cylinder.stl",
+        1.0, ROOM_TEMPERATURE_EV, "surrounding cylinder", true, 0.001);
+    Surface injection_surface("real-model/injection_surface.stl",
+        1.0, ROOM_TEMPERATURE_EV, "injection surface", false, 0.001);
     SurfaceCollection surfaces;
-    surfaces.addSurface(&radial_wall);
-    surfaces.addSurface(&end1);
-    surfaces.addSurface(&end2);
-    SurfaceEmission gasFeed(&radial_wall, 1e-12, ELEMENT);
+    surfaces.addSurface(&chamber);
+    surfaces.addSurface(&surrounding_cylinder);
+    surfaces.addSurface(&injection_surface);
+    SurfaceEmission gasFeed(&injection_surface, 1e-12, ELEMENT);
 
     SimulationModel simModel(surfaces);
     simModel.addSource(&gasFeed);
@@ -51,7 +51,7 @@ void doRun(size_t N_PARTICLES) {
         "cylinder_collision_points.csv",
         "z1_collision_points.csv", "z2_collision_points.csv",
         "rt.018.dat", surfaces, ELECTRON_DENSITY);
-    plasmamodel.populateCollisionReactions(generator, thread_res, 0.5);
+    plasmamodel.populateCollisionReactions(generator, thread_res, 2.0);
 
     std::string name = "test" + std::to_string(N_PARTICLES);
     logger.setLogging(PARTICLE_LOOP_LOGGING);
@@ -76,7 +76,7 @@ int main() {
         doRun(size);
     }*/
 
-    doRun(100000);
+    doRun(50);
 
     return 0;
 }
