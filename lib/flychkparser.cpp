@@ -1,5 +1,8 @@
 #include <fstream>
 #include <algorithm>
+#include <sstream>
+#include <cstddef>
+#include <cmath>
 
 #include "flychkparser.h"
 

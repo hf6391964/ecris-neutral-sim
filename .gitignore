@@ -18,3 +18,8 @@ app/hiisi_neutral_density/real-model/stl-external
 sim_log.txt
 *.csv
 !results
+CMake*
+!CMakeLists.txt
+Makefile
+*.cmake
+

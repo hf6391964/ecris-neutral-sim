@@ -1,0 +1,70 @@
+# Created by the script cgal_create_CMakeLists
+# This is the CMake script for compiling a set of CGAL applications.
+
+project( neutrals )
+
+include_directories ("include"
+                     "../gsl-2.2.1")
+
+add_library(neutrals STATIC
+    lib/chargeexchangereaction.cpp
+    lib/collisiongenerator.cpp
+    lib/collisionreaction.cpp
+    lib/electronionizationreaction.cpp
+    lib/electronmodel.cpp
+    lib/element_data.cpp
+    lib/flychkparser.cpp
+    lib/grid.cpp
+    lib/logger.cpp
+    lib/maxwellianpopulation.cpp
+    lib/neutralizationchannel.cpp
+    lib/neutralizationgenerator.cpp
+    lib/particle.cpp
+    lib/particlepopulation.cpp
+    lib/recombination.cpp
+    lib/simpleplasmamodel.cpp
+    lib/simulationmodel.cpp
+    lib/spatialdistribution.cpp
+    lib/STL_reader.cpp
+    lib/surfacecollection.cpp
+    lib/surface.cpp
+    lib/surfaceemission.cpp
+    lib/util.cpp
+    lib/wallneutralization.cpp
+)
+
+cmake_minimum_required(VERSION 2.8.11)
+
+# CGAL and its components
+find_package( CGAL QUIET COMPONENTS Core )
+
+if ( NOT CGAL_FOUND )
+
+  message(STATUS "This project requires the CGAL library, and will not be compiled.")
+  return()  
+
+endif()
+
+# include helper file
+include( ${CGAL_USE_FILE} )
+
+
+# Boost and its components
+find_package( Boost REQUIRED )
+
+if ( NOT Boost_FOUND )
+
+  message(STATUS "This project requires the Boost library, and will not be compiled.")
+
+  return()  
+
+endif()
+
+# include for local directory
+
+# include for local package
+include_directories( BEFORE include
+                     "${PROJECT_SOURCE_DIR}/../../../gsl-2.2.1")
+
+                 #target_link_libraries(neutrals ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} "${PROJECT_SOURCE_DIR}/../gsl-2.2.1/.libs/libgsl.a" pthread)
+

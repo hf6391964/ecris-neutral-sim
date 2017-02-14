@@ -16,7 +16,7 @@ void doRun(size_t N_PARTICLES) {
         0.06074164, 0.13743072, 0.1514723, 0.13927348, 0.10523982, 0.06349422,
         0.02817102, 0.00892281, 0.00243114, 0.00033945
     };
-    const double GRID_SIZE = 0.001;
+    const double GRID_SIZE = 0.002;
     const double SAMPLING_INTERVAL = 0.0005;
     const size_t N_TIME_SAMPLES = 0;  // 0 for stationary
     const double ESCAPE_TIME = 1e-5;
@@ -30,8 +30,20 @@ void doRun(size_t N_PARTICLES) {
 
     simthreadresources *thread_res = Util::allocateThreadResources(13122016);
 
+    /*Surface radial_wall("model/radial_wall.stl",
+        0.0, ROOM_TEMPERATURE_EV, "radial_wall", false);
+    Surface end1("model/end1.stl",
+        1.0, ROOM_TEMPERATURE_EV, "end1", true);
+    Surface end2("model/end2.stl",
+        1.0, ROOM_TEMPERATURE_EV, "end2", false);
+    SurfaceCollection surfaces;
+    surfaces.addSurface(&radial_wall);
+    surfaces.addSurface(&end1);
+    surfaces.addSurface(&end2);
+    SurfaceEmission gasFeed(&radial_wall, 1e-12, ELEMENT);*/
+
     Surface chamber("real-model/stl-external/plasmannakemat2-trimmed.stl",
-        0.0, ROOM_TEMPERATURE_EV, "chamber wall", false, 0.001, 0.05);
+        0.0, ROOM_TEMPERATURE_EV, "chamber wall", false, 0.001);
     Surface surrounding_cylinder("real-model/surrounding_cylinder.stl",
         1.0, ROOM_TEMPERATURE_EV, "surrounding cylinder", true, 0.001);
     Surface injection_surface("real-model/injection_surface.stl",
@@ -55,9 +67,13 @@ void doRun(size_t N_PARTICLES) {
 
     std::string name = "test" + std::to_string(N_PARTICLES);
     logger.setLogging(PARTICLE_LOOP_LOGGING);
+    clock_t start_clock = clock();
     simModel.runSimulation(generator, ngenerator,
         N_PARTICLES, name, N_TIME_SAMPLES, GRID_SIZE, SAMPLING_INTERVAL);
+    clock_t end_clock = clock();
     Util::deallocateThreadResources(thread_res);
+
+    std::cout << "Time: " << ((end_clock - start_clock) / CLOCKS_PER_SEC) << " sec\n";
 
     logger.setLogging(true);
     surfaces.writeStatistics(logger);
@@ -76,7 +92,7 @@ int main() {
         doRun(size);
     }*/
 
-    doRun(50);
+    doRun(10000);
 
     return 0;
 }
