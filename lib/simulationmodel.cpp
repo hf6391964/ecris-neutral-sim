@@ -127,6 +127,14 @@ void SimulationModel::simulationThread(
                 continue;
             }
 
+            IntersectionPoint ip = particle.getNextIntersection();
+            if (ip.pSurface != NULL) {
+                logger << "Next intersected surface: " <<
+                    ip.pSurface->getLabel() << ", point is (" <<
+                    ip.point.x() << ", " << ip.point.y() <<
+                    ", " << ip.point.z() << ")\n";
+            }
+
             while (particle.getTime() < cutoffTime &&
                    (stationary || nextSampleIndex < nTimeSamples)) {
                 double isectDistance = particle.distanceToIntersection();

@@ -36,7 +36,7 @@ class Surface {
         Surface(std::string filename, double pumpingFactor, double temperature,
             std::string label, bool flipNormals = false,
             double scale = 1.0,
-            double avgTriangleArea = -1.0);
+            double edgeLength = 0.0);
 
         void setAccommodationCoefficients(
             std::unordered_map<Element, double, element_hash> coefficients);
@@ -44,7 +44,7 @@ class Surface {
         double getAccommodationCoefficient(Element element) const;
 
         bool loadFromSTL(std::string filename, double scale = 1.0,
-            double avgTriangleArea = -1.0);
+            double edgeLength = 0.0);
         void buildAABBTree();
         void computeAreaCDF();
         void computeFaceNormals();

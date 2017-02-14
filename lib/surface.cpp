@@ -3,10 +3,10 @@
 
 
 Surface::Surface(std::string filename, double pumpingFactor, double temperature,
-    std::string label, bool flipNormals, double scale,  double avgTriangleArea)
+    std::string label, bool flipNormals, double scale, double edgeLength)
     : pumpingFactor_(pumpingFactor), temperature_(temperature),
       pumpedParticles_(0), collisionCounter_(0), label_(label) {
-    loadFromSTL(filename, scale, avgTriangleArea);
+    loadFromSTL(filename, scale, edgeLength);
     std::cout << "Building AABB tree...\n";
     buildAABBTree();
     std::cout << "Computing area cumulative distribution function...\n";
@@ -126,7 +126,7 @@ void Surface::computeAreaCDF() {
 }
 
 bool Surface::loadFromSTL(std::string filename, double scale,
-    double avgTriangleArea) {
+    double edgeLength) {
     std::ifstream ifs;
     Surface_mesh mesh;
 
@@ -200,22 +200,10 @@ bool Surface::loadFromSTL(std::string filename, double scale,
     }
 
     if (ret) {
-        if (avgTriangleArea > 0.0) {
-            double totalArea = 0.0;
-            for (face_descriptor fd : mesh.faces()) {
-                totalArea += CGAL::Polygon_mesh_processing::face_area(fd, mesh,
-                    CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh.points()));
-            }
-            double avgArea = totalArea / mesh.number_of_faces();
-            double densityControlFactor = avgArea / avgTriangleArea;
-
-            std::vector<Surface_mesh::Face_index> new_facets;
-            std::vector<Surface_mesh::Vertex_index> new_vertex;
-
-            CGAL::Polygon_mesh_processing::refine(mesh, faces(mesh),
-                std::back_inserter(new_facets),
-                std::back_inserter(new_vertex),
-                CGAL::Polygon_mesh_processing::parameters::density_control_factor(densityControlFactor));
+        if (edgeLength > 0.0) {
+            std::cout << "Splitting long edges in the mesh...\n";
+            CGAL::Polygon_mesh_processing::split_long_edges(edges(mesh),
+                edgeLength, mesh);
         }
         std::cout << "Loaded " << filename << " with " <<
             mesh.number_of_faces() << " faces and " <<

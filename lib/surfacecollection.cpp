@@ -1,6 +1,6 @@
 #include "surfacecollection.h"
 
-#define USE_ALL_INTERSECTIONS
+//#define USE_ALL_INTERSECTIONS
 
 void SurfaceCollection::addSurface(Surface *surface) {
     surfaces_.push_back(surface);
