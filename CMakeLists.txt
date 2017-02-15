@@ -3,9 +3,6 @@
 
 project( neutrals )
 
-include_directories ("include"
-                     "../gsl-2.2.1")
-
 add_library(neutrals STATIC
     lib/chargeexchangereaction.cpp
     lib/collisiongenerator.cpp
@@ -36,7 +33,7 @@ add_library(neutrals STATIC
 cmake_minimum_required(VERSION 2.8.11)
 
 # CGAL and its components
-find_package( CGAL QUIET COMPONENTS Core )
+find_package( CGAL QUIET )
 
 if ( NOT CGAL_FOUND )
 
@@ -64,7 +61,5 @@ endif()
 
 # include for local package
 include_directories( BEFORE include
-                     "${PROJECT_SOURCE_DIR}/../../../gsl-2.2.1")
-
-                 #target_link_libraries(neutrals ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} "${PROJECT_SOURCE_DIR}/../gsl-2.2.1/.libs/libgsl.a" pthread)
+                     "${PROJECT_SOURCE_DIR}/../gsl-2.2.1")
 

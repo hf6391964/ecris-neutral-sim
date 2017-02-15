@@ -6,7 +6,7 @@ project( main )
 cmake_minimum_required(VERSION 2.8.11)
 
 # CGAL and its components
-find_package( CGAL COMPONENTS Core )
+find_package( CGAL QUIET )
 
 if ( NOT CGAL_FOUND )
 
@@ -39,11 +39,6 @@ include_directories( BEFORE "${PROJECT_SOURCE_DIR}/../../include"
 
 # Creating entries for target: main
 # ############################
-
-add_executable( main  main.cpp )
-
-add_to_cached_list( CGAL_EXECUTABLE_TARGETS main )
-
-# Link the executable to CGAL and third-party libraries
-target_link_libraries(main ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} "${PROJECT_SOURCE_DIR}/../../libneutrals.a" "${PROJECT_SOURCE_DIR}/../../../gsl-2.2.1/.libs/libgsl.a" pthread)
+add_executable( main main.cpp )
+target_link_libraries(main CGAL ${CGAL_LIBRARIES} "${PROJECT_SOURCE_DIR}/../../libneutrals.a" "${PROJECT_SOURCE_DIR}/../../../gsl-2.2.1/.libs/libgsl.a" pthread)
 
