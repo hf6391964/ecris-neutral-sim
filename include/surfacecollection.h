@@ -17,7 +17,8 @@ class SurfaceCollection {
 
         void addSurface(Surface *surface);
 
-        bool findClosestIntersection(Ray &r, IntersectionPoint &p) const;
+        bool findClosestIntersection(Ray &r, IntersectionPoint &p,
+            bool skipCurrentFace = false) const;
 
         void writeStatistics(Logger& log) const;
 };

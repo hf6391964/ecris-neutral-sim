@@ -16,6 +16,12 @@ struct IntersectionPoint {
     Point point;
 };
 
+struct Skip {
+    face_descriptor fd;
+    Skip(const face_descriptor fd) : fd(fd) {}
+    bool operator()(const face_descriptor& t) const { return t == fd; }
+};
+
 class Surface {
     Tree tree_;
     Bbox bbox_;
@@ -53,7 +59,7 @@ class Surface {
         std::tuple<Point, face_descriptor> getRandomPoint(Rng& rng) const;
 
         void computeFirstIntersection(const Ray& r,
-            Ray_intersection& isect) const;
+            Ray_intersection& isect, bool useSkipFunctor, const Skip &skip) const;
 
         void computeAllIntersections(const Ray& r,
             std::back_insert_iterator<std::vector<Ray_intersection>> it) const;

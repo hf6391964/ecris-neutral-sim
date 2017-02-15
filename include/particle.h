@@ -31,7 +31,8 @@ class Particle {
         double distanceToIntersection() const;
         void goToIntersection(Rng& rng);
         void goForward(double dt);
-        bool findNextIntersection(SurfaceCollection &surfaces);
+        bool findNextIntersection(SurfaceCollection &surfaces,
+            bool skipCurrentFace = false);
         void setNextIntersection(const IntersectionPoint &ip);
         IntersectionPoint getNextIntersection() const;
 

@@ -32,8 +32,12 @@ double Surface::getAccommodationCoefficient(Element element) const {
 }
 
 void Surface::computeFirstIntersection(const Ray& r,
-    Ray_intersection& isect) const {
-    isect = tree_.first_intersection(r);
+    Ray_intersection& isect, bool useSkipFunctor, const Skip &skip) const {
+    if (useSkipFunctor) {
+        isect = tree_.first_intersection(r, skip);
+    } else {
+        isect = tree_.first_intersection(r);
+    }
 }
 
 void Surface::computeAllIntersections(const Ray& r,

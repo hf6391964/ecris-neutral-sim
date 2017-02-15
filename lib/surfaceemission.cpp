@@ -15,6 +15,11 @@ Particle SurfaceEmission::generateParticle(Rng& rng, double time) const {
     Direction d = pSurface_->generateCosineLawDirection(fd, rng);
     double v = Util::getMBSpeed(rng, pSurface_->getTemperature(),
         particle.getMass_eV());
+    IntersectionPoint ip;
+    ip.pSurface = pSurface_;
+    ip.faceId = fd;
+    ip.point = p;
+    particle.setNextIntersection(ip);
     particle.setPosition(p);
     particle.setVelocity(v, d);
     return particle;

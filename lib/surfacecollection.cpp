@@ -12,13 +12,15 @@ Bbox SurfaceCollection::bbox() const {
 }
 
 bool SurfaceCollection::findClosestIntersection(Ray &r,
-    IntersectionPoint &ip) const {
+    IntersectionPoint &ip, bool skipCurrentFace) const {
     bool found = false;
     double nearestDistance = 0.0;
     Point* p = NULL;
     Ray_intersection intersection;
     Point position = r.point(0);
+    skipCurrentFace = skipCurrentFace && ip.pSurface != NULL;
     ip.pSurface = NULL;
+    Skip skip(ip.faceId);
 
     for (Surface *pSurface : surfaces_) {
 #ifdef USE_ALL_INTERSECTIONS
@@ -27,7 +29,11 @@ bool SurfaceCollection::findClosestIntersection(Ray &r,
             std::back_inserter(intersections));
         for (Ray_intersection intersection : intersections) {
 #else
-        pSurface->computeFirstIntersection(r, intersection);
+        if (skipCurrentFace) {
+            pSurface->computeFirstIntersection(r, intersection, true, skip);
+        } else {
+            pSurface->computeFirstIntersection(r, intersection, false, skip);
+        }
 #endif
             if (intersection &&
                 (p = boost::get<Point>(&(intersection->first)))) {

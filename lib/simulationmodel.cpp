@@ -124,7 +124,7 @@ void SimulationModel::simulationThread(
                 " generated with initial time = " << initialTime <<
                 ", mass = " << particle.getMass_eV() << " eV\n";
 
-            if (!particle.findNextIntersection(surfaces_)) {
+            if (!particle.findNextIntersection(surfaces_, true)) {
                 logger << "ERR: generated particle doesn't have intersections\n";
                 continue;
             }
@@ -166,7 +166,7 @@ void SimulationModel::simulationThread(
                     // Approximation: if time to intersection is smaller than
                     // the mean free time, just go directly to the intersection
                     particle.goToIntersection(thread_res->rng);
-                    particle.findNextIntersection(surfaces_);
+                    particle.findNextIntersection(surfaces_, true);
 
                     IntersectionPoint ip = particle.getNextIntersection();
                     if (ip.pSurface != NULL) {
@@ -223,7 +223,7 @@ void SimulationModel::simulationThread(
                             long sampleIndex = particle.getTime() / samplingInterval;
                             nextSampleIndex = sampleIndex + 1;
 
-                            particle.findNextIntersection(surfaces_);
+                            particle.findNextIntersection(surfaces_, false);
                             IntersectionPoint ip = particle.getNextIntersection();
                             if (ip.pSurface != NULL) {
                                 logger << "Next intersected surface: " <<

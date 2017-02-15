@@ -123,10 +123,12 @@ void Particle::goToIntersection(Rng& rng) {
     }
 }
 
-bool Particle::findNextIntersection(SurfaceCollection &surfaces) {
-    Ray r(position_ + 1e-12 * direction_.vector(), direction_);
+bool Particle::findNextIntersection(SurfaceCollection &surfaces,
+    bool skipCurrentFace) {
+    Ray r(position_, direction_);
 
-    return surfaces.findClosestIntersection(r, nextIntersection_);
+    return surfaces.findClosestIntersection(r, nextIntersection_,
+        skipCurrentFace);
 }
 
 void Particle::setNextIntersection(const IntersectionPoint &ip) {
