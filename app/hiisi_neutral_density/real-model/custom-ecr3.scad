@@ -108,18 +108,21 @@ module injection_tube_hole() {
 }
 
 module injection_plug() {
-    difference() {
-        translate([0, 0, injection_plug_plate_h - injection_plug_plate_d])
-            cylinder(r=injection_plug_plate_r, h=injection_plug_plate_d);
+    translate([0, 0, injection_end_h]) difference() {
+        union() {
+            translate([0, 0, injection_plug_plate_h - injection_plug_plate_d])
+                cylinder(r=injection_plug_plate_r, h=injection_plug_plate_d);
+            cylinder(r=injection_plug_bottom_r, h=injection_plug_bottom_h);
+            cylinder(r1=injection_plug_r1, r2=injection_plug_r2, h=injection_plug_h);
+            translate([0, 0, injection_plug_h])
+                cylinder(r=injection_plug_button_r, h=injection_plug_button_h);
+        }
 
         minkowski() {
             waveguides();
             cylinder(r=injection_plug_plate_clearance);
         }
     }
-    cylinder(r1=injection_plug_r1, r2=injection_plug_r2, h=injection_plug_h);
-    translate([0, 0, injection_plug_h])
-        cylinder(r=injection_plug_button_r, h=injection_plug_button_h);
 }
 
 module waveguide() {
@@ -166,7 +169,7 @@ module assembly(preview) {
             extraction_cyl();
             waveguides();
             injection_tube();
-            translate([0, 0, injection_end_h]) injection_plug();
+            injection_plug();
         }
 
         waveguide_holes();
