@@ -31,7 +31,7 @@ void doRun(size_t N_PARTICLES) {
     simthreadresources *thread_res = Util::allocateThreadResources(13122016);
 
     /*Surface radial_wall("model/radial_wall.stl",
-        0.0, ROOM_TEMPERATURE_EV, "radial_wall", false);
+        0.0, ROOM_TEMPERATURE_EV, "radial_wall", false, 1.0, 0.1);
     Surface end1("model/end1.stl",
         1.0, ROOM_TEMPERATURE_EV, "end1", true);
     Surface end2("model/end2.stl",
@@ -42,16 +42,19 @@ void doRun(size_t N_PARTICLES) {
     surfaces.addSurface(&end2);
     SurfaceEmission gasFeed(&radial_wall, 1e-12, ELEMENT);*/
 
-    Surface chamber("real-model/stl-external/plasmannakemat2-trimmed.stl",
+    Surface chamber("real-model/chamber.stl",
         0.0, ROOM_TEMPERATURE_EV, "chamber wall", false, 0.001);
-    Surface surrounding_cylinder("real-model/surrounding_cylinder.stl",
+    Surface surrounding_cylinder("real-model/sheath.stl",
         1.0, ROOM_TEMPERATURE_EV, "surrounding cylinder", true, 0.001);
     Surface injection_surface("real-model/injection_surface.stl",
         1.0, ROOM_TEMPERATURE_EV, "injection surface", false, 0.001);
+    Surface extraction_surface("real-model/extraction_surface.stl",
+        0.1, ROOM_TEMPERATURE_EV, "extraction surface", false, 0.001);
     SurfaceCollection surfaces;
     surfaces.addSurface(&chamber);
     surfaces.addSurface(&surrounding_cylinder);
     surfaces.addSurface(&injection_surface);
+    surfaces.addSurface(&extraction_surface);
     SurfaceEmission gasFeed(&injection_surface, 1e-12, ELEMENT);
 
     SimulationModel simModel(surfaces);
@@ -68,12 +71,15 @@ void doRun(size_t N_PARTICLES) {
     std::string name = "test" + std::to_string(N_PARTICLES);
     logger.setLogging(PARTICLE_LOOP_LOGGING);
     clock_t start_clock = clock();
+    time_t start_time = time(NULL);
     simModel.runSimulation(generator, ngenerator,
-        N_PARTICLES, name, N_TIME_SAMPLES, GRID_SIZE, SAMPLING_INTERVAL);
+        N_PARTICLES, name, N_TIME_SAMPLES, GRID_SIZE, SAMPLING_INTERVAL);//, 1.0, 1);
     clock_t end_clock = clock();
+    time_t end_time = time(NULL);
     Util::deallocateThreadResources(thread_res);
 
-    std::cout << "Time: " << ((end_clock - start_clock) / CLOCKS_PER_SEC) << " sec\n";
+    std::cout << "System time: " << ((end_clock - start_clock) / CLOCKS_PER_SEC) << " sec\n";
+    std::cout << "Wall clock time: " << (end_time - start_time) << " sec\n";
 
     logger.setLogging(true);
     surfaces.writeStatistics(logger);
@@ -92,7 +98,7 @@ int main() {
         doRun(size);
     }*/
 
-    doRun(10000);
+    doRun(100000);
 
     return 0;
 }
