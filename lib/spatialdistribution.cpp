@@ -1,7 +1,8 @@
 #include "spatialdistribution.h"
 
 template<typename T>
-SpatialDistribution<T>::SpatialDistribution(const Grid &grid) {
+SpatialDistribution<T>::SpatialDistribution(const Grid &grid, T null_value)
+    : null_value_(null_value) {
     size_t n = grid.arraySize();
     valueVector_ = new T[n];
     grid_ = grid;
@@ -25,7 +26,7 @@ void SpatialDistribution<T>::initializeTo(T value) {
 
 template<typename T>
 void SpatialDistribution<T>::initializeToNull() {
-    initializeTo(getNull());
+    initializeTo(null_value_);
 }
 
 template<typename T>
@@ -37,7 +38,7 @@ T SpatialDistribution<T>::getValueAt(const Point &p) const {
         return valueVector_[index];
     }
 
-    return getNull();
+    return null_value_;
 }
 
 template<typename T>
@@ -52,7 +53,7 @@ void SpatialDistribution<T>::removeCoordinateTransformation() {
 }
 
 DensityDistribution::DensityDistribution(const DensityDistribution &src,
-    double weight) : SpatialDistribution(src.grid_) {
+    double weight) : SpatialDistribution(src.grid_, 0.0) {
     size_t n = grid_.arraySize();
     for (size_t i = 0; i < n; ++i) {
         valueVector_[i] = src.valueVector_[i] * weight;
@@ -62,14 +63,14 @@ DensityDistribution::DensityDistribution(const DensityDistribution &src,
 
 DensityDistribution::DensityDistribution(std::shared_ptr<DensityDistribution> src,
     double weight)
-    : SpatialDistribution(), sourceDistribution_(src),
+    : SpatialDistribution(0.0), sourceDistribution_(src),
       sourceDistributionWeight_(weight) {
     grid_ = src->grid_;
     calculateCumulativeDensity();
 }
 
 DensityDistribution::DensityDistribution(std::string filename,
-    double weight) {
+    double weight) : SpatialDistribution(0.0) {
     std::ifstream fin(filename);
     // Read grid dimensions from given file
     grid_ = Grid(fin);

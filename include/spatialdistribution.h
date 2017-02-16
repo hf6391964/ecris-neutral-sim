@@ -10,17 +10,17 @@ class SpatialDistribution {
         Grid grid_;
 
     private:
-        virtual T getNull() const = 0;
+        T null_value_;
 
     public:
-        SpatialDistribution() {}
-        SpatialDistribution(const Grid &grid);
+        SpatialDistribution(T null_value) : null_value_(null_value) {}
+        SpatialDistribution(const Grid &grid, T null_value);
         ~SpatialDistribution();
 
         void initializeTo(T value);
         void initializeToNull();
 
-        virtual T getValueAt(const Point &p) const;
+        T getValueAt(const Point &p) const;
 
         void setCoordinateTransformation(const Aff_transformation
             &transformation);
@@ -29,8 +29,6 @@ class SpatialDistribution {
 
 class DensityDistribution : public SpatialDistribution<double> {
     private:
-        double getNull() const { return 0.0; }
-
         double sumDensity_;
         std::shared_ptr<std::vector<double>> cumulativeDensity_;
         void calculateCumulativeDensity();
@@ -49,10 +47,5 @@ class DensityDistribution : public SpatialDistribution<double> {
         Point getRandomPosition(Rng &rng) const;
 };
 
-class VelocityDistribution : public SpatialDistribution<Vector> {
-    private:
-        Vector getNull() const { return Vector(0.0, 0.0, 0.0); }
-};
-
 template class SpatialDistribution<double>;
-template class SpatialDistribution<Vector>;
+
