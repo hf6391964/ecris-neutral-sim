@@ -6,9 +6,9 @@ injection_angle = 30;
 injection_r = 4.5;
 injection_N = 50;
 
-surround_cyl_dz = -450;
-surround_cyl_r = 75;
-surround_cyl_h = 510;
+surround_cyl_dz = -434;
+surround_cyl_r = 57;
+surround_cyl_h = 475;
 
 module chamber() {
     import("stl-external/plasmannakemat2-trimmed.stl", convexity=20);
@@ -16,7 +16,7 @@ module chamber() {
 
 module surrounding_cylinder() {
     translate([0, 0, surround_cyl_dz])
-        cylinder(r=surround_cyl_r, h=surround_cyl_h);
+        cylinder(r=surround_cyl_r, h=surround_cyl_h, $fn=100);
 }
 
 module circle_surface(r, n) {

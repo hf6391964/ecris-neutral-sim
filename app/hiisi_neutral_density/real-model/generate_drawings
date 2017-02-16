@@ -1,0 +1,6 @@
+#!/bin/sh
+
+openscad -o proj1.dxf -D PARTNO=5 custom-ecr3.scad &
+openscad -o proj2.dxf -D PARTNO=6 custom-ecr3.scad &
+openscad -o proj3.dxf -D PARTNO=7 custom-ecr3.scad &
+
