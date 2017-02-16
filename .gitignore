@@ -22,4 +22,6 @@ CMake*
 !CMakeLists.txt
 Makefile
 *.cmake
+\#*
+*.dxf
 
