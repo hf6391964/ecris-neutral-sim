@@ -42,8 +42,8 @@ extraction_hole_r = 4;
 grill_hole_r = 1.5;
 grill_sector_angle = 80;
 
-$fa = 6;
-$fs = 1;
+$fa = 10;
+$fs = 1.5;
 
 cylinder_outer_length = cylinder_length + injection_end_h + extraction_end_h;
 
