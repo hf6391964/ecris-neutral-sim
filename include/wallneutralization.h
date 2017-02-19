@@ -18,7 +18,7 @@ class WallNeutralization : public NeutralizationChannel {
     std::vector<Endpoint> wallPoints_, end1Points_, end2Points_;
     EndpointSetVector pointSets_;
     std::vector<double> cumulativeNormalizedEndpointCount_;
-    std::shared_ptr<ParticlePopulation> population_;
+    const ParticlePopulation &population_;
     double confinementTime_;
     double spatialResolution_;
     double angularResolution_;
@@ -26,7 +26,7 @@ class WallNeutralization : public NeutralizationChannel {
 
     public:
         WallNeutralization(
-            std::shared_ptr<ParticlePopulation> population_,
+            const ParticlePopulation &population_,
             double confinementTime,
             const std::string &wallFilename,
             const std::string &end1Filename,

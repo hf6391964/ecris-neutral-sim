@@ -5,7 +5,7 @@
 
 
 WallNeutralization::WallNeutralization(
-    std::shared_ptr<ParticlePopulation> population,
+    const ParticlePopulation &population,
     double confinementTime,
     const std::string &wallFilename,
     const std::string &end1Filename,
@@ -97,7 +97,7 @@ Particle WallNeutralization::sampleNeutralProduct(Rng &rng,
     }
 
     // 2. Sample particle speed from the plasma 1+ distribution
-    double speed = population_->getRandomParticleSpeed(rng);
+    double speed = population_.getRandomParticleSpeed(rng);
 
     // Ray from the particle start point to the wall endpoint
     IntersectionPoint ip;

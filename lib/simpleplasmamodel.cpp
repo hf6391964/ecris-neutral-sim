@@ -14,35 +14,25 @@ SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
     Element element) : element_(element) {
     elementData_ = ELEMENT_DATA.at(element_);
 
-    particlePopulations_.resize(ionRelativeDensities.size() + 1);
-
-    // Calculate the density distributions
-    // TODO insert check for validity of the distribution
-    // i.e. if the reading succeeded
-    std::shared_ptr<DensityDistribution> electronDensity(
-        new DensityDistribution(electronDensityFilename, electronWeight));
+    particlePopulations_.reserve(ionRelativeDensities.size() + 1);
 
     ionMassEv_ = elementData_->mass * ATOMIC_MASS_TO_EV;
+    maxIonTemp_ = 0.0;
+    particlePopulations_.emplace_back(
+        ELECTRON_MASS_EV, -1, electronTemperature,
+        DensityDistribution(electronDensityFilename, electronWeight));
     // Populate the ion densities
     int q = 1;
-    maxIonTemp_ = 0.0;
     for (double relDensity : ionRelativeDensities) {
-        std::shared_ptr<DensityDistribution> ionDensityDistribution(
-            new DensityDistribution(electronDensity, relDensity));
-        particlePopulations_[q] = std::shared_ptr<MaxwellianPopulation>(
-            new MaxwellianPopulation(element_, q,
-            ionTemperatures[q - 1], ionDensityDistribution));
+        particlePopulations_.emplace_back(
+            element_, q, ionTemperatures[q - 1],
+            DensityDistribution(particlePopulations_[0].getDensityDistribution(),
+            relDensity));
         maxIonTemp_ = std::max(maxIonTemp_, ionTemperatures[q - 1]);
         q += 1;
     }
-    particlePopulations_[0] = std::shared_ptr<MaxwellianPopulation>(
-        new MaxwellianPopulation(ELECTRON_MASS_EV, -1, electronTemperature,
-            electronDensity));
 
     maxChargeState_ = ionRelativeDensities.size();
-}
-
-SimplePlasmaModel::~SimplePlasmaModel() {
 }
 
 void SimplePlasmaModel::populateCollisionReactions(
@@ -81,7 +71,7 @@ void SimplePlasmaModel::populateNeutralizationReactions(
     FlychkParser parser(flychkFilename);
     double recombinationRateCoefficient;
     if (!parser.getTotalRateCoefficient(
-        particlePopulations_[0]->getTemperature(), 1,
+        particlePopulations_[0].getTemperature(), 1,
         recombinationRateCoefficient)) {
         throw std::invalid_argument(
             "Couldn't find recombination rate coefficient from FLYCHK");
@@ -95,7 +85,7 @@ void SimplePlasmaModel::populateNeutralizationReactions(
 double SimplePlasmaModel::getIonDensityAt(const Point &p,
     unsigned int chargeState) const {
     if (chargeState > maxChargeState_) return 0.0;
-    return particlePopulations_[chargeState]->getDensityAt(p);
+    return particlePopulations_[chargeState].getDensityAt(p);
 }
 
 double SimplePlasmaModel::getElectronDensityAt(const Point &p) const {
@@ -105,7 +95,7 @@ double SimplePlasmaModel::getElectronDensityAt(const Point &p) const {
 Vector SimplePlasmaModel::getIsotropicIonVelocity(Rng &rng,
     unsigned int chargeState) const {
     if (chargeState > maxChargeState_) return Vector(0.0, 0.0, 0.0);
-    return particlePopulations_[chargeState]->getRandomParticleVelocity(rng);
+    return particlePopulations_[chargeState].getRandomParticleVelocity(rng);
 }
 
 Vector SimplePlasmaModel::getIsotropicElectronVelocity(Rng &rng) const {

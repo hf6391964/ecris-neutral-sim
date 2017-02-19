@@ -4,16 +4,8 @@ template<typename T>
 SpatialDistribution<T>::SpatialDistribution(const Grid &grid, T null_value)
     : null_value_(null_value) {
     size_t n = grid.arraySize();
-    valueVector_ = new T[n];
+    valueVector_.resize(n);
     grid_ = grid;
-}
-
-template<typename T>
-SpatialDistribution<T>::~SpatialDistribution() {
-    if (valueVector_ != NULL) {
-        delete[] valueVector_;
-        valueVector_ = NULL;
-    }
 }
 
 template<typename T>
@@ -53,20 +45,10 @@ void SpatialDistribution<T>::removeCoordinateTransformation() {
 }
 
 DensityDistribution::DensityDistribution(const DensityDistribution &src,
-    double weight) : SpatialDistribution(src.grid_, 0.0) {
-    size_t n = grid_.arraySize();
-    for (size_t i = 0; i < n; ++i) {
-        valueVector_[i] = src.valueVector_[i] * weight;
-    }
-    calculateCumulativeDensity();
-}
-
-DensityDistribution::DensityDistribution(std::shared_ptr<DensityDistribution> src,
     double weight)
-    : SpatialDistribution(0.0), sourceDistribution_(src),
+    : SpatialDistribution(0.0), sourceDistribution_(&src),
       sourceDistributionWeight_(weight) {
-    grid_ = src->grid_;
-    calculateCumulativeDensity();
+    grid_ = src.grid_;
 }
 
 DensityDistribution::DensityDistribution(std::string filename,
@@ -76,7 +58,7 @@ DensityDistribution::DensityDistribution(std::string filename,
     grid_ = Grid(fin);
     // Read density data from that file
     size_t n = grid_.arraySize();
-    valueVector_ = new double[n];
+    valueVector_.resize(n);
     for (size_t i = 0; i < n; ++i) {
         double nParticles;
         fin >> nParticles;
@@ -88,27 +70,25 @@ DensityDistribution::DensityDistribution(std::string filename,
 }
 
 void DensityDistribution::calculateCumulativeDensity() {
-    if (sourceDistribution_) {
-        sumDensity_ = sourceDistribution_->sumDensity_;
-        cumulativeDensity_ = sourceDistribution_->cumulativeDensity_;
-    } else {
-        sumDensity_ = 0.0;
-        size_t n = grid_.arraySize();
-        cumulativeDensity_ =
-            std::shared_ptr<std::vector<double>>(new std::vector<double>(n));
+    sumDensity_ = 0.0;
+    size_t n = grid_.arraySize();
+    cumulativeDensity_.resize(n);
 
-        for (size_t i = 0; i < n; ++i) {
-            sumDensity_ += valueVector_[i];
-            (*cumulativeDensity_)[i] = sumDensity_;
-        }
+    for (size_t i = 0; i < n; ++i) {
+        sumDensity_ += valueVector_[i];
+        cumulativeDensity_[i] = sumDensity_;
     }
 }
 
 Point DensityDistribution::getRandomPosition(Rng &rng) const {
+    if (sourceDistribution_ != nullptr) {
+        return sourceDistribution_->getRandomPosition(rng);
+    }
+
     double x = uni01(rng) * sumDensity_;
 
-    size_t i = std::lower_bound(cumulativeDensity_->begin(),
-        cumulativeDensity_->end(), x) - cumulativeDensity_->begin();
+    size_t i = std::lower_bound(cumulativeDensity_.begin(),
+        cumulativeDensity_.end(), x) - cumulativeDensity_.begin();
 
     double l = grid_.cellSideLength();
 
@@ -125,7 +105,7 @@ Point DensityDistribution::getRandomPosition(Rng &rng) const {
 }
 
 double DensityDistribution::getValueAt(const Point &p) const {
-    if (sourceDistribution_) {
+    if (sourceDistribution_ != nullptr) {
         return sourceDistributionWeight_ * sourceDistribution_->getValueAt(p);
     }
 

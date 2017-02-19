@@ -10,12 +10,12 @@ class ParticlePopulation {
         Element element_ = ELEMENT_NONE;
         const double particleMass_eV_;
         int chargeState_;
-        std::shared_ptr<DensityDistribution> densityDistribution_;
+        DensityDistribution densityDistribution_;
         std::string label_ = "";
 
     public:
         ParticlePopulation(Element element, int chargeState,
-            std::shared_ptr<DensityDistribution> densityDistribution)
+            const DensityDistribution &densityDistribution)
             : element_(element),
               particleMass_eV_(ELEMENT_DATA.at(element_)->mass * ATOMIC_MASS_TO_EV),
               chargeState_(chargeState), densityDistribution_(densityDistribution) {
@@ -27,7 +27,7 @@ class ParticlePopulation {
         }
 
         ParticlePopulation(double particleMass_eV, int chargeState,
-            std::shared_ptr<DensityDistribution> densityDistribution)
+            const DensityDistribution &densityDistribution)
             : particleMass_eV_(particleMass_eV), chargeState_(chargeState),
               densityDistribution_(densityDistribution) {
             if (chargeState_ == -1) {
@@ -45,6 +45,10 @@ class ParticlePopulation {
 
         std::string getLabel() const {
             return label_;
+        }
+
+        const DensityDistribution &getDensityDistribution() const {
+            return densityDistribution_;
         }
 
         virtual Vector getRandomParticleVelocity(Rng &rng) const = 0;
