@@ -12,9 +12,15 @@ class SurfaceEmission : public NeutralSource {
     const ElementData *elementData_;
 
     public:
-        SurfaceEmission(std::shared_ptr<Surface> pSurface, double emissionRate_,
+        // The emission rate is in [ Pa m^3 / s ]
+        SurfaceEmission(std::shared_ptr<Surface> pSurface, double emissionRate,
             Element element_, std::string label);
 
         Particle generateParticle(Rng& rng, double time) const;
+
+        double getEmissionRate() const {
+            return emissionRate_ /
+                (pSurface_->getTemperature() * EV_TO_JOULE);
+        }
 };
 

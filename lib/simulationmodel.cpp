@@ -77,15 +77,21 @@ void SimulationModel::runSimulation(
         grid.writeDimensions(dim);
         dim.close();
 
+        double cellVolume = gridSize*gridSize*gridSize;
+        double densityCoefficient = pSource->getEmissionRate() *
+            samplingInterval / (cellVolume * nParticles);
+
         if (stationary) {
-            writeResults(sourcePrefix, frames[0], grid, 0.0, "stationary");
+            writeResults(sourcePrefix, frames[0], grid, 0.0, densityCoefficient,
+                "stationary");
         } else {
             int nDigits = std::log10(nTimeSamples) + 1;
             for (unsigned long step = 0; step < nTimeSamples; ++step) {
                 std::stringstream suffix;
                 suffix << std::setw(nDigits) << std::setfill('0') << step;
                 writeResults(sourcePrefix, frames[step],
-                    grid, step * samplingInterval, suffix.str());
+                    grid, step * samplingInterval, densityCoefficient,
+                    suffix.str());
             }
         }
     }
@@ -260,7 +266,7 @@ void SimulationModel::simulationThread(
 
 void SimulationModel::writeResults(std::string prefix,
     const SampleFrame &frame,
-    Grid grid, double t, std::string suffix) const {
+    Grid grid, double t, double densityCoefficient, std::string suffix) const {
     size_t nx, ny, nz;
     std::tie(nx, ny, nz) = grid.dimensions();
     std::stringstream filename;
@@ -273,8 +279,9 @@ void SimulationModel::writeResults(std::string prefix,
     size_t nxyz = nx*ny*nz;
     for (size_t j = 0; j < nxyz; ++j) {
         Vector v = frame[j].velocity;
+        double count = (double)frame[j].count * densityCoefficient;
         f << v.x() << CSV_SEP << v.y() << CSV_SEP << v.z() << CSV_SEP <<
-            frame[j].count << '\n';
+            count << '\n';
     }
 
     f.close();

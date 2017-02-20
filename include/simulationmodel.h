@@ -40,7 +40,8 @@ class SimulationModel {
 
     void writeResults(std::string prefix,
         const SampleFrame &frame,
-        Grid grid, double t, std::string suffix) const;
+        Grid grid, double t, double densityCoefficient,
+        std::string suffix) const;
 
     public:
         SimulationModel(SurfaceCollection &surfaces);
