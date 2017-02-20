@@ -28,10 +28,10 @@ void doRun(size_t N_PARTICLES) {
         ELECTRON_DENSITY, ION_RELATIVE_DENSITIES, ELECTRON_TEMPERATURE,
         ION_TEMPERATURES, ELEMENT);
 
-    simthreadresources *thread_res = Util::allocateThreadResources(13122016);
+    simthreadresources thread_res(13122016);
 
     /*Surface radial_wall("model/radial_wall.stl",
-        0.0, ROOM_TEMPERATURE_EV, "radial_wall", false, 1.0, 0.1);
+        0.0, ROOM_TEMPERATURE_EV, "radial_wall", false);
     Surface end1("model/end1.stl",
         1.0, ROOM_TEMPERATURE_EV, "end1", true);
     Surface end2("model/end2.stl",
@@ -42,23 +42,37 @@ void doRun(size_t N_PARTICLES) {
     surfaces.addSurface(&end2);
     SurfaceEmission gasFeed(&radial_wall, 1e-12, ELEMENT);*/
 
-    Surface chamber("real-model/chamber.stl",
+    /*Surface chamber("real-model/stl-external/plasmannakemat2-admesh.stl",
         0.0, ROOM_TEMPERATURE_EV, "chamber wall", false, 0.001);
-    Surface surrounding_cylinder("real-model/sheath.stl",
+    Surface surrounding_cylinder("real-model/sheath_big.stl",
         1.0, ROOM_TEMPERATURE_EV, "surrounding cylinder", true, 0.001);
-    Surface injection_surface("real-model/injection_surface.stl",
+    Surface injection_surface("real-model/injection_surface_big.stl",
         1.0, ROOM_TEMPERATURE_EV, "injection surface", false, 0.001);
-    Surface extraction_surface("real-model/extraction_surface.stl",
-        0.1, ROOM_TEMPERATURE_EV, "extraction surface", false, 0.001);
     SurfaceCollection surfaces;
     surfaces.addSurface(&chamber);
     surfaces.addSurface(&surrounding_cylinder);
     surfaces.addSurface(&injection_surface);
-    surfaces.addSurface(&extraction_surface);
-    SurfaceEmission gasFeed(&injection_surface, 1e-12, ELEMENT);
+    SurfaceEmission gasFeed(&injection_surface, 1e-12, ELEMENT);*/
 
+    SurfacePtr chamber = std::make_shared<Surface>("real-model/chamber.stl",
+        0.0, ROOM_TEMPERATURE_EV, "chamber wall", false, 0.001);
+    SurfacePtr surrounding_cylinder = std::make_shared<Surface>(
+        "real-model/sheath.stl",
+        1.0, ROOM_TEMPERATURE_EV, "surrounding cylinder", true, 0.001);
+    SurfacePtr injection_surface = std::make_shared<Surface>(
+        "real-model/injection_surface.stl",
+        1.0, ROOM_TEMPERATURE_EV, "injection surface", false, 0.001);
+    SurfacePtr extraction_surface = std::make_shared<Surface>(
+        "real-model/extraction_surface.stl",
+        0.1, ROOM_TEMPERATURE_EV, "extraction surface", false, 0.001);
+    SurfaceCollection surfaces;
+    surfaces.addSurface(chamber);
+    surfaces.addSurface(surrounding_cylinder);
+    surfaces.addSurface(injection_surface);
+    surfaces.addSurface(extraction_surface);
     SimulationModel simModel(surfaces);
-    simModel.addSource(&gasFeed);
+    simModel.addSource(std::make_unique<SurfaceEmission>(
+        injection_surface, 1e-12, ELEMENT));
 
     CollisionGenerator generator(simModel.getGrid(GRID_SIZE));
     NeutralizationGenerator ngenerator;
@@ -76,7 +90,6 @@ void doRun(size_t N_PARTICLES) {
         N_PARTICLES, name, N_TIME_SAMPLES, GRID_SIZE, SAMPLING_INTERVAL);//, 1.0, 1);
     clock_t end_clock = clock();
     time_t end_time = time(NULL);
-    Util::deallocateThreadResources(thread_res);
 
     std::cout << "System time: " << ((end_clock - start_clock) / CLOCKS_PER_SEC) << " sec\n";
     std::cout << "Wall clock time: " << (end_time - start_time) << " sec\n";
@@ -98,7 +111,7 @@ int main() {
         doRun(size);
     }*/
 
-    doRun(100000);
+    doRun(10000);
 
     return 0;
 }
