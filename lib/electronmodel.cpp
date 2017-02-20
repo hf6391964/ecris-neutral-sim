@@ -3,29 +3,16 @@
 
 ElectronModel::ElectronModel(const double B0, const double r0, const double dt,
     const double z1, const double z2, const double gridSize,
-    const double confinementTime, const double a[]) : B0_(B0), r0_(r0), dt_(dt),
-    z1_(z1), z2_(z2), gridSize_(gridSize), confinementTime_(confinementTime),
-    a_(a) {
+    const double confinementTime, const std::vector<double> &a)
+    : B0_(B0), r0_(r0), dt_(dt), z1_(z1), z2_(z2), gridSize_(gridSize),
+      confinementTime_(confinementTime), a_(a) {
     grid_ = Grid(Bbox(-r0, -r0, z1, r0, r0, z2), gridSize_);
     resetCounters();
 }
 
-ElectronModel::~ElectronModel() {
-    if (particleCount_ != NULL) {
-        delete[] particleCount_;
-    }
-}
-
 void ElectronModel::resetCounters() {
-    if (particleCount_ != NULL) {
-        delete[] particleCount_;
-    }
-
     size_t arraySize = grid_.arraySize();
-    particleCount_ = new unsigned long[arraySize];
-    for (size_t i = 0; i < arraySize; i++) {
-        particleCount_[i] = 0;
-    }
+    particleCount_ = std::vector<unsigned long>(arraySize, 0);
 
     z1CollisionPoints_.clear();
     z2CollisionPoints_.clear();
@@ -36,7 +23,7 @@ void ElectronModel::resetCounters() {
 }
 
 Vector ElectronModel::solenoidBfield(const double x, const double y,
-    const double z, const double a[]) {
+    const double z, const std::vector<double> &a) {
     double r2 = x*x + y*y;
     // Horner scheme w.r.t. z
     double solenoid_Bz =
@@ -67,7 +54,7 @@ Vector ElectronModel::hexapoleBfield(const double x, const double y,
 }
 
 Vector ElectronModel::totalBfield(const Vector vx, const double B0,
-    const double r0, const double a[]) {
+    const double r0, const std::vector<double> &a) {
     double x = vx.x();
     double y = vx.y();
     double z = vx.z();
@@ -199,7 +186,7 @@ void ElectronModel::writeDensityToFile(const std::string &filename,
         }
     } else {
         for (size_t i = 0; i < N; ++i) {
-            fout << particleCount_[i] << std::endl;
+            fout << particleCount_[i] << '\n';
         }
     }
     fout.close();

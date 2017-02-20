@@ -97,8 +97,7 @@ void SimulationModel::simulationThread(
     long nTimeSamples, Grid grid, uint_least32_t seed,
     std::vector<SampleFrame> &frames,
     bool stationary, double cutoffTime) const {
-
-    simthreadresources *thread_res = Util::allocateThreadResources(seed);
+    simthreadresources thread_res(seed);
 
     const size_t gridSize = grid.arraySize();
 
@@ -109,9 +108,9 @@ void SimulationModel::simulationThread(
         for (unsigned long i = 0; i < nParticles; ++i) {
             // Spread the gas pulse evenly across the whole sample interval
             // in time dependent simulations
-            double initialTime = -uni01(thread_res->rng) * samplingInterval;
+            double initialTime = -uni01(thread_res.rng) * samplingInterval;
             Particle particle =
-                pSource->generateParticle(thread_res->rng, initialTime);
+                pSource->generateParticle(thread_res.rng, initialTime);
             long nextSampleIndex = 0;
 
             logger << "\nParticle number " << i <<
@@ -159,7 +158,7 @@ void SimulationModel::simulationThread(
                 if (timeToIntersection < timestep) {
                     // Approximation: if time to intersection is smaller than
                     // the mean free time, just go directly to the intersection
-                    particle.goToIntersection(thread_res->rng);
+                    particle.goToIntersection(thread_res.rng);
                     particle.findNextIntersection(surfaces_, true);
 
                     IntersectionPoint ip = particle.getNextIntersection();
@@ -178,12 +177,12 @@ void SimulationModel::simulationThread(
                         ", " << p.z() << ")\n";
 
                     CollisionReaction *reaction =
-                        collisionGenerator.sampleCollision(thread_res->rng,
+                        collisionGenerator.sampleCollision(thread_res.rng,
                             p, speed, timestep);
 
                     if (reaction != nullptr) {
                         CollisionProducts products =
-                            reaction->computeReactionProducts(thread_res->rng,
+                            reaction->computeReactionProducts(thread_res.rng,
                             p, particle);
 
                         std::vector<Particle> neutralProducts =
@@ -201,7 +200,7 @@ void SimulationModel::simulationThread(
                         } else if (ionProducts == 1) {
                             // One ionized product produced, sample a neutralization reaction
                             particle =
-                                neutralizationGenerator.sampleNeutralizationReaction(thread_res->rng, particle);
+                                neutralizationGenerator.sampleNeutralizationReaction(thread_res.rng, particle);
                         } else {
                             // There are no reaction products, we are
                             // done with this particle.
@@ -261,8 +260,6 @@ void SimulationModel::simulationThread(
             }
         }
     }
-
-    Util::deallocateThreadResources(thread_res);
 }
 
 void SimulationModel::writeResults(std::string prefix,

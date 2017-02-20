@@ -133,22 +133,3 @@ double Util::calculateMBRelativeSpeed(double particleSpeed, double T_eV,
         ms, fOne, NULL, N_calls);
 }
 
-simthreadresources *Util::allocateThreadResources(uint_least32_t seed) {
-    simthreadresources *thread_res = new simthreadresources;
-
-    thread_res->rng = Rng(seed);
-    thread_res->ms = gsl_monte_vegas_alloc(3);
-    thread_res->ws = gsl_integration_workspace_alloc(RATE_COEFF_WORKSPACE_SIZE);
-    thread_res->gslrng = gsl_rng_alloc(gsl_rng_mt19937);
-    gsl_rng_set(thread_res->gslrng, seed);
-
-    return thread_res;
-}
-
-void Util::deallocateThreadResources(simthreadresources *thread_res) {
-    if (thread_res == NULL) return;
-    gsl_monte_vegas_free(thread_res->ms);
-    gsl_integration_workspace_free(thread_res->ws);
-    gsl_rng_free(thread_res->gslrng);
-    delete thread_res;
-}

@@ -15,9 +15,7 @@ class ElectronModel {
         ElectronModel(const double B0, const double r0, const double dt,
             const double z1, const double z2, const double gridSize,
             const double confinementTime,
-            const double a[] = SOLENOID_FIELD_AI);
-
-        ~ElectronModel();
+            const std::vector<double> &a = SOLENOID_FIELD_AI);
 
         void resetCounters();
 
@@ -111,9 +109,9 @@ class ElectronModel {
             bool normalize = true) const;
 
         static Vector totalBfield(const Vector vx, const double B0,
-            const double r0, const double a[] = SOLENOID_FIELD_AI);
+            const double r0, const std::vector<double> &a);
         static Vector solenoidBfield(const double x, const double y,
-            const double z, const double a[] = SOLENOID_FIELD_AI);
+            const double z, const std::vector<double> &a);
         static Vector hexapoleBfield(const double x, const double y,
             const double B0, const double r0);
 
@@ -128,7 +126,7 @@ class ElectronModel {
         Vector particleVelocity_;
         Vector particlePosition_;
         const double B0_, r0_, dt_, z1_, z2_, gridSize_, confinementTime_;
-        const double* a_;
+        const std::vector<double> a_;
         double t_;
         Grid grid_;
         std::vector<Vector> z1CollisionPoints_;
@@ -137,6 +135,6 @@ class ElectronModel {
         std::vector<double> finalEnergies_;
         std::vector<std::tuple<double, double>> lostVelocities_;
         std::vector<std::tuple<double, double>> nonLostVelocities_;
-        unsigned long* particleCount_ = NULL;
+        std::vector<unsigned long> particleCount_;
 };
 
