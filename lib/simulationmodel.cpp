@@ -62,16 +62,6 @@ void SimulationModel::runSimulation(
             thread.join();
         }
 
-        for (auto &frame : frames) {
-            for (auto &sample : frame) {
-                if (sample.count > 0) {
-                    sample.velocity = sample.velocity / sample.count;
-                } else {
-                    sample.velocity = Vector(0.0, 0.0, 0.0);
-                }
-            }
-        }
-
         std::string sourcePrefix = prefix + '_' + pSource->getLabel();
         std::ofstream dim(sourcePrefix + "_dimensions.csv");
         grid.writeDimensions(dim);
@@ -254,10 +244,12 @@ void SimulationModel::simulationThread(
                 size_t arrIndex;
                 if (grid.arrayIndex(particle.getPosition(), arrIndex)) {
                     size_t frameIndex = stationary ? 0 : sampleIndex;
-                    std::lock_guard<std::mutex> writeGuard(writeMutex);
                     Sample &sample = frames[frameIndex][arrIndex];
-                    sample.count += 1;
-                    sample.velocity = sample.velocity + particle.getVelocity();
+                    std::lock_guard<std::mutex> writeGuard(writeMutex);
+                    sample.count++;
+                    Vector lastVelocityAverage = sample.velocity;
+                    sample.velocity = sample.velocity +
+                        (particle.getVelocity() - lastVelocityAverage) / sample.count;
                 }
             }
         }
