@@ -50,18 +50,5 @@ class SimplePlasmaModel {
             const std::string &flychkFilename,
             const SurfaceCollection &surfaces,
             double averageElectronDensity) const;
-
-        // Here ion densities are indexed such that i = q.
-        // A special case is i = 0 which corresponds to electron density.
-        double getIonDensityAt(const Point &p, unsigned int chargeState) const;
-        double getElectronDensityAt(const Point &p) const;
-
-        double getIonMass() const {
-            return ionMassEv_;
-        }
-
-        Vector getIsotropicIonVelocity(Rng &rng, unsigned int chargeState)
-            const;
-        Vector getIsotropicElectronVelocity(Rng &rng) const;
 };
 

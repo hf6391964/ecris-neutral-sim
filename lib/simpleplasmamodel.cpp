@@ -18,7 +18,8 @@ SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
     particlePopulations_.reserve(ionRelativeDensities.size() + 1);
 
     ionMassEv_ = elementData_->mass * ATOMIC_MASS_TO_EV;
-    maxIonTemp_ = 0.0;
+    maxIonTemp_ = *std::max_element(ionTemperatures.begin(),
+        ionTemperatures.end());
     particlePopulations_.emplace_back(
         ELECTRON_MASS_EV, -1, electronTemperature,
         DensityDistribution(electronDensityFilename, electronWeight));
@@ -29,7 +30,6 @@ SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
             element_, q, ionTemperatures[q - 1],
             DensityDistribution(particlePopulations_[0].getDensityDistribution(),
             relDensity));
-        maxIonTemp_ = std::max(maxIonTemp_, ionTemperatures[q - 1]);
         q += 1;
     }
 
@@ -81,25 +81,5 @@ void SimplePlasmaModel::populateNeutralizationReactions(
         averageElectronDensity * recombinationRateCoefficient;
     generator.addNeutralizationChannel(std::make_unique<Recombination>(
         particlePopulations_[1], recombinationRate));
-}
-
-double SimplePlasmaModel::getIonDensityAt(const Point &p,
-    unsigned int chargeState) const {
-    if (chargeState > maxChargeState_) return 0.0;
-    return particlePopulations_[chargeState].getDensityAt(p);
-}
-
-double SimplePlasmaModel::getElectronDensityAt(const Point &p) const {
-    return getIonDensityAt(p, 0);
-}
-
-Vector SimplePlasmaModel::getIsotropicIonVelocity(Rng &rng,
-    unsigned int chargeState) const {
-    if (chargeState > maxChargeState_) return Vector(0.0, 0.0, 0.0);
-    return particlePopulations_[chargeState].getRandomParticleVelocity(rng);
-}
-
-Vector SimplePlasmaModel::getIsotropicElectronVelocity(Rng &rng) const {
-    return getIsotropicIonVelocity(rng, 0);
 }
 
