@@ -29,7 +29,7 @@ class SpatialDistribution {
 class DensityDistribution : public SpatialDistribution<double> {
     private:
         double sumDensity_;
-        std::shared_ptr<std::vector<double>> cumulativeDensity_;
+        std::vector<double> cumulativeDensity_;
         void calculateCumulativeDensity();
         std::shared_ptr<DensityDistribution> sourceDistribution_;
         double sourceDistributionWeight_;

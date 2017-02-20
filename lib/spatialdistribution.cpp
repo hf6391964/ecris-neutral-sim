@@ -72,12 +72,11 @@ DensityDistribution::DensityDistribution(std::string filename,
 void DensityDistribution::calculateCumulativeDensity() {
     sumDensity_ = 0.0;
     size_t n = grid_.arraySize();
-    cumulativeDensity_ =
-        std::shared_ptr<std::vector<double>>(new std::vector<double>(n));
+    cumulativeDensity_ = std::vector<double>(n);
 
     for (size_t i = 0; i < n; ++i) {
         sumDensity_ += valueVector_[i];
-        (*cumulativeDensity_)[i] = sumDensity_;
+        cumulativeDensity_[i] = sumDensity_;
     }
 }
 
@@ -88,8 +87,8 @@ Point DensityDistribution::getRandomPosition(Rng &rng) const {
 
     double x = uni01(rng) * sumDensity_;
 
-    size_t i = std::lower_bound(cumulativeDensity_->begin(),
-        cumulativeDensity_->end(), x) - cumulativeDensity_->begin();
+    size_t i = std::lower_bound(cumulativeDensity_.begin(),
+        cumulativeDensity_.end(), x) - cumulativeDensity_.begin();
 
     double l = grid_.cellSideLength();
 
