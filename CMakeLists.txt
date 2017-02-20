@@ -33,7 +33,7 @@ add_library(neutrals STATIC
 cmake_minimum_required(VERSION 2.8.11)
 
 # CGAL and its components
-find_package( CGAL QUIET )
+find_package( CGAL )
 
 if ( NOT CGAL_FOUND )
 
