@@ -7,12 +7,13 @@
 #include "logger.h"
 
 typedef std::vector<std::unique_ptr<CollisionReaction>> CollisionReactionVector;
+typedef std::vector<std::vector<double>> RateCoefficientVector;
 
 class CollisionGenerator {
     CollisionReactionVector collisionReactions_;
     Grid grid_;
-    double *rateCoefficients_ = NULL;
-    double *majorantReactionRate_ = NULL;
+    RateCoefficientVector rateCoefficients_;
+    std::vector<double> majorantReactionRate_;
     size_t nSpeedSteps_ = 0;
     double speedStepSize_ = 0.0;
     size_t nReactions_ = 0;
@@ -21,7 +22,6 @@ class CollisionGenerator {
 
     public:
         CollisionGenerator(const Grid &grid);
-        ~CollisionGenerator();
 
         // NOTE: ownership of the pointed reaction will be transferred to the
         // instance of CollisionGenerator!

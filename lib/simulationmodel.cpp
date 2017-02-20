@@ -13,8 +13,8 @@ void SimulationModel::addSource(NeutralSource* source) {
 }
 
 void SimulationModel::runSimulation(
-    CollisionGenerator &collisionGenerator,
-    NeutralizationGenerator &neutralizationGenerator,
+    const CollisionGenerator &collisionGenerator,
+    const NeutralizationGenerator &neutralizationGenerator,
     unsigned long nParticles,
     std::string prefix, unsigned int nTimeSamples, double gridSize,
     double samplingInterval, double cutoffTime, int nThreads) {
@@ -34,9 +34,6 @@ void SimulationModel::runSimulation(
     size_t arraySize = gSize;
     std::cout << "grid has " << gSize << " cells\n";
     std::cout << "Need " << ((sizeof(Vector) + sizeof(unsigned long)) * arraySize) << " bytes\n";
-    if (!stationary) {
-        arraySize *= nTimeSamples;
-    }
 
     std::cout << "Sampling interval: " << samplingInterval << std::endl;
 
@@ -46,32 +43,32 @@ void SimulationModel::runSimulation(
     std::vector<uint_least32_t> seeds(nThreads);
     sseq.generate(seeds.begin(), seeds.end());
 
-    std::cout << "Allocating memory...\n";
-    Vector* velocity = new Vector[arraySize];
-    unsigned long* count = new unsigned long[arraySize];
-    for (size_t k = 0; k < arraySize; ++k) {
-        velocity[k] = Vector(0.0, 0.0, 0.0);
-        count[k] = 0;
-    }
+    std::vector<SampleFrame> frames(stationary ? 1 : nTimeSamples,
+        SampleFrame(arraySize, Sample()));
 
     std::cout << "Running with " << nThreads << " thread(s)..." << std::endl;
     // TODO extend and use SpatialDistribution here
     for (int i = 0; i < nThreads; ++i) {
         std::cout << "Starting thread " << i << std::endl;
         threads.push_back(std::thread(&SimulationModel::simulationThread,
-            this, &collisionGenerator, &neutralizationGenerator,
+            this, std::ref(collisionGenerator),
+            std::ref(neutralizationGenerator),
             std::ref(writeMutex),
             particlesInChunk, samplingInterval, nTimeSamples, grid, seeds[i],
-            velocity, count, stationary, cutoffTime));
+            std::ref(frames), stationary, cutoffTime));
     }
 
-    for (auto it = threads.begin(); it != threads.end(); ++it) {
-        it->join();
+    for (auto &thread : threads) {
+        thread.join();
     }
 
-    for (size_t j = 0; j < arraySize; ++j) {
-        if (count[j] > 0) {
-            velocity[j] = velocity[j] / count[j];
+    for (auto &frame : frames) {
+        for (auto &sample : frame) {
+            if (sample.count > 0) {
+                sample.velocity = sample.velocity / sample.count;
+            } else {
+                sample.velocity = Vector(0.0, 0.0, 0.0);
+            }
         }
     }
 
@@ -80,29 +77,26 @@ void SimulationModel::runSimulation(
     dim.close();
 
     if (stationary) {
-        writeResults(prefix, velocity, count, grid, 0.0, "stationary");
+        writeResults(prefix, frames[0], grid, 0.0, "stationary");
     } else {
         int nDigits = std::log10(nTimeSamples) + 1;
-        for (unsigned long step = 0; step < nTimeSamples; step++) {
+        for (unsigned long step = 0; step < nTimeSamples; ++step) {
             std::stringstream suffix;
             suffix << std::setw(nDigits) << std::setfill('0') << step;
-            writeResults(prefix, velocity + step*gSize, count + step*gSize,
+            writeResults(prefix, frames[step],
                 grid, step * samplingInterval, suffix.str());
         }
     }
-
-    delete[] velocity;
-    delete[] count;
 }
 
 void SimulationModel::simulationThread(
-    CollisionGenerator *collisionGenerator,
-    NeutralizationGenerator *neutralizationGenerator,
+    const CollisionGenerator &collisionGenerator,
+    const NeutralizationGenerator &neutralizationGenerator,
     std::mutex &writeMutex,
     unsigned long nParticles, double samplingInterval,
-    long nTimeSamples, const Grid &grid, uint_least32_t seed,
-    Vector* velocity, unsigned long* count, bool stationary,
-    double cutoffTime) const {
+    long nTimeSamples, Grid grid, uint_least32_t seed,
+    std::vector<SampleFrame> &frames,
+    bool stationary, double cutoffTime) const {
 
     simthreadresources *thread_res = Util::allocateThreadResources(seed);
 
@@ -146,7 +140,7 @@ void SimulationModel::simulationThread(
                 // the greatest rate, so in principle it should suffice
                 // for accurate enough sampling of collision reactions
                 double meanFreeTime =
-                    collisionGenerator->getMeanFreeTime(speed);
+                    collisionGenerator.getMeanFreeTime(speed);
 
                 double timeToSampleBoundary = nextSampleIndex * samplingInterval -
                     particle.getTime();
@@ -184,10 +178,10 @@ void SimulationModel::simulationThread(
                         ", " << p.z() << ")\n";
 
                     CollisionReaction *reaction =
-                        collisionGenerator->sampleCollision(thread_res->rng,
+                        collisionGenerator.sampleCollision(thread_res->rng,
                             p, speed, timestep);
 
-                    if (reaction != NULL) {
+                    if (reaction != nullptr) {
                         CollisionProducts products =
                             reaction->computeReactionProducts(thread_res->rng,
                             p, particle);
@@ -207,7 +201,7 @@ void SimulationModel::simulationThread(
                         } else if (ionProducts == 1) {
                             // One ionized product produced, sample a neutralization reaction
                             particle =
-                                neutralizationGenerator->sampleNeutralizationReaction(thread_res->rng, particle);
+                                neutralizationGenerator.sampleNeutralizationReaction(thread_res->rng, particle);
                         } else {
                             // There are no reaction products, we are
                             // done with this particle.
@@ -257,16 +251,11 @@ void SimulationModel::simulationThread(
                     logger << "Sampled particle at t = " << particle.getTime() << '\n';
                     size_t arrIndex;
                     if (grid.arrayIndex(particle.getPosition(), arrIndex)) {
-                        if (!stationary) {
-                            if (sampleIndex < nTimeSamples) {
-                                arrIndex += sampleIndex*gridSize;
-                            }
-                        }
-
+                        size_t frameIndex = stationary ? 0 : sampleIndex;
                         std::lock_guard<std::mutex> writeGuard(writeMutex);
-                        count[arrIndex] += 1;
-                        velocity[arrIndex] = velocity[arrIndex] +
-                            particle.getVelocity();
+                        Sample &sample = frames[frameIndex][arrIndex];
+                        sample.count += 1;
+                        sample.velocity = sample.velocity + particle.getVelocity();
                     }
                 }
             }
@@ -276,8 +265,9 @@ void SimulationModel::simulationThread(
     Util::deallocateThreadResources(thread_res);
 }
 
-void SimulationModel::writeResults(std::string prefix, Vector* velocity,
-    unsigned long* count, Grid& grid, double t, std::string suffix) const {
+void SimulationModel::writeResults(std::string prefix,
+    const SampleFrame &frame,
+    Grid grid, double t, std::string suffix) const {
     size_t nx, ny, nz;
     std::tie(nx, ny, nz) = grid.dimensions();
     std::stringstream filename;
@@ -288,11 +278,12 @@ void SimulationModel::writeResults(std::string prefix, Vector* velocity,
     f << "t = " << t << std::endl;
 
     size_t nxyz = nx*ny*nz;
-    for (size_t j = 0; j < nxyz; j++) {
-        Vector v = velocity[j];
+    for (size_t j = 0; j < nxyz; ++j) {
+        Vector v = frame[j].velocity;
         f << v.x() << CSV_SEP << v.y() << CSV_SEP << v.z() << CSV_SEP <<
-            count[j] << std::endl;
+            frame[j].count << '\n';
     }
 
     f.close();
 }
+

@@ -16,6 +16,13 @@
 #include "collisiongenerator.h"
 #include "neutralizationgenerator.h"
 
+struct Sample {
+    Vector velocity = Vector(0.0, 0.0, 0.0);
+    unsigned long count = 0;
+};
+
+typedef std::vector<Sample> SampleFrame;
+
 class SimulationModel {
     std::vector<NeutralSource*> sources_;
     SurfaceCollection &surfaces_;
@@ -23,15 +30,16 @@ class SimulationModel {
     Bbox bbox_;
 
     void simulationThread(
-        CollisionGenerator *collisionGenerator,
-        NeutralizationGenerator *neutralizationGenerator,
+        const CollisionGenerator &collisionGenerator,
+        const NeutralizationGenerator &neutralizationGenerator,
         std::mutex &writeMutex,
         unsigned long nParticles, double samplingInterval, long nTimeSamples,
-        const Grid &grid, uint_least32_t seed, Vector* velocity,
-        unsigned long* count, bool stationary, double cutoffTime) const;
+        Grid grid, uint_least32_t seed, std::vector<SampleFrame> &frames,
+        bool stationary, double cutoffTime) const;
 
-    void writeResults(std::string prefix, Vector* velocity,
-        unsigned long* count, Grid& grid, double t, std::string suffix) const;
+    void writeResults(std::string prefix,
+        const SampleFrame &frame,
+        Grid grid, double t, std::string suffix) const;
 
     public:
         SimulationModel(SurfaceCollection &surfaces);
@@ -40,8 +48,8 @@ class SimulationModel {
         void addSource(NeutralSource* source);
 
         void runSimulation(
-            CollisionGenerator &collisionGenerator,
-            NeutralizationGenerator &neutralizationGenerator,
+            const CollisionGenerator &collisionGenerator,
+            const NeutralizationGenerator &neutralizationGenerator,
             unsigned long nParticles, std::string prefix,
             unsigned int nTimeSamples = 0,
             double gridSize = 0.1,

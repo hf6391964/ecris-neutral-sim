@@ -4,22 +4,6 @@ CollisionGenerator::CollisionGenerator(const Grid &grid)
     : grid_(grid) {
 }
 
-CollisionGenerator::~CollisionGenerator() {
-    _cleanup();
-}
-
-void CollisionGenerator::_cleanup() {
-    // Deallocate previously allocated resources
-    if (rateCoefficients_ != NULL) {
-        delete[] rateCoefficients_;
-        rateCoefficients_ = NULL;
-    }
-    if (majorantReactionRate_ != NULL) {
-        delete[] majorantReactionRate_;
-        majorantReactionRate_ = NULL;
-    }
-}
-
 void CollisionGenerator::addCollisionReaction(std::unique_ptr<CollisionReaction> reaction) {
     collisionReactions_.push_back(std::move(reaction));
 }
@@ -33,13 +17,11 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     speedStepSize_ = speedStepSize;
     nSpeedSteps_ = std::ceil(maxSpeed / speedStepSize) + 1;
 
-    _cleanup();
-
     size_t nBytes = nSpeedSteps_ * (1 + nReactions_) * sizeof(double);
     std::cout << "Precomputed values will take up " << nBytes << " bytes\n";
     // Allocate necessary resources
-    majorantReactionRate_ = new double[nSpeedSteps_];
-    rateCoefficients_ = new double[nReactions_ * nSpeedSteps_];
+    majorantReactionRate_ = std::vector<double>(nSpeedSteps_);
+    rateCoefficients_ = RateCoefficientVector(nSpeedSteps_);
 
     std::vector<double> densityMaxima(nReactions_, 0.0);
     for (size_t i = 0; i < gridSize; ++i) {
@@ -55,15 +37,15 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     for (size_t iv = 0; iv < nSpeedSteps_; ++iv) {
         std::cout << "Precomputation: speed step " << (iv+1) << '/' << nSpeedSteps_ << '\n';
         double particleSpeed = speedStepSize_ * iv;
-        double *rateCoeffs = &rateCoefficients_[iv * nReactions_];
+        rateCoefficients_[iv] = std::vector<double>(nReactions_);
 
         // Calculate rate coefficients separately for each reaction
         // Find the majorant reaction rate at the given velocity
         majorantReactionRate_[iv] = 0.0;
         for (size_t ir = 0; ir < nReactions_; ++ir) {
-            rateCoeffs[ir] =
+            rateCoefficients_[iv][ir] =
                 collisionReactions_[ir]->getRateCoefficient(particleSpeed, thread_res);
-            majorantReactionRate_[iv] += densityMaxima[ir] * rateCoeffs[ir];
+            majorantReactionRate_[iv] += densityMaxima[ir] * rateCoefficients_[iv][ir];
         }
     }
 
@@ -98,8 +80,8 @@ CollisionReaction *CollisionGenerator::sampleCollision(Rng &rng,
         cumulativeReactionRate2(nReactions_);
     for (size_t ir = 0; ir < nReactions_; ++ir) {
         double density = collisionReactions_[ir]->getPopulation()->getDensityAt(p);
-        double rate1 = density * rateCoefficients_[velIndex * nReactions_ + ir],
-            rate2 = density * rateCoefficients_[(velIndex+1) * nReactions_ + ir];
+        double rate1 = density * rateCoefficients_[velIndex][ir],
+            rate2 = density * rateCoefficients_[velIndex+1][ir];
         totalReactionRate1 += rate1;
         totalReactionRate2 += rate2;
         cumulativeReactionRate1[ir] = totalReactionRate1;
@@ -124,7 +106,7 @@ CollisionReaction *CollisionGenerator::sampleCollision(Rng &rng,
         return collisionReactions_[iReaction].get();
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void CollisionGenerator::writeStatistics(Logger &log) const {
