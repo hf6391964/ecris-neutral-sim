@@ -9,7 +9,7 @@ void CollisionGenerator::addCollisionReaction(std::unique_ptr<CollisionReaction>
 }
 
 void CollisionGenerator::precomputeReactionRates(double maxSpeed,
-    double speedStepSize, simthreadresources *thread_res) {
+    double speedStepSize, simthreadresources &thread_res) {
 
     nReactions_ = collisionReactions_.size();
     size_t gridSize = grid_.arraySize();

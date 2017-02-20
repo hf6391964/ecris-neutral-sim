@@ -12,10 +12,10 @@ class ElectronIonizationReaction : public CollisionReaction {
             const IonizationParameters &ip);
 
         double getReactionRate(const Point &p, double particleSpeed,
-            simthreadresources *thread_res) const;
+            simthreadresources &thread_res) const;
 
         double getRateCoefficient(double particleSpeed,
-            simthreadresources *thread_res) const;
+            simthreadresources &thread_res) const;
 
         CollisionProducts computeReactionProducts(Rng &rng,
             const Point &p, const Particle &target) const;

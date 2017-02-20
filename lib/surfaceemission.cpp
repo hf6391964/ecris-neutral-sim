@@ -1,7 +1,7 @@
 #include "surfaceemission.h"
 
-SurfaceEmission::SurfaceEmission(Surface* pSurface, double emissionRate,
-    Element element)
+SurfaceEmission::SurfaceEmission(std::shared_ptr<Surface> pSurface,
+    double emissionRate, Element element)
     : pSurface_(pSurface), emissionRate_(emissionRate), element_(element) {
     elementData_ = ELEMENT_DATA.at(element_);
 }
@@ -16,7 +16,7 @@ Particle SurfaceEmission::generateParticle(Rng& rng, double time) const {
     double v = Util::getMBSpeed(rng, pSurface_->getTemperature(),
         particle.getMass_eV());
     IntersectionPoint ip;
-    ip.pSurface = pSurface_;
+    ip.pSurface = pSurface_.get();
     ip.faceId = fd;
     ip.point = p;
     particle.setNextIntersection(ip);

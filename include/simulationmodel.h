@@ -24,7 +24,7 @@ struct Sample {
 typedef std::vector<Sample> SampleFrame;
 
 class SimulationModel {
-    std::vector<NeutralSource*> sources_;
+    std::vector<std::unique_ptr<NeutralSource>> sources_;
     SurfaceCollection &surfaces_;
     long nParticles_;
     Bbox bbox_;
@@ -45,7 +45,7 @@ class SimulationModel {
         SimulationModel(SurfaceCollection &surfaces);
 
         Grid getGrid(double gridSize) const;
-        void addSource(NeutralSource* source);
+        void addSource(std::unique_ptr<NeutralSource> source);
 
         void runSimulation(
             const CollisionGenerator &collisionGenerator,

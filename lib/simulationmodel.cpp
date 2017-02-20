@@ -8,8 +8,8 @@ Grid SimulationModel::getGrid(double gridSize) const {
     return Grid(surfaces_.bbox(), gridSize);
 }
 
-void SimulationModel::addSource(NeutralSource* source) {
-    sources_.push_back(source);
+void SimulationModel::addSource(std::unique_ptr<NeutralSource> source) {
+    sources_.push_back(std::move(source));
 }
 
 void SimulationModel::runSimulation(
@@ -99,9 +99,7 @@ void SimulationModel::simulationThread(
     bool stationary, double cutoffTime) const {
     simthreadresources thread_res(seed);
 
-    const size_t gridSize = grid.arraySize();
-
-    for (NeutralSource* pSource : sources_) {
+    for (const auto &pSource : sources_) {
         // TODO run simulation separately for each particle species in the
         // spectrum
 

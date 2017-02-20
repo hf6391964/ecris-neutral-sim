@@ -6,13 +6,13 @@
 #include "element_data.h"
 
 class SurfaceEmission : public NeutralSource {
-    Surface* pSurface_;
+    std::shared_ptr<Surface> pSurface_;
     double emissionRate_;
     Element element_;
     const ElementData *elementData_;
 
     public:
-        SurfaceEmission(Surface* pSurface, double emissionRate_,
+        SurfaceEmission(std::shared_ptr<Surface> pSurface, double emissionRate_,
             Element element_);
 
         Particle generateParticle(Rng& rng, double time) const;

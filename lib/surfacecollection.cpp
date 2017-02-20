@@ -2,7 +2,7 @@
 
 //#define USE_ALL_INTERSECTIONS
 
-void SurfaceCollection::addSurface(Surface *surface) {
+void SurfaceCollection::addSurface(std::shared_ptr<Surface> surface) {
     surfaces_.push_back(surface);
     bbox_ += surface->bbox();
 }
@@ -22,7 +22,7 @@ bool SurfaceCollection::findClosestIntersection(Ray &r,
     ip.pSurface = NULL;
     Skip skip(ip.faceId);
 
-    for (Surface *pSurface : surfaces_) {
+    for (auto pSurface : surfaces_) {
 #ifdef USE_ALL_INTERSECTIONS
         std::vector<Ray_intersection> intersections;
         pSurface->computeAllIntersections(r,
@@ -42,7 +42,7 @@ bool SurfaceCollection::findClosestIntersection(Ray &r,
                     found = true;
                     ip.point = *p;
                     ip.faceId = intersection->second;
-                    ip.pSurface = pSurface;
+                    ip.pSurface = pSurface.get();
                     nearestDistance = distance;
                 }
             }
@@ -56,7 +56,7 @@ bool SurfaceCollection::findClosestIntersection(Ray &r,
 
 void SurfaceCollection::writeStatistics(Logger &log) const {
     log << "Surface pumping and collision statistics:\n";
-    for (Surface *pSurface : surfaces_) {
+    for (auto pSurface : surfaces_) {
         log << pSurface->getLabel() << ": " << pSurface->getCollisionCount() <<
             " collisions, " << pSurface->getPumpedParticles() <<
             " particles pumped\n";

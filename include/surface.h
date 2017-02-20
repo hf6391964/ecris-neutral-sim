@@ -10,6 +10,8 @@
 
 class Surface;
 
+typedef std::shared_ptr<Surface> SurfacePtr;
+
 struct IntersectionPoint {
     Surface* pSurface = NULL;
     face_descriptor faceId;

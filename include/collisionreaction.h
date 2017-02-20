@@ -25,10 +25,10 @@ class CollisionReaction {
         std::string getLabel() const;
 
         virtual double getReactionRate(const Point &p, double particleSpeed,
-            simthreadresources *thread_res) const = 0;
+            simthreadresources &thread_res) const = 0;
 
         virtual double getRateCoefficient(double particleSpeed,
-            simthreadresources *thread_res) const = 0;
+            simthreadresources &thread_res) const = 0;
 
         // computeReactionProducts returns a vector of neutral reaction
         // products and the number of ionized reaction products

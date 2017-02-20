@@ -40,7 +40,7 @@ class SimplePlasmaModel {
             std::vector<double> ionTemperatures, Element element);
 
         void populateCollisionReactions(CollisionGenerator &generator,
-            simthreadresources *thread_res, double speedStepSize = 0.01) const;
+            simthreadresources &thread_res, double speedStepSize = 0.01) const;
         void populateNeutralizationReactions(
             NeutralizationGenerator &generator,
             double confinementTime,

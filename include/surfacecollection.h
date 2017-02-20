@@ -7,7 +7,7 @@
 #include "logger.h"
 
 class SurfaceCollection {
-    std::vector<Surface*> surfaces_;
+    std::vector<std::shared_ptr<Surface>> surfaces_;
     Bbox bbox_;
 
     public:
@@ -15,7 +15,7 @@ class SurfaceCollection {
 
         Bbox bbox() const;
 
-        void addSurface(Surface *surface);
+        void addSurface(std::shared_ptr<Surface> surface);
 
         bool findClosestIntersection(Ray &r, IntersectionPoint &p,
             bool skipCurrentFace = false) const;
