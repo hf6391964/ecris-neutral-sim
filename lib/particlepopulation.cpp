@@ -1,7 +1,7 @@
 #include "particlepopulation.h"
 
 double ParticlePopulation::getDensityAt(const Point &p) const {
-    return densityDistribution_.getValueAt(p);
+    return densityDistribution_->getValueAt(p);
 }
 
 double ParticlePopulation::getRandomParticleSpeed(Rng &rng) const {
@@ -9,6 +9,6 @@ double ParticlePopulation::getRandomParticleSpeed(Rng &rng) const {
 }
 
 Point ParticlePopulation::getRandomParticlePosition(Rng &rng) const {
-    return densityDistribution_.getRandomPosition(rng);
+    return densityDistribution_->getRandomPosition(rng);
 }
 

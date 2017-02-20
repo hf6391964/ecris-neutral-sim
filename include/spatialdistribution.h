@@ -6,7 +6,7 @@
 template<typename T>
 class SpatialDistribution {
     protected:
-        std::vector<T> valueVector_;
+        T *valueVector_ = NULL;
         Grid grid_;
 
     private:
@@ -15,6 +15,7 @@ class SpatialDistribution {
     public:
         SpatialDistribution(T null_value) : null_value_(null_value) {}
         SpatialDistribution(const Grid &grid, T null_value);
+        ~SpatialDistribution();
 
         void initializeTo(T value);
         void initializeToNull();
@@ -29,14 +30,15 @@ class SpatialDistribution {
 class DensityDistribution : public SpatialDistribution<double> {
     private:
         double sumDensity_;
-        std::vector<double> cumulativeDensity_;
+        std::shared_ptr<std::vector<double>> cumulativeDensity_;
         void calculateCumulativeDensity();
-        const DensityDistribution *sourceDistribution_ = nullptr;
+        std::shared_ptr<DensityDistribution> sourceDistribution_;
         double sourceDistributionWeight_;
 
     public:
         DensityDistribution(std::string filename, double weight = 1.0);
-        DensityDistribution(const DensityDistribution &src, double weight);
+        DensityDistribution(std::shared_ptr<DensityDistribution> src,
+            double weight = 1.0);
 
         double getValueAt(const Point &p) const;
 

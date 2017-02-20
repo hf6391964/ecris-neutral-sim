@@ -12,7 +12,7 @@
 #include "neutralizationgenerator.h"
 
 class SimplePlasmaModel {
-    std::vector<MaxwellianPopulation> particlePopulations_;
+    std::vector<std::shared_ptr<MaxwellianPopulation>> particlePopulations_;
     unsigned int maxChargeState_ = 0;
     const ElementData *elementData_;
     const Element element_;

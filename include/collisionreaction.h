@@ -14,13 +14,13 @@ class CollisionReaction {
         std::atomic_ulong reactionCounter_;
 
     protected:
-        const ParticlePopulation &population_;
+        std::shared_ptr<ParticlePopulation> population_;
         std::string label_ = "";
 
     public:
-        CollisionReaction(const ParticlePopulation &population);
+        CollisionReaction(std::shared_ptr<ParticlePopulation> population);
 
-        const ParticlePopulation &getPopulation() const;
+        std::shared_ptr<ParticlePopulation> getPopulation() const;
 
         std::string getLabel() const;
 

@@ -8,7 +8,7 @@ class ElectronIonizationReaction : public CollisionReaction {
     IonizationParameters ionizationParameters_;
 
     public:
-        ElectronIonizationReaction(const ParticlePopulation &population,
+        ElectronIonizationReaction(std::shared_ptr<ParticlePopulation> population,
             const IonizationParameters &ip);
 
         double getReactionRate(const Point &p, double particleSpeed,

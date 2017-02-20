@@ -8,11 +8,11 @@ class MaxwellianPopulation : public ParticlePopulation {
 
     public:
         MaxwellianPopulation(Element element, int chargeState,
-            double temperature_eV, const DensityDistribution &distr)
+            double temperature_eV, std::shared_ptr<DensityDistribution> distr)
             : ParticlePopulation(element, chargeState, distr),
               temperature_eV_(temperature_eV) {}
         MaxwellianPopulation(double particleMass_eV, int chargeState,
-            double temperature_eV, const DensityDistribution &distr)
+            double temperature_eV, std::shared_ptr<DensityDistribution> distr)
             : ParticlePopulation(particleMass_eV, chargeState, distr),
               temperature_eV_(temperature_eV) {}
 

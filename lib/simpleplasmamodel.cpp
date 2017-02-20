@@ -20,16 +20,17 @@ SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
     ionMassEv_ = elementData_->mass * ATOMIC_MASS_TO_EV;
     maxIonTemp_ = *std::max_element(ionTemperatures.begin(),
         ionTemperatures.end());
-    particlePopulations_.emplace_back(
+    particlePopulations_[0] = std::make_shared<MaxwellianPopulation>(
         ELECTRON_MASS_EV, -1, electronTemperature,
-        DensityDistribution(electronDensityFilename, electronWeight));
+        std::make_shared<DensityDistribution>(electronDensityFilename,
+        electronWeight));
     // Populate the ion densities
     int q = 1;
     for (double relDensity : ionRelativeDensities) {
-        particlePopulations_.emplace_back(
+        particlePopulations_[q] = std::make_shared<MaxwellianPopulation>(
             element_, q, ionTemperatures[q - 1],
-            DensityDistribution(particlePopulations_[0].getDensityDistribution(),
-            relDensity));
+            std::make_shared<DensityDistribution>(
+                particlePopulations_[0]->getDensityDistribution(), relDensity));
         q += 1;
     }
 
@@ -72,7 +73,7 @@ void SimplePlasmaModel::populateNeutralizationReactions(
     FlychkParser parser(flychkFilename);
     double recombinationRateCoefficient;
     if (!parser.getTotalRateCoefficient(
-        particlePopulations_[0].getTemperature(), 1,
+        particlePopulations_[0]->getTemperature(), 1,
         recombinationRateCoefficient)) {
         throw std::invalid_argument(
             "Couldn't find recombination rate coefficient from FLYCHK");

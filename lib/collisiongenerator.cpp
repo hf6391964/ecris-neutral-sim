@@ -47,7 +47,7 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
         if (!grid_.getCellMidpoint(i, p)) continue;
         for (size_t ir = 0; ir < nReactions_; ++ir) {
             densityMaxima[ir] = std::max(densityMaxima[ir],
-                collisionReactions_[ir]->getPopulation().getDensityAt(p));
+                collisionReactions_[ir]->getPopulation()->getDensityAt(p));
         }
     }
 
@@ -97,7 +97,7 @@ CollisionReaction *CollisionGenerator::sampleCollision(Rng &rng,
     std::vector<double> cumulativeReactionRate1(nReactions_),
         cumulativeReactionRate2(nReactions_);
     for (size_t ir = 0; ir < nReactions_; ++ir) {
-        double density = collisionReactions_[ir]->getPopulation().getDensityAt(p);
+        double density = collisionReactions_[ir]->getPopulation()->getDensityAt(p);
         double rate1 = density * rateCoefficients_[velIndex * nReactions_ + ir],
             rate2 = density * rateCoefficients_[(velIndex+1) * nReactions_ + ir];
         totalReactionRate1 += rate1;
