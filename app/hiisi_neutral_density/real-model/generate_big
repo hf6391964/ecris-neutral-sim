@@ -1,0 +1,5 @@
+#!/bin/sh
+
+openscad -o sheath_big.stl -D PARTNO=2 ecr3.scad
+openscad -o injection_surface_big.stl -D PARTNO=3 ecr3.scad
+
