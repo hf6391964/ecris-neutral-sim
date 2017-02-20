@@ -1,8 +1,6 @@
 #ifndef CGAL_AND_TYPEDEFS_H
 #define CGAL_AND_TYPEDEFS_H
 
-#define CGAL_DISABLE_ROUNDING_MATH_CHECK
-
 #include <random>
 
 #include "monte/gsl_monte_vegas.h"

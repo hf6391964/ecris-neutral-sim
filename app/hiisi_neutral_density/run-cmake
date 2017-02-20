@@ -1,0 +1,6 @@
+#!/bin/sh
+
+exec cmake . -DCGAL_DIR='../../../cgal/build' \
+    -DCMAKE_CXX_FLAGS='-std=c++14 -Wall -frounding-math' \
+    -DCMAKE_BUILD_TYPE=Release -DCGAL_DONT_OVERRIDE_CMAKE_FLAGS=TRUE
+
