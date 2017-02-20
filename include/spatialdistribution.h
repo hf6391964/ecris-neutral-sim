@@ -6,7 +6,7 @@
 template<typename T>
 class SpatialDistribution {
     protected:
-        T *valueVector_ = NULL;
+        std::vector<T> valueVector_;
         Grid grid_;
 
     private:
@@ -15,7 +15,6 @@ class SpatialDistribution {
     public:
         SpatialDistribution(T null_value) : null_value_(null_value) {}
         SpatialDistribution(const Grid &grid, T null_value);
-        ~SpatialDistribution();
 
         void initializeTo(T value);
         void initializeToNull();

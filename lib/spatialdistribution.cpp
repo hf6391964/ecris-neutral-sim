@@ -4,16 +4,8 @@ template<typename T>
 SpatialDistribution<T>::SpatialDistribution(const Grid &grid, T null_value)
     : null_value_(null_value) {
     size_t n = grid.arraySize();
-    valueVector_ = new T[n];
+    valueVector_ = std::vector<T>(n);
     grid_ = grid;
-}
-
-template<typename T>
-SpatialDistribution<T>::~SpatialDistribution() {
-    if (valueVector_ != NULL) {
-        delete[] valueVector_;
-        valueVector_ = NULL;
-    }
 }
 
 template<typename T>
@@ -66,7 +58,7 @@ DensityDistribution::DensityDistribution(std::string filename,
     grid_ = Grid(fin);
     // Read density data from that file
     size_t n = grid_.arraySize();
-    valueVector_ = new double[n];
+    valueVector_ = std::vector<double>(n);
     for (size_t i = 0; i < n; ++i) {
         double nParticles;
         fin >> nParticles;
