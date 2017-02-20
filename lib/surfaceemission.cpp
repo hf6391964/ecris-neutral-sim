@@ -1,8 +1,9 @@
 #include "surfaceemission.h"
 
 SurfaceEmission::SurfaceEmission(std::shared_ptr<Surface> pSurface,
-    double emissionRate, Element element)
-    : pSurface_(pSurface), emissionRate_(emissionRate), element_(element) {
+    double emissionRate, Element element, std::string label)
+    : NeutralSource(label),
+      pSurface_(pSurface), emissionRate_(emissionRate), element_(element) {
     elementData_ = ELEMENT_DATA.at(element_);
 }
 

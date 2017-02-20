@@ -13,7 +13,7 @@ class SurfaceEmission : public NeutralSource {
 
     public:
         SurfaceEmission(std::shared_ptr<Surface> pSurface, double emissionRate_,
-            Element element_);
+            Element element_, std::string label);
 
         Particle generateParticle(Rng& rng, double time) const;
 };

@@ -72,7 +72,7 @@ void doRun(size_t N_PARTICLES) {
     surfaces.addSurface(extraction_surface);
     SimulationModel simModel(surfaces);
     simModel.addSource(std::make_unique<SurfaceEmission>(
-        injection_surface, 1e-12, ELEMENT));
+        injection_surface, 1e-12, ELEMENT, "injection"));
 
     CollisionGenerator generator(simModel.getGrid(GRID_SIZE));
     NeutralizationGenerator ngenerator;

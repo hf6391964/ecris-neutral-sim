@@ -30,6 +30,7 @@ class SimulationModel {
     Bbox bbox_;
 
     void simulationThread(
+        const NeutralSource *pSource,
         const CollisionGenerator &collisionGenerator,
         const NeutralizationGenerator &neutralizationGenerator,
         std::mutex &writeMutex,
