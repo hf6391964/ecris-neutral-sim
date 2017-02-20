@@ -12,7 +12,7 @@ int main() {
                  confinementTime = 1e-6,
                  gridSize = 0.001,
                  Becr = 0.656;
-    const double Ai[] =
+    const std::vector<double> Ai
         { 0.413286, 0.954437, 52.1123, -74.7674, -1258.17, 2994.75, 22469.9 };
     const unsigned long N_PARTICLES = 1000000;
 
