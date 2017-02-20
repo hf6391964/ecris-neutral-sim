@@ -10,7 +10,8 @@ class NeutralizationGenerator {
     NeutralizationChannelVector channels_;
 
     public:
-        void addNeutralizationChannel(NeutralizationChannel *channel);
+        void addNeutralizationChannel(
+            std::unique_ptr<NeutralizationChannel> channel);
 
         Particle sampleNeutralizationReaction(Rng &rng,
             const Particle &sourceParticle) const;

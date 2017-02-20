@@ -39,12 +39,12 @@ void SimplePlasmaModel::populateCollisionReactions(
     CollisionGenerator &generator, simthreadresources *thread_res, double
     speedStepSize) const {
     // Populate the electron ionization reaction
-    generator.addCollisionReaction(new ElectronIonizationReaction(
+    generator.addCollisionReaction(std::make_unique<ElectronIonizationReaction>(
         particlePopulations_[0], elementData_->ionizationParameters));
 
     // Populate charge exchange reactions
     for (unsigned int q = 1; q <= maxChargeState_; ++q) {
-        generator.addCollisionReaction(new ChargeExchangeReaction(
+        generator.addCollisionReaction(std::make_unique<ChargeExchangeReaction>(
             particlePopulations_[q], elementData_->ionizationParameters.I_le));
     }
 
@@ -63,7 +63,7 @@ void SimplePlasmaModel::populateNeutralizationReactions(
     const SurfaceCollection &surfaces,
     double averageElectronDensity) const {
     // Wall neutralization
-    generator.addNeutralizationChannel(new WallNeutralization(
+    generator.addNeutralizationChannel(std::make_unique<WallNeutralization>(
         particlePopulations_[1], confinementTime, wallFilename,
         end1Filename, end2Filename, surfaces));
 
@@ -78,8 +78,8 @@ void SimplePlasmaModel::populateNeutralizationReactions(
     }
     double recombinationRate =
         averageElectronDensity * recombinationRateCoefficient;
-    generator.addNeutralizationChannel(
-        new Recombination(particlePopulations_[1], recombinationRate));
+    generator.addNeutralizationChannel(std::make_unique<Recombination>(
+        particlePopulations_[1], recombinationRate));
 }
 
 double SimplePlasmaModel::getIonDensityAt(const Point &p,

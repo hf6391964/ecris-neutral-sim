@@ -25,7 +25,7 @@ class CollisionGenerator {
 
         // NOTE: ownership of the pointed reaction will be transferred to the
         // instance of CollisionGenerator!
-        void addCollisionReaction(CollisionReaction *reaction);
+        void addCollisionReaction(std::unique_ptr<CollisionReaction> reaction);
         void precomputeReactionRates(double maxSpeed,
             double speedStepSize, simthreadresources *thread_res);
 

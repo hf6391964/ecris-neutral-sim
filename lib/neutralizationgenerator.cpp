@@ -3,8 +3,8 @@
 
 
 void NeutralizationGenerator::addNeutralizationChannel(
-    NeutralizationChannel *channel) {
-    channels_.push_back(std::unique_ptr<NeutralizationChannel>(channel));
+    std::unique_ptr<NeutralizationChannel> channel) {
+    channels_.push_back(std::move(channel));
 }
 
 Particle NeutralizationGenerator::sampleNeutralizationReaction(Rng &rng,

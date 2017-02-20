@@ -20,8 +20,8 @@ void CollisionGenerator::_cleanup() {
     }
 }
 
-void CollisionGenerator::addCollisionReaction(CollisionReaction *reaction) {
-    collisionReactions_.push_back(std::unique_ptr<CollisionReaction>(reaction));
+void CollisionGenerator::addCollisionReaction(std::unique_ptr<CollisionReaction> reaction) {
+    collisionReactions_.push_back(std::move(reaction));
 }
 
 void CollisionGenerator::precomputeReactionRates(double maxSpeed,
