@@ -14,6 +14,7 @@ SimplePlasmaModel::SimplePlasmaModel(std::string electronDensityFilename,
     Element element) : element_(element) {
     elementData_ = ELEMENT_DATA.at(element_);
 
+    particlePopulations_.clear();
     particlePopulations_.reserve(ionRelativeDensities.size() + 1);
 
     ionMassEv_ = elementData_->mass * ATOMIC_MASS_TO_EV;
