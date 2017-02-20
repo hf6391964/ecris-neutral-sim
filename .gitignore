@@ -24,4 +24,5 @@ Makefile
 *.cmake
 \#*
 *.dxf
+!app/hiisi_neutral_density/electron_data/*.csv
 
