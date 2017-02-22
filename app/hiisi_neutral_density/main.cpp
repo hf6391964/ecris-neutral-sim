@@ -28,8 +28,6 @@ void doRun(size_t N_PARTICLES) {
         ELECTRON_DENSITY, ION_RELATIVE_DENSITIES, ELECTRON_TEMPERATURE,
         ION_TEMPERATURES, ELEMENT);
 
-    simthreadresources thread_res(13122016);
-
     /*Surface radial_wall("model/radial_wall.stl",
         0.0, ROOM_TEMPERATURE_EV, "radial_wall", false);
     Surface end1("model/end1.stl",
@@ -81,7 +79,7 @@ void doRun(size_t N_PARTICLES) {
         "electron_data/z1_collision_points.csv",
         "electron_data/z2_collision_points.csv",
         "rt.018.dat", surfaces, ELECTRON_DENSITY);
-    plasmamodel.populateCollisionReactions(generator, thread_res, 2);
+    plasmamodel.populateCollisionReactions(generator, 13122016, 2);
 
     std::string name = "test" + std::to_string(N_PARTICLES);
     logger.setLogging(PARTICLE_LOOP_LOGGING);
@@ -112,7 +110,7 @@ int main() {
         doRun(size);
     }*/
 
-    doRun(500000);
+    doRun(10000);
 
     return 0;
 }

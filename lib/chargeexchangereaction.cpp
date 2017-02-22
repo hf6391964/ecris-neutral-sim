@@ -17,15 +17,15 @@ double ChargeExchangeReaction::getCrossSection(double) const {
 }
 
 double ChargeExchangeReaction::getReactionRate(const Point &p,
-    double particleSpeed, simthreadresources &thread_res) const {
+    double particleSpeed, mc_integrate_resources &mc_res) const {
     return population_->getDensityAt(p) *
-        getRateCoefficient(particleSpeed, thread_res);
+        getRateCoefficient(particleSpeed, mc_res);
 }
 
 double ChargeExchangeReaction::getRateCoefficient(double particleSpeed,
-    simthreadresources &thread_res) const {
-    return population_->calculateRateCoefficient(particleSpeed, thread_res.ms,
-        thread_res.gslrng, crossSection, (void *)&mullerSalzbornCrossSection_);
+    mc_integrate_resources &mc_res) const {
+    return population_->calculateRateCoefficient(particleSpeed, mc_res.ms,
+        mc_res.gslrng, crossSection, (void *)&mullerSalzbornCrossSection_);
 }
 
 double ChargeExchangeReaction::crossSection(double, void *args) {

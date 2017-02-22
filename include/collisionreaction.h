@@ -8,6 +8,25 @@
 
 typedef std::pair<std::vector<Particle>, unsigned int> CollisionProducts;
 
+struct mc_integrate_resources {
+    monte_state *ms;
+    gsl_integration_workspace *ws;
+    gsl_rng *gslrng;
+
+    mc_integrate_resources(uint_least32_t seed) {
+        ms = gsl_monte_vegas_alloc(3);
+        ws = gsl_integration_workspace_alloc(RATE_COEFF_WORKSPACE_SIZE);
+        gslrng = gsl_rng_alloc(gsl_rng_mt19937);
+        gsl_rng_set(gslrng, seed);
+    }
+
+    ~mc_integrate_resources() {
+        gsl_monte_vegas_free(ms);
+        gsl_integration_workspace_free(ws);
+        gsl_rng_free(gslrng);
+    }
+};
+
 // Base class for a general collision reaction
 class CollisionReaction {
     private:
@@ -25,10 +44,10 @@ class CollisionReaction {
         std::string getLabel() const;
 
         virtual double getReactionRate(const Point &p, double particleSpeed,
-            simthreadresources &thread_res) const = 0;
+            mc_integrate_resources &mc_res) const = 0;
 
         virtual double getRateCoefficient(double particleSpeed,
-            simthreadresources &thread_res) const = 0;
+            mc_integrate_resources &mc_res) const = 0;
 
         // computeReactionProducts returns a vector of neutral reaction
         // products and the number of ionized reaction products

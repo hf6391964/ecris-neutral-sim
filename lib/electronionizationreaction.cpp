@@ -10,15 +10,15 @@ ElectronIonizationReaction::ElectronIonizationReaction(
 }
 
 double ElectronIonizationReaction::getReactionRate(const Point &p,
-    double particleSpeed, simthreadresources &thread_res) const {
+    double particleSpeed, mc_integrate_resources &mc_res) const {
     return population_->getDensityAt(p) * getRateCoefficient(particleSpeed,
-        thread_res);
+        mc_res);
 }
 
 double ElectronIonizationReaction::getRateCoefficient(
-    double particleSpeed, simthreadresources &thread_res) const {
-    return population_->calculateRateCoefficient(particleSpeed, thread_res.ms,
-        thread_res.gslrng, crossSection, (void *)&ionizationParameters_);
+    double particleSpeed, mc_integrate_resources &mc_res) const {
+    return population_->calculateRateCoefficient(particleSpeed, mc_res.ms,
+        mc_res.gslrng, crossSection, (void *)&ionizationParameters_);
 }
 
 CollisionProducts ElectronIonizationReaction::computeReactionProducts(

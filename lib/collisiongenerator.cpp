@@ -9,7 +9,7 @@ void CollisionGenerator::addCollisionReaction(std::unique_ptr<CollisionReaction>
 }
 
 void CollisionGenerator::precomputeReactionRates(double maxSpeed,
-    double speedStepSize, simthreadresources &thread_res) {
+    double speedStepSize, uint_least32_t seed) {
 
     nReactions_ = collisionReactions_.size();
     size_t gridSize = grid_.arraySize();
@@ -34,6 +34,7 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     }
 
     std::cout << "Precomputing collision rates...\n";
+    mc_integrate_resources mc_res(seed);
     for (size_t iv = 0; iv < nSpeedSteps_; ++iv) {
         double particleSpeed = speedStepSize_ * iv;
         rateCoefficients_[iv] = std::vector<double>(nReactions_);
@@ -43,7 +44,7 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
         majorantReactionRate_[iv] = 0.0;
         for (size_t ir = 0; ir < nReactions_; ++ir) {
             rateCoefficients_[iv][ir] =
-                collisionReactions_[ir]->getRateCoefficient(particleSpeed, thread_res);
+                collisionReactions_[ir]->getRateCoefficient(particleSpeed, mc_res);
             majorantReactionRate_[iv] += densityMaxima[ir] * rateCoefficients_[iv][ir];
         }
     }

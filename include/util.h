@@ -27,22 +27,9 @@ struct mbrelativeparams {
 
 struct simthreadresources {
     Rng rng;
-    monte_state *ms;
-    gsl_integration_workspace *ws;
-    gsl_rng *gslrng;
 
     simthreadresources(uint_least32_t seed) {
         rng = Rng(seed);
-        ms = gsl_monte_vegas_alloc(3);
-        ws = gsl_integration_workspace_alloc(RATE_COEFF_WORKSPACE_SIZE);
-        gslrng = gsl_rng_alloc(gsl_rng_mt19937);
-        gsl_rng_set(gslrng, seed);
-    }
-
-    ~simthreadresources() {
-        gsl_monte_vegas_free(ms);
-        gsl_integration_workspace_free(ws);
-        gsl_rng_free(gslrng);
     }
 };
 
