@@ -16,12 +16,13 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
     xvalues, yvalues, zvalues, nums, slices = parsedData
     axValuesArr = [xvalues, yvalues, zvalues]
 
-    plotdir = PLOTDIR + ' ' + prefix
+    plotdir = PLOTDIR + '_' + prefix
 
     if not path.isdir(plotdir):
         makedirs(plotdir)
 
     slices = ma.masked_values(slices, 0)
+    slices = np.log10(slices)
 
     cMin = np.min(slices[:, :, :, 3])
     cMax = np.max(slices[:, :, :, 3])
@@ -58,7 +59,7 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
         )
         data = slices[i, :, :, 3]
 
-        heatmap = plt.pcolormesh(XX, YY, data, edgecolor='face', vmin=0,
+        heatmap = plt.pcolormesh(XX, YY, data, edgecolor='face', vmin=cMin,
                                  vmax=cMax, cmap=plt.get_cmap('inferno'))
 
         plt.xlabel('${0}$ [m]'.format(axNames[ax1]))
