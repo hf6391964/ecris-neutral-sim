@@ -79,7 +79,7 @@ void doRun(size_t N_PARTICLES) {
         "electron_data/z1_collision_points.csv",
         "electron_data/z2_collision_points.csv",
         "rt.018.dat", surfaces, ELECTRON_DENSITY);
-    plasmamodel.populateCollisionReactions(generator, 13122016, 2);
+    plasmamodel.populateCollisionReactions(generator, 13122016, 0.01);
 
     std::string name = "test" + std::to_string(N_PARTICLES);
     logger.setLogging(PARTICLE_LOOP_LOGGING);
@@ -110,7 +110,7 @@ int main() {
         doRun(size);
     }*/
 
-    doRun(10000);
+    doRun(2000000);
 
     return 0;
 }
