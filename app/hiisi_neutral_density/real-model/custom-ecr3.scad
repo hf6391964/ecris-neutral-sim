@@ -1,11 +1,5 @@
 PARTNO = undef;
 
-cylinder_length = 400;
-cylinder_r_inner = 50;
-cylinder_r_outer = 56;
-groove_depth = 4.5;
-groove_fillet = 5;
-groove_width = 20;
 injection_end_h = 6;
 extraction_end_h = 4;
 
@@ -33,11 +27,19 @@ injection_plug_plate_r = 42;
 injection_plug_plate_clearance = 3;
 injection_plug_bottom_r = 37.3;
 injection_plug_bottom_h = 15;
+injection_plug_h_total = injection_plug_plate_h;
 
 extraction_cyl_r = 39;
 extraction_cyl_offset = 1.9;
 extraction_cyl_h = 30;
 extraction_hole_r = 4;
+
+cylinder_length = 397 + injection_plug_h_total + extraction_cyl_h;
+cylinder_r_inner = 50;
+cylinder_r_outer = 56;
+groove_depth = 4.5;
+groove_fillet = 5;
+groove_width = 20;
 
 grill_hole_r = 1.5;
 grill_sector_angle = 80;
@@ -207,7 +209,7 @@ module extraction_surface() {
 //assembly(true);
 //projection(cut=true) translate([0, 0, -100]) assembly(true);
 
-translate([0, 0, -203.8 - injection_end_h]) {
+translate([0, 0, -203.8 - injection_end_h - injection_plug_h_total]) {
     if (PARTNO == 1) {
         assembly(false);
     } else if (PARTNO == 2) {
