@@ -12,15 +12,15 @@ class ElectronIonizationReaction : public CollisionReaction {
             const IonizationParameters &ip);
 
         double getReactionRate(const Point &p, double particleSpeed,
-            mc_integrate_resources &mc_res) const;
+            mc_integrate_resources &mc_res);
 
         double getRateCoefficient(double particleSpeed,
-            mc_integrate_resources &mc_res) const;
+            mc_integrate_resources &mc_res);
 
         CollisionProducts computeReactionProducts(Rng &rng,
             const Point &p, const Particle &target) const;
 
-        double getCrossSection(double speed) const;
+        double getCrossSection(double speed);
 
         static double crossSection(double velocity, void *p);
 };

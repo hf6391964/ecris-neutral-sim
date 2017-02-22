@@ -33,7 +33,7 @@ double Util::getMBSpeed(Rng& rng, double T_eV, double mass_eV) {
 }
 
 double Util::mbHelperFn(double speed, void *p) {
-    mbparams *params = (mbparams *)p;
+    mbparams *params = static_cast<mbparams *>(p);
 
     return evaluateMBDistribution(params->T_eV, params->mass_eV, speed) *
         speed * (*(params->fn))(speed, params->fnParams);
@@ -83,7 +83,7 @@ Direction Util::getIsotropicSphereDirection(Rng &rng) {
 }
 
 double Util::relativeSpeedHelper(double *v, size_t, void *params) {
-    mbrelativeparams *par = (mbrelativeparams *)params;
+    mbrelativeparams *par = static_cast<mbrelativeparams *>(params);
     double mper2kT = par->mass_eV /
         (2.0 * par->T_eV * SPEED_OF_LIGHT * SPEED_OF_LIGHT);
     double vmean2 = par->vmean * par->vmean;

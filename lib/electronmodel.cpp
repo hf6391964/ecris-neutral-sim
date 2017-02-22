@@ -145,13 +145,14 @@ void ElectronModel::runMaxwellSimulation(const unsigned long nParticles,
 
 double ElectronModel::meanEnergy() const {
     return std::accumulate(finalEnergies_.begin(), finalEnergies_.end(),
-        (double)0.0) / finalEnergies_.size();
+        static_cast<double>(0.0)) / finalEnergies_.size();
 }
 
 double ElectronModel::energyStdDev() const {
     double mean = meanEnergy();
     return std::sqrt(std::accumulate(finalEnergies_.begin(),
-        finalEnergies_.end(), (double)0.0, [mean](double acc, double e) {
+        finalEnergies_.end(), static_cast<double>(0.0),
+        [mean](double acc, double e) {
             double de = e - mean;
             return acc + de*de;
         }
@@ -178,7 +179,7 @@ void ElectronModel::writeDensityToFile(const std::string &filename,
             }
         }
 
-        double averageDensity = (double)nParticles / nPlasmaCells,
+        double averageDensity = static_cast<double>(nParticles) / nPlasmaCells,
                normalizationFactor = 1.0 / averageDensity;
         for (size_t i = 0; i < N; ++i) {
             double value = particleCount_[i] * normalizationFactor;

@@ -44,17 +44,17 @@ class CollisionReaction {
         std::string getLabel() const;
 
         virtual double getReactionRate(const Point &p, double particleSpeed,
-            mc_integrate_resources &mc_res) const = 0;
+            mc_integrate_resources &mc_res) = 0;
 
         virtual double getRateCoefficient(double particleSpeed,
-            mc_integrate_resources &mc_res) const = 0;
+            mc_integrate_resources &mc_res) = 0;
 
         // computeReactionProducts returns a vector of neutral reaction
         // products and the number of ionized reaction products
         virtual CollisionProducts computeReactionProducts(Rng &rng,
             const Point &p, const Particle &target) const = 0;
 
-        virtual double getCrossSection(double relativeSpeed) const = 0;
+        virtual double getCrossSection(double relativeSpeed) = 0;
 
         void incrementReactionCounter();
 

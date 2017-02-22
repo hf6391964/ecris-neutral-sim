@@ -10,15 +10,15 @@ ElectronIonizationReaction::ElectronIonizationReaction(
 }
 
 double ElectronIonizationReaction::getReactionRate(const Point &p,
-    double particleSpeed, mc_integrate_resources &mc_res) const {
+    double particleSpeed, mc_integrate_resources &mc_res) {
     return population_->getDensityAt(p) * getRateCoefficient(particleSpeed,
         mc_res);
 }
 
 double ElectronIonizationReaction::getRateCoefficient(
-    double particleSpeed, mc_integrate_resources &mc_res) const {
+    double particleSpeed, mc_integrate_resources &mc_res) {
     return population_->calculateRateCoefficient(particleSpeed, mc_res.ms,
-        mc_res.gslrng, crossSection, (void *)&ionizationParameters_);
+        mc_res.gslrng, crossSection, static_cast<void *>(&ionizationParameters_));
 }
 
 CollisionProducts ElectronIonizationReaction::computeReactionProducts(
@@ -26,8 +26,8 @@ CollisionProducts ElectronIonizationReaction::computeReactionProducts(
     return std::make_pair(std::vector<Particle>(), 1);
 }
 
-double ElectronIonizationReaction::getCrossSection(double speed) const {
-    return crossSection(speed, (void *)&ionizationParameters_);
+double ElectronIonizationReaction::getCrossSection(double speed) {
+    return crossSection(speed, static_cast<void *>(&ionizationParameters_));
 }
 
 double ElectronIonizationReaction::crossSection(double v, void *p) {
@@ -36,7 +36,7 @@ double ElectronIonizationReaction::crossSection(double v, void *p) {
 
     double A, I;
     double *B;
-    IonizationParameters *ip = (IonizationParameters *)p;
+    IonizationParameters *ip = static_cast<IonizationParameters *>(p);
     if (E < ip->I_le) return 0.0;  // Can't ionize if impact energy lower than
                                    // ionization energy
     if (E < ip->ionizationEnergyLimit * ip->I_le) {

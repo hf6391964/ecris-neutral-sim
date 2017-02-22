@@ -239,7 +239,7 @@ std::tuple<Point, face_descriptor> Surface::getRandomPoint(Rng& rng) const {
 
     face_descriptor fd(faceIndex);
 #ifdef DEBUG
-    std::cout << "Found index: " << (int)fd << std::endl <<
+    std::cout << "Found index: " << fd << std::endl <<
         "Corresponding areaCDF value: " << areaCDF_[fd] << std::endl;
 #endif
 

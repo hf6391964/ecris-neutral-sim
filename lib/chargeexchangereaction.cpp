@@ -8,28 +8,28 @@ ChargeExchangeReaction::ChargeExchangeReaction(
     chargeState_ = population_->getChargeState();
     label_ = "charge exchange";
     mullerSalzbornCrossSection_ = 1.43e-16 *
-        std::pow((double)chargeState_, 1.17) *
+        std::pow(chargeState_, 1.17) *
         std::pow(ionizationPotentialEv_, -2.76);
 }
 
-double ChargeExchangeReaction::getCrossSection(double) const {
+double ChargeExchangeReaction::getCrossSection(double) {
     return mullerSalzbornCrossSection_;
 }
 
 double ChargeExchangeReaction::getReactionRate(const Point &p,
-    double particleSpeed, mc_integrate_resources &mc_res) const {
+    double particleSpeed, mc_integrate_resources &mc_res) {
     return population_->getDensityAt(p) *
         getRateCoefficient(particleSpeed, mc_res);
 }
 
 double ChargeExchangeReaction::getRateCoefficient(double particleSpeed,
-    mc_integrate_resources &mc_res) const {
+    mc_integrate_resources &mc_res) {
     return population_->calculateRateCoefficient(particleSpeed, mc_res.ms,
-        mc_res.gslrng, crossSection, (void *)&mullerSalzbornCrossSection_);
+        mc_res.gslrng, crossSection, static_cast<void *>(&mullerSalzbornCrossSection_));
 }
 
 double ChargeExchangeReaction::crossSection(double, void *args) {
-    return *((double *)args);
+    return *(static_cast<double *>(args));
 }
 
 CollisionProducts ChargeExchangeReaction::computeReactionProducts(

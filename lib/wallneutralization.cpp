@@ -59,7 +59,7 @@ WallNeutralization::WallNeutralization(
     }
 
     for (unsigned long c : countVector) {
-        cumulativeNormalizedEndpointCount_.push_back((double)c / count);
+        cumulativeNormalizedEndpointCount_.push_back(static_cast<double>(c) / count);
     }
 }
 

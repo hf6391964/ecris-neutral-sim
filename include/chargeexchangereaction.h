@@ -13,15 +13,15 @@ class ChargeExchangeReaction : public CollisionReaction {
             double ionizationPotentialEv);
 
         double getReactionRate(const Point &p, double particleSpeed,
-            mc_integrate_resources &mc_res) const;
+            mc_integrate_resources &mc_res);
 
         double getRateCoefficient(double particleSpeed,
-            mc_integrate_resources &mc_res) const;
+            mc_integrate_resources &mc_res);
 
         CollisionProducts computeReactionProducts(Rng &rng,
             const Point &, const Particle &target) const;
 
-        double getCrossSection(double) const;
+        double getCrossSection(double);
 
         static double crossSection(double, void *args);
 };

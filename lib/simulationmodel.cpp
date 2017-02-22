@@ -283,7 +283,7 @@ void SimulationModel::writeResults(std::string prefix,
     size_t nxyz = nx*ny*nz;
     for (size_t j = 0; j < nxyz; ++j) {
         Vector v = frame[j].velocity;
-        double count = (double)frame[j].count * densityCoefficient;
+        double count = static_cast<double>(frame[j].count) * densityCoefficient;
         f << v.x() << CSV_SEP << v.y() << CSV_SEP << v.z() << CSV_SEP <<
             count << '\n';
     }
