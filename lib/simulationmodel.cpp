@@ -12,6 +12,12 @@ void SimulationModel::addSource(std::unique_ptr<NeutralSource> source) {
     sources_.push_back(std::move(source));
 }
 
+static std::mutex stdoutMutex;
+static void writeThreadLogLine(const std::string &line) {
+    std::lock_guard<std::mutex> stdoutGuard(stdoutMutex);
+    std::cout << line << '\n';
+}
+
 void SimulationModel::runSimulation(
     const CollisionGenerator &collisionGenerator,
     const NeutralizationGenerator &neutralizationGenerator,
@@ -49,9 +55,9 @@ void SimulationModel::runSimulation(
             " with " << nThreads << " thread(s)..." << std::endl;
 
         for (int i = 0; i < nThreads; ++i) {
-            std::cout << "Starting thread " << i << std::endl;
+            std::cout << "Starting thread " << (i+1) << '\n';
             threads.push_back(std::thread(&SimulationModel::simulationThread,
-                this, pSource.get(), std::ref(collisionGenerator),
+                this, i, pSource.get(), std::ref(collisionGenerator),
                 std::ref(neutralizationGenerator),
                 std::ref(writeMutex),
                 particlesInChunk, samplingInterval, nTimeSamples, grid, seeds[i],
@@ -88,6 +94,7 @@ void SimulationModel::runSimulation(
 }
 
 void SimulationModel::simulationThread(
+    int iThread,
     const NeutralSource *pSource,
     const CollisionGenerator &collisionGenerator,
     const NeutralizationGenerator &neutralizationGenerator,
@@ -99,6 +106,11 @@ void SimulationModel::simulationThread(
     simthreadresources thread_res(seed);
 
     for (unsigned long i = 0; i < nParticles; ++i) {
+        if (i % 1000 == 0) {
+            std::string line = "Thread " + std::to_string(iThread + 1) + ": " +
+                std::to_string(i) + " particles";
+            writeThreadLogLine(line);
+        }
         // Spread the gas pulse evenly across the whole sample interval
         // in time dependent simulations
         double initialTime = -uni01(thread_res.rng) * samplingInterval;

@@ -189,7 +189,6 @@ void ElectronModel::writeDensityToFile(const std::string &filename,
             fout << particleCount_[i] << '\n';
         }
     }
-    fout.close();
 }
 
 void ElectronModel::writeElectronEndpoints(const std::string &z1Filename,
