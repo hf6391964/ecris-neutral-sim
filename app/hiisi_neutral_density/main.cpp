@@ -16,15 +16,15 @@ void doRun(size_t N_PARTICLES) {
         0.06074164, 0.13743072, 0.1514723, 0.13927348, 0.10523982, 0.06349422,
         0.02817102, 0.00892281, 0.00243114, 0.00033945
     };
-    const double GRID_SIZE = 0.002;
+    const double GRID_SIZE = 0.001;
     const double SAMPLING_INTERVAL = 0.0005;
     const size_t N_TIME_SAMPLES = 0;  // 0 for stationary
-    const double ESCAPE_TIME = 1e-5;
+    const double ESCAPE_TIME = 1.9e-3;
 
     std::vector<double> ION_TEMPERATURES(ION_RELATIVE_DENSITIES.size(),
         ION_TEMPERATURE);
     SimplePlasmaModel plasmamodel(
-        "electron_density_hiisi.csv",
+        "electron_data/electron_density_hiisi.csv",
         ELECTRON_DENSITY, ION_RELATIVE_DENSITIES, ELECTRON_TEMPERATURE,
         ION_TEMPERATURES, ELEMENT);
 
@@ -61,10 +61,10 @@ void doRun(size_t N_PARTICLES) {
         1.0, ROOM_TEMPERATURE_EV, "surrounding cylinder", true, 0.001);
     SurfacePtr injection_surface = std::make_shared<Surface>(
         "real-model/injection_surface.stl",
-        1.0, ROOM_TEMPERATURE_EV, "injection surface", false, 0.001);
+        1.0, ROOM_TEMPERATURE_EV, "injection surface", true, 0.001);
     SurfacePtr extraction_surface = std::make_shared<Surface>(
         "real-model/extraction_surface.stl",
-        0.1, ROOM_TEMPERATURE_EV, "extraction surface", false, 0.001);
+        0.7, ROOM_TEMPERATURE_EV, "extraction surface", false, 0.001);
     SurfaceCollection surfaces;
     surfaces.addSurface(chamber);
     surfaces.addSurface(surrounding_cylinder);
@@ -77,10 +77,11 @@ void doRun(size_t N_PARTICLES) {
     CollisionGenerator generator(simModel.getGrid(GRID_SIZE));
     NeutralizationGenerator ngenerator;
     plasmamodel.populateNeutralizationReactions(ngenerator, ESCAPE_TIME,
-        "cylinder_collision_points.csv",
-        "z1_collision_points.csv", "z2_collision_points.csv",
+        "electron_data/cylinder_collision_points.csv",
+        "electron_data/z1_collision_points.csv",
+        "electron_data/z2_collision_points.csv",
         "rt.018.dat", surfaces, ELECTRON_DENSITY);
-    plasmamodel.populateCollisionReactions(generator, thread_res, 2.0);
+    plasmamodel.populateCollisionReactions(generator, thread_res, 2);
 
     std::string name = "test" + std::to_string(N_PARTICLES);
     logger.setLogging(PARTICLE_LOOP_LOGGING);
@@ -111,7 +112,7 @@ int main() {
         doRun(size);
     }*/
 
-    doRun(10000);
+    doRun(500000);
 
     return 0;
 }
