@@ -43,7 +43,7 @@ int main() {
         .r0 = r0,
         .a = Ai
     };
-    const unsigned long N_PARTICLES = 1000000;
+    const unsigned long N_PARTICLES = 100000;
 
     Rng rng(20022017);
 
@@ -103,6 +103,16 @@ int main() {
 
     std::ofstream f("plasma_volume.txt");
     f << volume << '\n';
+
+    std::ofstream fmask("plasma_mask.txt");
+    grid.writeDimensions(fmask);
+    for (bool b : visited) {
+        if (b) {
+            fmask << "1\n";
+        } else {
+            fmask << "0\n";
+        }
+    }
 
     return EXIT_SUCCESS;
 }
