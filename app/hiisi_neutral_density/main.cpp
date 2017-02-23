@@ -10,7 +10,7 @@ void doRun(size_t N_PARTICLES) {
     const double ELECTRON_DENSITY = 1e17;
     const double ELECTRON_TEMPERATURE = 10e3;
     const Element ELEMENT = ARGON;
-    const double ION_TEMPERATURE = 4.0;
+    const double ION_TEMPERATURE = 1.0;
     std::vector<double> ION_RELATIVE_DENSITIES {
         0.0729343, 0.04383817, 0.03905347, 0.03666112, 0.0586578, 0.05133851,
         0.06074164, 0.13743072, 0.1514723, 0.13927348, 0.10523982, 0.06349422,
