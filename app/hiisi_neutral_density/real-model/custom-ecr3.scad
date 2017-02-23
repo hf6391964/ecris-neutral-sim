@@ -209,6 +209,7 @@ module extraction_surface() {
 //assembly(true);
 //projection(cut=true) translate([0, 0, -100]) assembly(true);
 
+rotate([0, 0, 30])
 translate([0, 0, -203.8 - injection_end_h - injection_plug_h_total]) {
     if (PARTNO == 1) {
         assembly(false);
