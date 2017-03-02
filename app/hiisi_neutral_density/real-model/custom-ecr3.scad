@@ -197,7 +197,7 @@ module circle_surface(r, n) {
 }
 
 module injection_surface() {
-    rotate([0, 0, 60]) translate([injection_tube_R, 0, injection_tube_h])
+    rotate([0, 0, 60]) translate([injection_tube_R, 0, 0])
         circle_surface(injection_tube_r, 20);
 }
 
