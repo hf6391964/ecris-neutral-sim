@@ -10,15 +10,16 @@ ElectronIonizationReaction::ElectronIonizationReaction(
 }
 
 double ElectronIonizationReaction::getReactionRate(const Point &p,
-    double particleSpeed, mc_integrate_resources &mc_res) {
+    double particleSpeed, mc_integrate_resources &mc_res) const {
     return population_->getDensityAt(p) * getRateCoefficient(particleSpeed,
         mc_res);
 }
 
 double ElectronIonizationReaction::getRateCoefficient(
-    double particleSpeed, mc_integrate_resources &mc_res) {
+    double particleSpeed, mc_integrate_resources &mc_res) const {
+    IonizationParameters params = ionizationParameters_;
     return population_->calculateRateCoefficient(particleSpeed, mc_res.ms,
-        mc_res.gslrng, crossSection, static_cast<void *>(&ionizationParameters_));
+        mc_res.gslrng, crossSection, static_cast<void *>(&params));
 }
 
 CollisionProducts ElectronIonizationReaction::computeReactionProducts(
@@ -26,8 +27,9 @@ CollisionProducts ElectronIonizationReaction::computeReactionProducts(
     return std::make_pair(std::vector<Particle>(), 1);
 }
 
-double ElectronIonizationReaction::getCrossSection(double speed) {
-    return crossSection(speed, static_cast<void *>(&ionizationParameters_));
+double ElectronIonizationReaction::getCrossSection(double speed) const {
+    IonizationParameters params = ionizationParameters_;
+    return crossSection(speed, static_cast<void *>(&params));
 }
 
 double ElectronIonizationReaction::crossSection(double v, void *p) {

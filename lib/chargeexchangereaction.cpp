@@ -12,20 +12,21 @@ ChargeExchangeReaction::ChargeExchangeReaction(
         std::pow(ionizationPotentialEv_, -2.76);
 }
 
-double ChargeExchangeReaction::getCrossSection(double) {
+double ChargeExchangeReaction::getCrossSection(double) const {
     return mullerSalzbornCrossSection_;
 }
 
 double ChargeExchangeReaction::getReactionRate(const Point &p,
-    double particleSpeed, mc_integrate_resources &mc_res) {
+    double particleSpeed, mc_integrate_resources &mc_res) const {
     return population_->getDensityAt(p) *
         getRateCoefficient(particleSpeed, mc_res);
 }
 
 double ChargeExchangeReaction::getRateCoefficient(double particleSpeed,
-    mc_integrate_resources &mc_res) {
+    mc_integrate_resources &mc_res) const {
+    double tmpCrossSection = mullerSalzbornCrossSection_;
     return population_->calculateRateCoefficient(particleSpeed, mc_res.ms,
-        mc_res.gslrng, crossSection, static_cast<void *>(&mullerSalzbornCrossSection_));
+        mc_res.gslrng, crossSection, static_cast<void *>(&tmpCrossSection));
 }
 
 double ChargeExchangeReaction::crossSection(double, void *args) {
