@@ -86,7 +86,7 @@ void doRun(size_t N_PARTICLES) {
     clock_t start_clock = clock();
     time_t start_time = time(NULL);
     simModel.runSimulation(generator, ngenerator,
-        N_PARTICLES, name, N_TIME_SAMPLES, GRID_SIZE, SAMPLING_INTERVAL);//, 1.0, 1);
+        N_PARTICLES, name, N_TIME_SAMPLES, GRID_SIZE, SAMPLING_INTERVAL, 5.0);//, 1.0, 1);
     clock_t end_clock = clock();
     time_t end_time = time(NULL);
 
@@ -110,7 +110,7 @@ int main() {
         doRun(size);
     }*/
 
-    doRun(2000000);
+    doRun(5000000);
 
     return 0;
 }
