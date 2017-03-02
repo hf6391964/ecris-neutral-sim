@@ -107,7 +107,7 @@ void SimulationModel::simulationThread(
     simthreadresources thread_res(seed);
 
     for (unsigned long i = 0; i < nParticles; ++i) {
-        if (i % 1000 == 0) {
+        if (i % 500000 == 0) {
             std::string line = "Thread " + std::to_string(iThread + 1) + ": " +
                 std::to_string(i) + " particles";
             writeThreadLogLine(line);
