@@ -23,7 +23,8 @@ void SimulationModel::runSimulation(
     const NeutralizationGenerator &neutralizationGenerator,
     unsigned long nParticles,
     std::string prefix, unsigned int nTimeSamples, double gridSize,
-    double samplingInterval, double cutoffTime, int nThreads) {
+    double samplingInterval, double pulseLength,
+    double cutoffTime, int nThreads) {
     if (logger.isLogging()) {
         nThreads = 1;
     } else if (nThreads <= 0) {
@@ -61,7 +62,7 @@ void SimulationModel::runSimulation(
                 std::ref(neutralizationGenerator),
                 std::ref(writeMutex),
                 particlesInChunk, samplingInterval, nTimeSamples, grid, seeds[i],
-                std::ref(frames), stationary, cutoffTime));
+                std::ref(frames), stationary, cutoffTime, pulseLength));
         }
 
         for (auto &thread : threads) {
@@ -102,7 +103,7 @@ void SimulationModel::simulationThread(
     unsigned long nParticles, double samplingInterval,
     long nTimeSamples, Grid grid, uint_least32_t seed,
     std::vector<SampleFrame> &frames,
-    bool stationary, double cutoffTime) const {
+    bool stationary, double cutoffTime, double pulseLength) const {
     simthreadresources thread_res(seed);
 
     for (unsigned long i = 0; i < nParticles; ++i) {
@@ -111,9 +112,9 @@ void SimulationModel::simulationThread(
                 std::to_string(i) + " particles";
             writeThreadLogLine(line);
         }
-        // Spread the gas pulse evenly across the whole sample interval
+        // Spread the gas pulse evenly across the whole pulse length
         // in time dependent simulations
-        double initialTime = -uni01(thread_res.rng) * samplingInterval;
+        double initialTime = -uni01(thread_res.rng) * pulseLength;
         Particle particle =
             pSource->generateParticle(thread_res.rng, initialTime);
         long nextSampleIndex = 0;
