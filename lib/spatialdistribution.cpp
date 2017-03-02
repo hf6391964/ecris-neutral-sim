@@ -44,7 +44,8 @@ void SpatialDistribution<T>::removeCoordinateTransformation() {
     grid_.removeCoordinateTransformation();
 }
 
-DensityDistribution::DensityDistribution(std::shared_ptr<DensityDistribution> src,
+DensityDistribution::DensityDistribution(
+    const std::shared_ptr<DensityDistribution> &src,
     double weight)
     : SpatialDistribution(0.0), sourceDistribution_(src),
       sourceDistributionWeight_(weight) {

@@ -2,7 +2,7 @@
 #include "electronionizationreaction.h"
 
 ElectronIonizationReaction::ElectronIonizationReaction(
-    std::shared_ptr<ParticlePopulation> population,
+    const std::shared_ptr<ParticlePopulation> &population,
     const IonizationParameters &ip)
     : CollisionReaction(population),
       ionizationParameters_(ip) {

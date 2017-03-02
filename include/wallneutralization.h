@@ -26,7 +26,7 @@ class WallNeutralization : public NeutralizationChannel {
 
     public:
         WallNeutralization(
-            std::shared_ptr<ParticlePopulation> population_,
+            const std::shared_ptr<ParticlePopulation> &population_,
             double confinementTime,
             const std::string &wallFilename,
             const std::string &end1Filename,

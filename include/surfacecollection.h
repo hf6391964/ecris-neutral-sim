@@ -15,7 +15,7 @@ class SurfaceCollection {
 
         Bbox bbox() const;
 
-        void addSurface(std::shared_ptr<Surface> surface);
+        void addSurface(const std::shared_ptr<Surface> &surface);
 
         bool findClosestIntersection(Ray &r, IntersectionPoint &p,
             bool skipCurrentFace = false) const;

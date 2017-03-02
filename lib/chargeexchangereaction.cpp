@@ -1,7 +1,7 @@
 #include "chargeexchangereaction.h"
 
 ChargeExchangeReaction::ChargeExchangeReaction(
-    std::shared_ptr<ParticlePopulation> population,
+    const std::shared_ptr<ParticlePopulation> &population,
     double ionizationPotentialEv)
     : CollisionReaction(population),
       ionizationPotentialEv_(ionizationPotentialEv) {

@@ -15,7 +15,7 @@ class ParticlePopulation {
 
     public:
         ParticlePopulation(Element element, int chargeState,
-            std::shared_ptr<DensityDistribution> densityDistribution)
+            const std::shared_ptr<DensityDistribution> &densityDistribution)
             : element_(element),
               particleMass_eV_(ELEMENT_DATA.at(element_)->mass * ATOMIC_MASS_TO_EV),
               chargeState_(chargeState), densityDistribution_(densityDistribution) {
@@ -27,7 +27,7 @@ class ParticlePopulation {
         }
 
         ParticlePopulation(double particleMass_eV, int chargeState,
-            std::shared_ptr<DensityDistribution> densityDistribution)
+            const std::shared_ptr<DensityDistribution> &densityDistribution)
             : particleMass_eV_(particleMass_eV), chargeState_(chargeState),
               densityDistribution_(densityDistribution) {
             if (chargeState_ == -1) {
@@ -47,7 +47,7 @@ class ParticlePopulation {
             return label_;
         }
 
-        std::shared_ptr<DensityDistribution> getDensityDistribution() const {
+        const std::shared_ptr<DensityDistribution> &getDensityDistribution() const {
             return densityDistribution_;
         }
 

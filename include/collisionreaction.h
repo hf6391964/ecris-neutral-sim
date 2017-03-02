@@ -37,9 +37,9 @@ class CollisionReaction {
         std::string label_ = "";
 
     public:
-        CollisionReaction(std::shared_ptr<ParticlePopulation> population);
+        CollisionReaction(const std::shared_ptr<ParticlePopulation> &population);
 
-        std::shared_ptr<ParticlePopulation> getPopulation() const;
+        const std::shared_ptr<ParticlePopulation> &getPopulation() const;
 
         std::string getLabel() const;
 

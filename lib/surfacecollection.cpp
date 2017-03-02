@@ -2,7 +2,7 @@
 
 //#define USE_ALL_INTERSECTIONS
 
-void SurfaceCollection::addSurface(std::shared_ptr<Surface> surface) {
+void SurfaceCollection::addSurface(const std::shared_ptr<Surface> &surface) {
     surfaces_.push_back(surface);
     bbox_ += surface->bbox();
 }

@@ -36,7 +36,7 @@ class DensityDistribution : public SpatialDistribution<double> {
 
     public:
         DensityDistribution(std::string filename, double weight = 1.0);
-        DensityDistribution(std::shared_ptr<DensityDistribution> src,
+        DensityDistribution(const std::shared_ptr<DensityDistribution> &src,
             double weight = 1.0);
 
         double getValueAt(const Point &p) const;

@@ -5,7 +5,7 @@
 
 
 WallNeutralization::WallNeutralization(
-    std::shared_ptr<ParticlePopulation> population,
+    const std::shared_ptr<ParticlePopulation> &population,
     double confinementTime,
     const std::string &wallFilename,
     const std::string &end1Filename,

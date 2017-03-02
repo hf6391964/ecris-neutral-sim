@@ -13,8 +13,8 @@ class SurfaceEmission : public NeutralSource {
 
     public:
         // The emission rate is in particles / second
-        SurfaceEmission(std::shared_ptr<Surface> pSurface, double emissionRate,
-            Element element_, std::string label);
+        SurfaceEmission(const std::shared_ptr<Surface> &pSurface,
+            double emissionRate, Element element_, std::string label);
 
         Particle generateParticle(Rng& rng, double time) const;
 

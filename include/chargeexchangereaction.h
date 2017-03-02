@@ -9,7 +9,8 @@ class ChargeExchangeReaction : public CollisionReaction {
     double mullerSalzbornCrossSection_ = 0.0;
 
     public:
-        ChargeExchangeReaction(std::shared_ptr<ParticlePopulation> population,
+        ChargeExchangeReaction(
+            const std::shared_ptr<ParticlePopulation> &population,
             double ionizationPotentialEv);
 
         double getReactionRate(const Point &p, double particleSpeed,

@@ -1,6 +1,6 @@
 #include "surfaceemission.h"
 
-SurfaceEmission::SurfaceEmission(std::shared_ptr<Surface> pSurface,
+SurfaceEmission::SurfaceEmission(const std::shared_ptr<Surface> &pSurface,
     double emissionRate, Element element, std::string label)
     : NeutralSource(label),
       pSurface_(pSurface), emissionRate_(emissionRate), element_(element) {

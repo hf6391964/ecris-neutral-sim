@@ -10,7 +10,7 @@ class Recombination : public NeutralizationChannel {
     std::shared_ptr<ParticlePopulation> population_;
 
     public:
-        Recombination(std::shared_ptr<ParticlePopulation> population,
+        Recombination(const std::shared_ptr<ParticlePopulation> &population,
             double reactionRate);
 
         Particle sampleNeutralProduct(Rng &rng,
