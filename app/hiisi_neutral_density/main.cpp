@@ -20,6 +20,10 @@ void doRun(size_t N_PARTICLES) {
     const double SAMPLING_INTERVAL = 0.0005;
     const size_t N_TIME_SAMPLES = 0;  // 0 for stationary
     const double ESCAPE_TIME = 1.9e-3;
+    const double PULSE_LENGTH = 1.0e-3;
+    const double EXTRACTION_EFFICIENCY = 0.1;
+    const double PARTICLES_PER_SECOND = 1e-6 / 3600.0 * NTP_VOLUME_TO_PARTICLES;
+    const double CUTOFF_TIME = 5.0;
 
     std::vector<double> ION_TEMPERATURES(ION_RELATIVE_DENSITIES.size(),
         ION_TEMPERATURE);
@@ -27,30 +31,6 @@ void doRun(size_t N_PARTICLES) {
         "electron_data/electron_density_hiisi.csv",
         ELECTRON_DENSITY, ION_RELATIVE_DENSITIES, ELECTRON_TEMPERATURE,
         ION_TEMPERATURES, ELEMENT);
-
-    /*Surface radial_wall("model/radial_wall.stl",
-        0.0, ROOM_TEMPERATURE_EV, "radial_wall", false);
-    Surface end1("model/end1.stl",
-        1.0, ROOM_TEMPERATURE_EV, "end1", true);
-    Surface end2("model/end2.stl",
-        1.0, ROOM_TEMPERATURE_EV, "end2", false);
-    SurfaceCollection surfaces;
-    surfaces.addSurface(&radial_wall);
-    surfaces.addSurface(&end1);
-    surfaces.addSurface(&end2);
-    SurfaceEmission gasFeed(&radial_wall, 1e-12, ELEMENT);*/
-
-    /*Surface chamber("real-model/stl-external/plasmannakemat2-admesh.stl",
-        0.0, ROOM_TEMPERATURE_EV, "chamber wall", false, 0.001);
-    Surface surrounding_cylinder("real-model/sheath_big.stl",
-        1.0, ROOM_TEMPERATURE_EV, "surrounding cylinder", true, 0.001);
-    Surface injection_surface("real-model/injection_surface_big.stl",
-        1.0, ROOM_TEMPERATURE_EV, "injection surface", false, 0.001);
-    SurfaceCollection surfaces;
-    surfaces.addSurface(&chamber);
-    surfaces.addSurface(&surrounding_cylinder);
-    surfaces.addSurface(&injection_surface);
-    SurfaceEmission gasFeed(&injection_surface, 1e-12, ELEMENT);*/
 
     SurfacePtr chamber = std::make_shared<Surface>("real-model/chamber.stl",
         0.0, ROOM_TEMPERATURE_EV, "chamber wall", false, 0.001);
@@ -62,7 +42,8 @@ void doRun(size_t N_PARTICLES) {
         1.0, ROOM_TEMPERATURE_EV, "injection surface", true, 0.001);
     SurfacePtr extraction_surface = std::make_shared<Surface>(
         "real-model/extraction_surface.stl",
-        0.7, ROOM_TEMPERATURE_EV, "extraction surface", false, 0.001);
+        EXTRACTION_EFFICIENCY, ROOM_TEMPERATURE_EV, "extraction surface", false,
+        0.001);
     SurfaceCollection surfaces;
     surfaces.addSurface(chamber);
     surfaces.addSurface(surrounding_cylinder);
@@ -70,7 +51,7 @@ void doRun(size_t N_PARTICLES) {
     surfaces.addSurface(extraction_surface);
     SimulationModel simModel(surfaces);
     simModel.addSource(std::make_unique<SurfaceEmission>(
-        injection_surface, 1e-12, ELEMENT, "injection"));
+        injection_surface, PARTICLES_PER_SECOND, ELEMENT, "injection"));
 
     CollisionGenerator generator(simModel.getGrid(GRID_SIZE));
     NeutralizationGenerator ngenerator;
@@ -86,7 +67,8 @@ void doRun(size_t N_PARTICLES) {
     clock_t start_clock = clock();
     time_t start_time = time(NULL);
     simModel.runSimulation(generator, ngenerator,
-        N_PARTICLES, name, N_TIME_SAMPLES, GRID_SIZE, SAMPLING_INTERVAL, 5.0);//, 1.0, 1);
+        N_PARTICLES, name, N_TIME_SAMPLES, GRID_SIZE, SAMPLING_INTERVAL,
+        PULSE_LENGTH, CUTOFF_TIME);
     clock_t end_clock = clock();
     time_t end_time = time(NULL);
 
@@ -112,6 +94,6 @@ int main() {
 
     doRun(5000000);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
