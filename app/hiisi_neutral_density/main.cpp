@@ -5,7 +5,12 @@
 #include "element_data.h"
 #include "logger.h"
 
-void doRun(size_t N_PARTICLES) {
+const double CONTINUOUS_FEED_RATE = 1e-6 / 3600.0 * NTP_VOLUME_TO_PARTICLES;
+
+void doRun(size_t N_PARTICLES, double PULSE_LENGTH = 1.0e-3,
+    double PARTICLES_PER_SECOND = CONTINUOUS_FEED_RATE,
+    double SAMPLING_INTERVAL = 0.005, size_t N_TIME_SAMPLES = 0) {
+
     const bool PARTICLE_LOOP_LOGGING = false;
     const double ELECTRON_DENSITY = 1e17;
     const double ELECTRON_TEMPERATURE = 10e3;
@@ -17,12 +22,8 @@ void doRun(size_t N_PARTICLES) {
         0.02817102, 0.00892281, 0.00243114, 0.00033945
     };
     const double GRID_SIZE = 0.001;
-    const double SAMPLING_INTERVAL = 0.0005;
-    const size_t N_TIME_SAMPLES = 0;  // 0 for stationary
     const double ESCAPE_TIME = 1.9e-3;
-    const double PULSE_LENGTH = 1.0e-3;
     const double EXTRACTION_EFFICIENCY = 0.1;
-    const double PARTICLES_PER_SECOND = 1e-6 / 3600.0 * NTP_VOLUME_TO_PARTICLES;
     const double CUTOFF_TIME = 5.0;
 
     std::vector<double> ION_TEMPERATURES(ION_RELATIVE_DENSITIES.size(),
@@ -81,6 +82,24 @@ void doRun(size_t N_PARTICLES) {
     ngenerator.writeStatistics(logger);
 }
 
+void run_stationary(size_t N_PARTICLES = 10000000) {
+    doRun(N_PARTICLES, 1.0e-3, CONTINUOUS_FEED_RATE, 0.0005, 0);
+}
+
+void run_convergence_test() {
+    std::vector<size_t> runs = {
+        100000, 200000, 500000, 1000000, 2000000, 5000000, 100000000
+    };
+
+    for (size_t size : runs) {
+        run_stationary(size);
+    }
+}
+
+void run_time_dependent() {
+    doRun(10000000, 1.0e-3, 3e12 / 1.0e-3, 0.001, 10);
+}
+
 int main() {
     /*std::vector<size_t> runs = {
         1000000, 2000000, 5000000, 10000000, 20000000, 50000000,
@@ -92,7 +111,7 @@ int main() {
         doRun(size);
     }*/
 
-    doRun(5000000);
+    run_convergence_test();
 
     return EXIT_SUCCESS;
 }
