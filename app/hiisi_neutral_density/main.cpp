@@ -63,7 +63,7 @@ void doRun(size_t N_PARTICLES, double PULSE_LENGTH = 1.0e-3,
         "rt.018.dat", surfaces, ELECTRON_DENSITY);
     plasmamodel.populateCollisionReactions(generator, 13122016, 0.01);
 
-    std::string name = "test" + std::to_string(N_PARTICLES);
+    std::string name = "test_" + std::to_string(N_PARTICLES);
     logger.setLogging(PARTICLE_LOOP_LOGGING);
     clock_t start_clock = clock();
     time_t start_time = time(NULL);
@@ -88,7 +88,7 @@ void run_stationary(size_t N_PARTICLES = 10000000) {
 
 void run_convergence_test() {
     std::vector<size_t> runs = {
-        100000, 200000, 500000, 1000000, 2000000, 5000000, 100000000
+        100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000
     };
 
     for (size_t size : runs) {
@@ -101,16 +101,6 @@ void run_time_dependent() {
 }
 
 int main() {
-    /*std::vector<size_t> runs = {
-        1000000, 2000000, 5000000, 10000000, 20000000, 50000000,
-        100000000, 200000000
-    };
-
-    for (size_t size : runs) {
-        std::cout << "Running with " << size << " particles" << std::endl;
-        doRun(size);
-    }*/
-
     run_convergence_test();
 
     return EXIT_SUCCESS;
