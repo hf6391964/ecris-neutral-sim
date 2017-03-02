@@ -15,7 +15,7 @@ class Grid {
     bool doTransform_ = false;
 
     public:
-        Grid() {};
+        Grid() : coordTransformation_(CGAL::IDENTITY) {};
         Grid(Bbox bbox, double gridSize);
         Grid(std::ifstream &fin);
 

@@ -1,7 +1,8 @@
 #include "grid.h"
 #include "constants.h"
 
-Grid::Grid(Bbox bbox, double gridSize) : gridSize_(gridSize) {
+Grid::Grid(Bbox bbox, double gridSize) : Grid() {
+    gridSize_ = gridSize;
     intervalsX_ = std::ceil((bbox.xmax() - bbox.xmin()) / gridSize);
     intervalsY_ = std::ceil((bbox.ymax() - bbox.ymin()) / gridSize);
     intervalsZ_ = std::ceil((bbox.zmax() - bbox.zmin()) / gridSize);
@@ -20,7 +21,7 @@ Grid::Grid(Bbox bbox, double gridSize) : gridSize_(gridSize) {
     gridSizeInverse_ = 1.0 / gridSize_;
 }
 
-Grid::Grid(std::ifstream &fin) {
+Grid::Grid(std::ifstream &fin) : Grid() {
     double xmin, xmax, ymin, ymax, zmin, zmax;
 
     fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -97,7 +98,7 @@ void Grid::setCoordinateTransformation(const Aff_transformation
 }
 
 void Grid::removeCoordinateTransformation() {
-    coordTransformation_ = Aff_transformation();
+    coordTransformation_ = Aff_transformation(CGAL::IDENTITY);
     doTransform_ = false;
 }
 
