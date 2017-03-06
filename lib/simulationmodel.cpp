@@ -24,7 +24,7 @@ void SimulationModel::runSimulation(
     unsigned long nParticles,
     std::string prefix, unsigned int nTimeSamples, double gridSize,
     double samplingInterval, double pulseLength,
-    double cutoffTime, int nThreads) {
+    double cutoffTime, int nThreads, uint_least32_t seed) {
     if (logger.isLogging()) {
         nThreads = 1;
     } else if (nThreads <= 0) {
@@ -44,7 +44,7 @@ void SimulationModel::runSimulation(
 
     for (const auto &pSource : sources_) {
         std::mutex writeMutex;
-        std::seed_seq sseq = {2016, 9, 19};
+        std::seed_seq sseq { seed };
         std::vector<std::thread> threads;
         std::vector<uint_least32_t> seeds(nThreads);
         sseq.generate(seeds.begin(), seeds.end());

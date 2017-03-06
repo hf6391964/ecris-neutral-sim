@@ -59,5 +59,6 @@ class SimulationModel {
             double samplingInterval = 0.0005,
             double pulseLength = 0.001,
             double cutoffTime = 1.0,
-            int nThreads = -1);
+            int nThreads = -1,
+            uint_least32_t seed = 123635645);
 };
