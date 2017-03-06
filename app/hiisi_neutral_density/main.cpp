@@ -9,7 +9,8 @@ const double CONTINUOUS_FEED_RATE = 1e-6 / 3600.0 * NTP_VOLUME_TO_PARTICLES;
 
 void doRun(size_t N_PARTICLES, double PULSE_LENGTH = 1.0e-3,
     double PARTICLES_PER_SECOND = CONTINUOUS_FEED_RATE,
-    double SAMPLING_INTERVAL = 0.005, size_t N_TIME_SAMPLES = 0) {
+    double SAMPLING_INTERVAL = 0.005, size_t N_TIME_SAMPLES = 0,
+    uint_least32_t seed = 13122016) {
 
     const bool PARTICLE_LOOP_LOGGING = false;
     const double ELECTRON_DENSITY = 1e17;
@@ -61,7 +62,7 @@ void doRun(size_t N_PARTICLES, double PULSE_LENGTH = 1.0e-3,
         "electron_data/z1_collision_points.csv",
         "electron_data/z2_collision_points.csv",
         "rt.018.dat", surfaces, ELECTRON_DENSITY);
-    plasmamodel.populateCollisionReactions(generator, 13122016, 0.01);
+    plasmamodel.populateCollisionReactions(generator, 14032017, 0.01);
 
     std::string name = "test_" + std::to_string(N_PARTICLES);
     logger.setLogging(PARTICLE_LOOP_LOGGING);
@@ -69,7 +70,7 @@ void doRun(size_t N_PARTICLES, double PULSE_LENGTH = 1.0e-3,
     time_t start_time = time(NULL);
     simModel.runSimulation(generator, ngenerator,
         N_PARTICLES, name, N_TIME_SAMPLES, GRID_SIZE, SAMPLING_INTERVAL,
-        PULSE_LENGTH, CUTOFF_TIME);
+        PULSE_LENGTH, CUTOFF_TIME, -1, seed);
     clock_t end_clock = clock();
     time_t end_time = time(NULL);
 
@@ -82,17 +83,21 @@ void doRun(size_t N_PARTICLES, double PULSE_LENGTH = 1.0e-3,
     ngenerator.writeStatistics(logger);
 }
 
-void run_stationary(size_t N_PARTICLES = 10000000) {
-    doRun(N_PARTICLES, 1.0e-3, CONTINUOUS_FEED_RATE, 0.0005, 0);
+void run_stationary(size_t N_PARTICLES = 10000000,
+    uint_least32_t seed = 1204146) {
+    doRun(N_PARTICLES, 1.0e-3, CONTINUOUS_FEED_RATE, 0.0005, 0, seed);
 }
 
 void run_convergence_test() {
     std::vector<size_t> runs = {
         100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000
     };
+    std::seed_seq sseq { 2017 };
+    std::vector<uint_least32_t> seeds(runs.size());
+    sseq.generate(seeds.begin(), seeds.end());
 
-    for (size_t size : runs) {
-        run_stationary(size);
+    for (size_t i = 0; i < runs.size(); ++i) {
+        run_stationary(runs[i], seeds[i]);
     }
 }
 
