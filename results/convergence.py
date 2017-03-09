@@ -16,8 +16,10 @@ data_files = [
 
 reference_data = load_data(data_files[-1][1])
 
-for n, fname in data_files[0:-1]:
-    current_data = load_data(fname)
-    error = sqrt(np.sum(np.square(current_data - reference_data)))
-    print('N = {0}, error = {1}'.format(n, error))
+with open('convergence.csv', 'w') as outfile:
+    for n, fname in data_files[0:-1]:
+        current_data = load_data(fname)
+        error = sqrt(np.sum(np.square(current_data - reference_data)))
+        print('N = {0}, error = {1}'.format(n, error))
+        outfile.write('{0} {1}\n'.format(n, error))
 
