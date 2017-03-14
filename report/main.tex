@@ -95,7 +95,7 @@ Electron (impact) ionization is a process where an energetic electron positively
 \]
 where $X$ is the original atom ($n=0$) or ion and $e$ is an electron.
 
-There have been many approximations of the electron ionization cross sections, most famously the Lotz equation~CITATION. A more convenient approximation was found in~\cite{recommended_ionization} and is used as a fit function
+There have been many approximations of the electron ionization cross sections, most famously the Lotz equation~CITATION. A more convenient approximation was found in~\cite{recommended_ionization} and is given in the form of a fit function
 \begin{equation}
     \label{eq:ionization_fit}
     \sigma(E) = \frac{1}{IE} \left[ A \ln \left(\frac{E}{I}\right) + \sum\limits_{i=1}^N
@@ -136,6 +136,17 @@ A famous approximation for the single charge exchange cross section is the one p
 where $q$ is the initial charge of the projectile and $I$ is the ionization potential of the target particle in $\si{\electronvolt}$.
 
 \subsubsection{Recombination}
+In recombination, a free electron is bound onto a shell of an ion and the excess energy is released as a photon $\gamma$. If the release of energy happens ``directly'', the process is called radiative recombination:
+\[
+    X^{+n} + e \rightarrow X^{+(n-1)} + \gamma.
+\]
+The released energy can also excite another bound electron which then de-excites and emits a photon:
+\[
+    X^{+n} + e \rightarrow X^{+(n-1)**} \rightarrow X^{+(n-1)} + \gamma.
+\]
+This process is called dielectronic recombination.~\cite{nist:recombination}
+
+Precalculated rate coefficients for these two processes at various different electron temperatures were found at~\cite{iaea:flychk}. The rate coefficients of the two processes were summed to yield a total recombination rate coefficient.
 
 \subsection{Ion confinement}
 
