@@ -49,9 +49,9 @@ Supervisor: Taneli Kalvas\\
 \setcounter{page}{1}
 
 \section{Introduction}
-In electron cyclotron resonance ion sources (ECRIS), it is crucial to keep the neutral density low enough to achieve efficient production of high ion charge states. The removal of neutrals is usually realized using turbo vacuum pumps. There are usually vacuum gauges installed in some spots to moitor the pumping.
+In electron cyclotron resonance ion sources (ECRIS), it is crucial to keep the neutral density low enough to achieve efficient production of high ion charge states. The removal of neutrals is usually realized using turbo vacuum pumps. There are usually vacuum gauges installed in some spots to monitor the pressure.
 
-These gauges, however, cannot capture local deviations in the neutral density. Therefore, the problem was approached by means of numerical simulation. The goal of this research training project was to produce a Monte Carlo code which could be used for that purpose.
+The gauges, however, cannot capture local deviations in the neutral density. Therefore, the problem was approached by means of numerical simulation. The goal of this research training project was to produce a Monte Carlo code which could be used for that purpose.
 
 It was assumed that the flow of neutrals is in the molecular flow regime, i.e. there is no direct interaction between the neutrals. The groundwork for the free molecular flow simulation was laid earlier in the author's BSc thesis~\cite{kapanen:bsc}.
 
@@ -91,9 +91,9 @@ where $m$ is the projectile particle mass, $k$ is the Boltzmann constant and $T$
 \subsubsection{Electron ionization}
 Electron (impact) ionization is a process where an energetic electron positively ionizes an atom or an ion by knocking off an electron bound to a shell:
 \[
-    A^{+n} + e \rightarrow A^{+(n+1)} + 2e,
+    X^{+n} + e \rightarrow A^{+(n+1)} + 2e,
 \]
-where $A$ is the original atom ($n=0$) or ion and $e$ is an electron.
+where $X$ is the original atom ($n=0$) or ion and $e$ is an electron.
 
 There have been many approximations of the electron ionization cross sections, most famously the Lotz equation~CITATION. A more convenient approximation was found in~\cite{recommended_ionization} and is used as a fit function
 \begin{equation}
@@ -101,7 +101,7 @@ There have been many approximations of the electron ionization cross sections, m
     \sigma(E) = \frac{1}{IE} \left[ A \ln \left(\frac{E}{I}\right) + \sum\limits_{i=1}^N
     B_i \left(1-\frac{I}{E}\right)^i \right]
 \end{equation}
-where $E$ is the electron energy, $I$ is the ionization potential of the atom or ion and $A$, $B_i$ are fit parameters depending on the atom or ion. The fit parameters are given in~\cite{recommended_ionization}. Notice that the cross section is given as a function of the electron energy instead of the relative velocity --- however, because the electron speed is undoubtedly much greater than the target particle speed, this is perfectly valid approximation.
+where $E$ is the electron energy, $I$ is the ionization potential of the atom or ion and $A$, $B_i$ are fit parameters depending on the atom or ion. The fit parameters are given in~\cite{recommended_ionization}. Notice that the cross section is given as a function of the electron energy instead of the relative velocity --- however, because the electron speed is undoubtedly much greater than the target particle speed, this is a perfectly valid approximation.
 
 For example, the fit parameters for argon neutrals are listed in table~\ref{table:argon_ionization}.
 \begin{table}
@@ -119,6 +119,21 @@ For example, the fit parameters for argon neutrals are listed in table~\ref{tabl
 \end{table}
 
 \subsubsection{Charge exchange}
+Charge exchange is a process where an ion $X$ exchanges an electron with another ion or an atom $X$:
+\[
+    X^{+m} + Y^{+n} \rightarrow X^{+(m-1)} + Y^{+(n+1)}.
+\]
+For example, $X$ being a $+1$ ion and $Y$ an atom:
+\[
+    X^{+1} + Y^0 \rightarrow X^{0} + Y^{+1}.
+\]
+
+A famous approximation for the single charge exchange cross section is the one proposed by Salzborn et al. and used in~\cite{cex} as
+\begin{equation}
+    \label{eq:cex}
+    \sigma_{q, q-1} = 1.43 \times 10^{-12} q^{1.17} I^{-2.76}\,(\si{\centi\metre\squared}),
+\end{equation}
+where $q$ is the initial charge of the projectile and $I$ is the ionization potential of the target particle in $\si{\electronvolt}$.
 
 \subsubsection{Recombination}
 
