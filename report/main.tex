@@ -70,7 +70,53 @@ Given that the ion confinement time in the magnetic bottle is long enough to ach
 
 \subsection{Plasma processes}
 
+This section lists the collision processes where the plasma and neutrals are involved. The focus is purposely kept on reactions concerning the neutrals. lso, only the ``single'' versions of these processes are covered as these dominate over the multiple counterparts in most cases. The formulae for the respective cross sections or rate coefficients are also listed.
+
+Using the cross section $\sigma$, the rate coefficient is then defined as $\langle \sigma(v_r) v_r \rangle$ where $v_r$ is the speed of the target particle relative to the bombarding particles. Considering a Maxwellian population of bombarding particles whose velocities have a uniform direction distribution, the relative speed can be written as
+\begin{equation}
+    v_r = \sqrt{v_x^2 + v_y^2 + (v_z - v_t)^2}
+\end{equation}
+where $v_t$ is the speed of the target particle and $v_{\{x, y, z\}}$ are the velocity components of the bombarding particle. Here the direction of the target particle motion was chosen to be along the $z$ axis. This choice is arbitrary due to the symmetry of the velocity distribution of the projectile particles.
+
+Now the rate coefficient can be calculated as an integral over the projectile particle velocity space:
+\begin{equation}
+    \langle \sigma v_r \rangle = \int\limits_{-\infty}^\infty \int\limits_{-\infty}^\infty \int\limits_{-\infty}^\infty v_r \sigma(v_r) f(v_x, v_y, v_z)\,\mathrm{d}v_x\,\mathrm{d}v_y\,\mathrm{d}v_z,
+\end{equation}
+where $f(v_x, v_y, v_z)$ is the velocity distribution of the projectile particles. In the context of this simulation, $f$ is the Maxwellian velocity distribution:
+\begin{equation}
+    f(v_x, v_y, v_z) = \left(\frac{m}{2\pi kT}\right)^{3/2} \exp \left[ -\frac{m(v_x^2 + v_y^2 + v_z^2)}{2kT} \right]
+\end{equation}
+where $m$ is the projectile particle mass, $k$ is the Boltzmann constant and $T$ is the temperature of the projectile particle population.
+
 \subsubsection{Electron ionization}
+Electron (impact) ionization is a process where an energetic electron positively ionizes an atom or an ion by knocking off an electron bound to a shell:
+\[
+    A^{+n} + e \rightarrow A^{+(n+1)} + 2e,
+\]
+where $A$ is the original atom ($n=0$) or ion and $e$ is an electron.
+
+There have been many approximations of the electron ionization cross sections, most famously the Lotz equation~CITATION. A more convenient approximation was found in~\cite{recommended_ionization} and is used as a fit function
+\begin{equation}
+    \label{eq:ionization_fit}
+    \sigma(E) = \frac{1}{IE} \left[ A \ln \left(\frac{E}{I}\right) + \sum\limits_{i=1}^N
+    B_i \left(1-\frac{I}{E}\right)^i \right]
+\end{equation}
+where $E$ is the electron energy, $I$ is the ionization potential of the atom or ion and $A$, $B_i$ are fit parameters depending on the atom or ion. The fit parameters are given in~\cite{recommended_ionization}. Notice that the cross section is given as a function of the electron energy instead of the relative velocity --- however, because the electron speed is undoubtedly much greater than the target particle speed, this is perfectly valid approximation.
+
+For example, the fit parameters for argon neutrals are listed in table~\ref{table:argon_ionization}.
+\begin{table}
+    \centering
+    \caption{Fit parameters of equation~\ref{eq:ionization_fit} for argon neutrals~\cite{recommended_ionization}.}
+    \label{table:argon_ionization}
+    \begin{tabular}{cccccccc}
+        \toprule
+        $I\,(\si{\electronvolt})$ & $A$ & $B_1$ & $B_2$ & $B_3$ & $B_4$ & $B_5$ & condition\\
+        \midrule
+        15.8 & 2.532 & -2.672 & 2.543 & -0.769 & 0.008 & 0.006 & \\
+        15.8 & 4.337 & 3.092 & -21.253 & 14.626 & 0.018 & 0.031 & $E > 4.13I$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \subsubsection{Charge exchange}
 
@@ -86,9 +132,13 @@ Given that the ion confinement time in the magnetic bottle is long enough to ach
 
 \subsection{Monte Carlo test particle simulation}
 
-\subsection{Monte Carlo collisions}
+\subsubsection{Monte Carlo collisions}
 
-\subsection{Decay channel sampling}
+\subsubsection{Decay channel sampling}
+
+\subsection{Single electron simulation}
+
+\subsection{Calculating the confinement time}
 
 \subsection{Software packages}
 
