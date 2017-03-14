@@ -49,8 +49,24 @@ Supervisor: Taneli Kalvas\\
 \setcounter{page}{1}
 
 \section{Introduction}
+In electron cyclotron resonance ion sources (ECRIS), it is crucial to keep the neutral density low enough to achieve efficient production of high ion charge states. The removal of neutrals is usually realized using turbo vacuum pumps. There are usually vacuum gauges installed in some spots to moitor the pumping.
+
+These gauges, however, cannot capture local deviations in the neutral density. Therefore, the problem was approached by means of numerical simulation. The goal of this research training project was to produce a Monte Carlo code which could be used for that purpose.
+
+It was assumed that the flow of neutrals is in the molecular flow regime, i.e. there is no direct interaction between the neutrals. The groundwork for the free molecular flow simulation was laid earlier in the author's BSc thesis~\cite{kapanen:bsc}.
+
+There certainly have been similar simulation models developed earlier, typically based on the Particle-in-Cell method. Those simulations feature a dynamic model of the ECR plasma, which leads to great computational complexity.
+
+In this project the idea of a simpler, quasi-stationary plasma model was probed. Such a model has the advantage of lower complexity because one only has mutually non-interacting neutrals as test particles. The independence of the test particles also means that the computation is easily parallelizable and performance gains can be had from running on multiprocessor systems.
+
+The bulk of the work in this project consisted of implementing a suitable plasma model and implementing neutral ``ray tracing'' in a real CAD geometry.
 
 \section{Theoretical background}
+In a typical ECR ion source, a plasma is formed by injecting neutral gas particles into a vacuum chamber and coupling RF energy to it at the frequency of several $\si{\giga\hertz}$.
+
+The plasma in an ECR ion source is a typical example of a laboratory plasma, with an electron density of $\sim\SI{e11}{\per\centi\metre}$. Due to the electron cyclotron resonance heating, there is a population of electrons with a high temperature of $\sim\SI{10}{\kilo\electronvolt}$. Outside the region where the cyclotron resonance heating takes place, there is also a population of colder neutrals at xx eV. The total electron energy distribution is thus often approximated by a ``double Maxwell'' distribution. GELLER
+
+Given that the ion confinement time in the magnetic bottle is long enough to achieve thermalization, the ion energy distribution can also be assumed as Maxwellian. Typical ion temperatures are in the range of xx-yy eV GELLER
 
 \subsection{Plasma processes}
 
