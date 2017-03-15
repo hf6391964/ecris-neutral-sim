@@ -79,6 +79,7 @@ where $v_t$ is the speed of the target particle and $v_{\{x, y, z\}}$ are the ve
 
 Now the rate coefficient can be calculated as an integral over the projectile particle velocity space:
 \begin{equation}
+    \label{eq:ratecoeff}
     \langle \sigma v_r \rangle = \int\limits_{-\infty}^\infty \int\limits_{-\infty}^\infty \int\limits_{-\infty}^\infty v_r \sigma(v_r) f(v_x, v_y, v_z)\,\mathrm{d}v_x\,\mathrm{d}v_y\,\mathrm{d}v_z,
 \end{equation}
 where $f(v_x, v_y, v_z)$ is the velocity distribution of the projectile particles. In the context of this simulation, $f$ is the Maxwellian velocity distribution:
@@ -263,6 +264,7 @@ The points where the electrons hit the chamber walls were recorded. Also, at eac
 The coordinates of the electron endpoints corresponding to the ``loss zones'' mentioned earlier and the electron density distribution were stored as CSV data files.
 
 \subsection{Calculating the confinement time}
+\label{sec:confinement}
 Lastly, the confinement time of ions in the magnetic bottle had to be estimated. Geller~\cite{geller:ecr} gives an equation for ions of charge state $q+$:
 \begin{equation}
     I_q \simeq \frac{1}{2} \frac{n_q q e \mathrm{Vol}}{\tau_q},
@@ -272,6 +274,15 @@ where $I_q$ is the extracted ion current, $n_q$ is the ion density, $e$ is the e
 This equation can be solved for the $\tau_q$ using data measured from existing ion sources. However, the volume Vol had to be estimated. A simple Monte Carlo approach was used here: $N$ random positions were uniformly sampled on the extraction hole. The magnetic field lines starting from these points were traced backwards until the chamber wall was intersected, flagging the cells of a cube grid through which the field line passed. The volume Vol was the calculated as the sum of the volumes of these cells.
 
 \subsection{Software design}
+One of the major challenges in the software design was efficiently calculating intersections of neutral paths with a CAD geometry with a non-trivial number of vertices and faces (given as STL files). The Computational Geometry Algorithms Library (\textsc{CGAL})~\cite{cgal} was chosen as the provider of algorithms related to manipulation of triangulated meshes. This choice implied the usage of \textsc{C++} as the programming language, which also made sense in terms of performance optimization.
+
+The GNU Scientific Library (\textsc{GSL})~\cite{gsl} was used for the computation of the rate coefficient integrals~\eqref{eq:ratecoeff} and tracing the magnetic field lines as described in section~\ref{sec:confinement}.
+
+The software library was designed with extensibility in mind. There are programming interfaces for moderately easy addition of new collision reactions and neutralization channels. Features of the modern \textsc{C++14} standard such as smart pointers were used for safe handling of memory.
+
+The neutrals were tracked individually one by one, sampling the particle position and incrementing the respective counter in a cube grid at fixed intervals. The implementation uses multiple threads allowing many neutrals to be traced simultaneously and increasing performance on multicore systems.
+
+The output data was stored as CSV files for postprocessing and plotting.
 
 \section{Results}
 
