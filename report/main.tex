@@ -149,10 +149,8 @@ This process is called dielectronic recombination.~\cite{nist:recombination}
 
 Precalculated rate coefficients for these two processes at various different electron temperatures were found at~\cite{iaea:flychk}. The rate coefficients of the two processes were summed to yield a total recombination rate coefficient.
 
-Recombination provides a neutralization channel for ions.
-
 \subsection{Ion loss}
-In addition to recombination, a remarkable neutralization channel is the loss of ions from the magnetic bottle. When an ion is no longer confined by the magnetic bottle, it eventually hits a wall of the vacuum chamber. Inelastic collision reactions with the wall material neutralize the ion and it will be desorbed.
+In addition to recombination, a remarkable neutralization channel is the loss of ions from the magnetic bottle. When an ion is no longer confined by the magnetic bottle, it eventually hits a wall of the vacuum chamber. Inelastic collision reactions with the wall material eventually neutralize the ion and it will be desorbed.
 
 \subsection{Knudsen's cosine law}
 The desorption of neutrals from walls of the vacuum chamber is assumed to be governed by Knudsen's cosine law~\cite{knudsen:cosine}:
@@ -173,6 +171,21 @@ Several numerical methods and software packages were used to implement the calcu
 
 \subsection{Monte Carlo test particle simulation}
 The basis of the simulation is the test particle Monte Carlo method. A limited set of test particles is chosen to represent the real particles and given a corresponding statistical weight in the simulation. Their phase space coordinates are randomly drawn from the corresponding probability distributions and propagated through the target geometry. On wall collisions, a new direction and velocity are calculated according to Knudsen's cosine law and the thermal accommodation law. The test particle simulation of neutrals without plasma is covered in detail in~\cite{kapanen:bsc}.
+
+\subsection{A simple quasi-stationary plasma model}
+THe plasma model implemented in this simulation describes the plasma electrons and ions of different charge states as density distributions defined in a cubic grid. The velocities of the plasma particles are approximated as Maxwellian with predefined temperatures.
+
+Taking the conservation of the plasma mass as a guiding principle, the following approximations were made:
+\begin{itemize}
+    \item Stationarity: the plasma population parameters (density, temperature) are not affected by collision reactions.
+    \item The spatial density distributions of the ion populations are proportional to the distribution of electrons. The code takes the global charge state distribution as a parameters.
+    \item The plasma consists of only one element.
+    \item Elastic collisions between the neutrals and the plasma particles are neglected.
+\end{itemize}
+
+An ionizing collision reaction may result in excess mass accumulating in the plasma. Conservetion of mass is implemented here: the plasma must eventually emit a particle through some channel.
+
+In this simulation, the two collision processes involving neutrals are charge exchange and electron ionization. In charge exchange, the plasma mass offset is unchanged because an ion is neutralized but the plasma also receives a new ion. Thus there is no need to emit an additional neutral. In electron ionization, a neutral comes in and is ionized by an electron, thus the plasma gains an excess of one particle. The excess is compensated by statistically choosing a neutralization channel and the corresponding neutralization time.
 
 \subsubsection{Monte Carlo collisions}
 To handle collisions processes of neutrals with the plasma particles (ions and electrons), a Monte Carlo collision method has to be used. The electrons and ions don't exist in the simulation as individual test particles but as particle distributions.
@@ -218,13 +231,17 @@ Given a pseudo-random number $x \in [0, 1[$, the chosen reaction is the smallest
     x \leq \frac{\sum\limits_{j=0}^i \nu_j}{\nu_\text{tot}}.
 \]
 
-\subsubsection{Decay channel sampling}
+When the decision on the collision process is made, a projectile particle is sampled from the corresponding particle population. The collision dynamics are then calculated in the center-of-mass frame. The neutral product (if any) is then tracked further.
+
+The reactions handled in the way described above in the simulation are charge exchange and electron ionization.
+
+\subsubsection{Neutralization channel sampling}
 
 \subsection{Single electron simulation}
 
 \subsection{Calculating the confinement time}
 
-\subsection{Software packages}
+\subsection{Software design}
 
 \section{Results}
 
