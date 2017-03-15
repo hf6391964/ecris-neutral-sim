@@ -69,7 +69,6 @@ The plasma in an ECR ion source is a typical example of a laboratory plasma, wit
 Given that the ion confinement time in the magnetic bottle is long enough to achieve thermalization, the ion energy distribution can also be assumed as Maxwellian with a temperature of a few electronvolts~\cite{geller:ecr}.
 
 \subsection{Plasma processes}
-
 This section lists the collision processes where the plasma and neutrals are involved. The focus is purposely kept on reactions concerning the neutrals. lso, only the ``single'' versions of these processes are covered as these dominate over the multiple counterparts in most cases. The formulae for the respective cross sections or rate coefficients are also listed.
 
 Using the cross section $\sigma$, the rate coefficient is then defined as $\langle \sigma(v_r) v_r \rangle$ where $v_r$ is the speed of the target particle relative to the bombarding particles. Considering a Maxwellian population of bombarding particles whose velocities have a uniform direction distribution, the relative speed can be written as
@@ -170,10 +169,54 @@ When a particle is adsorbed onto a wall, it may be only partially thermalized wi
 where $E_\text{in}$ is the incoming energy flux, $E_\text{re}$ the reflected flux and $E_\text{w}$ the emitted energy flux in the case of full thermalization.~\cite{sandia:accom}
 
 \section{Numerical methods and tools}
+Several numerical methods and software packages were used to implement the calculation of the neutral density distribution.
 
 \subsection{Monte Carlo test particle simulation}
+The basis of the simulation is the test particle Monte Carlo method. A limited set of test particles is chosen to represent the real particles and given a corresponding statistical weight in the simulation. Their phase space coordinates are randomly drawn from the corresponding probability distributions and propagated through the target geometry. On wall collisions, a new direction and velocity are calculated according to Knudsen's cosine law and the thermal accommodation law. The test particle simulation of neutrals without plasma is covered in detail in~\cite{kapanen:bsc}.
 
 \subsubsection{Monte Carlo collisions}
+To handle collisions processes of neutrals with the plasma particles (ions and electrons), a Monte Carlo collision method has to be used. The electrons and ions don't exist in the simulation as individual test particles but as particle distributions.
+
+Consider a test particle traveling through a particle population bombarding it at the frequency $\nu$. Remembering that a single test particle represents multiple real particles, the propagation of the test particle can be seen as probability flux or an ``intensity''. The calculation of collision probabilities arises from the differential equation
+\begin{equation}
+    \frac{\mathrm{d}p}{\mathrm{d}t} = -\nu p(t),
+\end{equation}
+where $p$ is the particle probability flux and $t$ the time. Setting $p(0) = 1$, The solution to this differential equation is
+\[
+    p(t) = \exp(-\nu t).
+\]
+The collision probability is now found as the complement:
+\begin{equation}
+    p_\text{coll} = 1 - \exp(-\nu t),
+\end{equation}
+where $\nu$ is the rate of the collision reaction in question. Considering a test particle propagating by a timestep $\Delta t$ in a projectile particle cloud of density $n_i$ and the rate coefficient of the reaction is $\langle v_r \sigma_i \rangle$, the probability of the collision happening during the timestep is
+\begin{equation}
+    p_i = 1 - \exp(-n_i \langle v_{r, i} \sigma_i \rangle \Delta t),
+\end{equation}
+where $v_{r, i}$ is the relative speed of the test particle to the projectile population. Drawing a pseudo-random number $x \in [0, 1[$, a collision now happens if
+\[
+    x \leq p_i = 1 - \exp(-n_i \langle v_{r, i} \sigma_i \rangle \Delta t),
+\]
+or equivalently
+\[
+    x > - \exp(-n_i \langle v_{r, i} \sigma_i \rangle \Delta t).
+\]
+
+When there are multiple populations and collision reactions, the total collision frequency is calculated as:
+\begin{equation}
+    \nu_\text{tot} (v) = \sum\limits_i \nu_i = \sum\limits_i n_i \langle v_{r, i} \sigma_i \rangle,
+\end{equation}
+where $i$ runs over different collision reactions.
+In practice, the values $\langle v_{r, i} \sigma_i \rangle$ are expensive to calculate and are thus precomputed in a grid of some fixed values of $v$ and stored in an array. Linear interpolation between the gridpoints is used to acquire the collision frequency at arbitrary values of $v$.
+
+The total collision frequency is used at each timestep to decide if a collision has happened. In the case of a collision, the collision reaction type $i$ is randomly decided using the individual reaction rates as the probability distribution:
+\begin{equation}
+    p[i] = \frac{\nu_i}{\nu_\text{tot}}.
+\end{equation}
+Given a pseudo-random number $x \in [0, 1[$, the chosen reaction is the smallest value of $i$ such that
+\[
+    x \leq \frac{\sum\limits_{j=0}^i \nu_j}{\nu_\text{tot}}.
+\]
 
 \subsubsection{Decay channel sampling}
 
