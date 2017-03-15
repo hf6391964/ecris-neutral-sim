@@ -157,7 +157,7 @@ The desorption of neutrals from walls of the vacuum chamber is assumed to be gov
 \begin{equation}
     \mathrm{d}n = \frac{n}{\pi}\cos\theta \,\mathrm{d}\omega,
 \end{equation}
-where $n$ is the flux of particles desorbing into the solid angle element $\mathrm{d}\omega$.
+where $n$ is the flux of particles desorbing into the solid angle element $\mathrm{d}\omega$ and $\theta$ is the angle of $\mathrm{d}\omega$ with respect to the surface normal.
 
 \subsection{Thermal accommodation}
 When a particle is adsorbed onto a wall, it may be only partially thermalized with the wall before desorption. The efficiency of this thermalization process is characterized by the \emph{accommodation coefficient} $\alpha$, which depends on the surface material, surface finish and the element of the incoming particles. It is defined according to the equation
@@ -173,7 +173,7 @@ Several numerical methods and software packages were used to implement the calcu
 The basis of the simulation is the test particle Monte Carlo method. A limited set of test particles is chosen to represent the real particles and given a corresponding statistical weight in the simulation. Their phase space coordinates are randomly drawn from the corresponding probability distributions and propagated through the target geometry. On wall collisions, a new direction and velocity are calculated according to Knudsen's cosine law and the thermal accommodation law. The test particle simulation of neutrals without plasma is covered in detail in~\cite{kapanen:bsc}.
 
 \subsection{A simple quasi-stationary plasma model}
-THe plasma model implemented in this simulation describes the plasma electrons and ions of different charge states as density distributions defined in a cubic grid. The velocities of the plasma particles are approximated as Maxwellian with predefined temperatures.
+The plasma model implemented in this simulation describes the plasma electrons and ions of different charge states as density distributions defined in a cubic grid. The velocities of the plasma particles are approximated as Maxwellian with predefined temperatures.
 
 Taking the conservation of the plasma mass as a guiding principle, the following approximations were made:
 \begin{itemize}
@@ -212,7 +212,7 @@ where $v_{r, i}$ is the relative speed of the test particle to the projectile po
 \]
 or equivalently
 \[
-    x > - \exp(-n_i \langle v_{r, i} \sigma_i \rangle \Delta t).
+    x > \exp(-n_i \langle v_{r, i} \sigma_i \rangle \Delta t).
 \]
 
 When there are multiple populations and collision reactions, the total collision frequency is calculated as:
@@ -236,6 +236,24 @@ When the decision on the collision process is made, a projectile particle is sam
 The reactions handled in the way described above in the simulation are charge exchange and electron ionization.
 
 \subsubsection{Neutralization channel sampling}
+If the plasma mass offset is increased due to an ionizing reaction, a particle will be emitted from the plasma and eventually neutralized. There is the possibility of specifying one or more neutralization channels, each of which follows an exponential decay law:
+\begin{equation}
+    p_\text{neutralized}(t) = 1 - \exp(-t / \tau_i ),
+\end{equation}
+where $p_\text{neutralized}$ is the probability that the neutralization reaction has happened at time $t$ and $\tau_i$ is the time constant of the corresponding reaction. Given a pseudo-random number $x \in [0, 1[$, a random neutralization time can be sampled by conventional inverse transform sampling:
+\begin{equation}
+    t = -\tau_i \ln x.
+\end{equation}
+
+Because the neutralization neutralization processes are independent from each other, the following way of sampling is implemented:
+\begin{enumerate}
+    \item For each neutralization channel, sample a random decay time.
+    \item Choose the reaction with the shortest decay time.
+\end{enumerate}
+
+Practically, recombination and loss of an ion from magnetic confinement are the two neutralization processes. In recombination, the position of the reaction is sampled from the 1+ ion density distribution. The velocity of the resulting neutral is sampled according to the 1+ energy distribution (Maxwell).
+
+The magnetic loss is a bit more complicated. Predefined ``loss zones'' calculated in an electron simulation are used. These are regions on the walls of the chamber where lost electrons have hit. The spatial behaviour of a plasma is usually dominated by the electrons (because they have the highest mobility) and thus the ion loss zones should roughly correspond to the electron loss zones. When an ion escapes through this channel, its position on the wall is chosen randomly according to the loss zones and it is assumed to be fully thermalized with the wall and neutralized due to recombination with wall electrons. Then a neutral is emitted from this position according to the cosine law.
 
 \subsection{Single electron simulation}
 
