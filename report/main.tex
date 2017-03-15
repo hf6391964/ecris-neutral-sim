@@ -260,9 +260,16 @@ A simple, single electron simulation was used to calculate the electron distribu
 
 The points where the electrons hit the chamber walls were recorded. Also, at each timestep, the locations of the electrons were recorded by incrementing the corresponding counters in a cube grid. From this grid of counters, the electron density was calculated by normalization. The choice of normalization is not exact. In the chosen approach, cells with counter value of 1/4 or more of the global maximum value were regarded as plasma cells. The normalization factor was chosen such that the average density in these cells evaluated to unity.
 
-The coordinates of the electron endpoints corresponding to the ``loss zones'' mentioned earlier and the electron density distribution were stored to CSV data files.
+The coordinates of the electron endpoints corresponding to the ``loss zones'' mentioned earlier and the electron density distribution were stored as CSV data files.
 
 \subsection{Calculating the confinement time}
+Lastly, the confinement time of ions in the magnetic bottle had to be estimated. Geller~\cite{geller:ecr} gives an equation for ions of charge state $q+$:
+\begin{equation}
+    I_q \simeq \frac{1}{2} \frac{n_q q e \mathrm{Vol}}{\tau_q},
+\end{equation}
+where $I_q$ is the extracted ion current, $n_q$ is the ion density, $e$ is the elementary charge, $\tau_q$ the confinement time and Vol is the volume bounded by the magnetic field lines which lead to the extraction hole.
+
+This equation can be solved for the $\tau_q$ using data measured from existing ion sources. However, the volume Vol had to be estimated. A simple Monte Carlo approach was used here: $N$ random positions were uniformly sampled on the extraction hole. The magnetic field lines starting from these points were traced backwards until the chamber wall was intersected, flagging the cells of a cube grid through which the field line passed. The volume Vol was the calculated as the sum of the volumes of these cells.
 
 \subsection{Software design}
 
