@@ -255,7 +255,12 @@ Practically, recombination and loss of an ion from magnetic confinement are the 
 
 The magnetic loss is a bit more complicated. Predefined ``loss zones'' calculated in an electron simulation are used. These are regions on the walls of the chamber where lost electrons have hit. The spatial behaviour of a plasma is usually dominated by the electrons (because they have the highest mobility) and thus the ion loss zones should roughly correspond to the electron loss zones. When an ion escapes through this channel, its position on the wall is chosen randomly according to the loss zones and it is assumed to be fully thermalized with the wall and neutralized due to recombination with wall electrons. Then a neutral is emitted from this position according to the cosine law.
 
-\subsection{Single electron simulation}
+\subsection{Electron simulation}
+A simple, single electron simulation was used to calculate the electron distribution of the plasma. The electrons are simulated individually. Their trajectories are simulated in the target geometry which is approximated by a cylinder in the presence of a magnetic field. The magnetic field is given by the superposition of an axisymmetric expansion of the solenoid field and an ideal hexapole field. The single electron model is described in detail in~\cite{kalvas:hiisi}.
+
+The points where the electrons hit the chamber walls were recorded. Also, at each timestep, the locations of the electrons were recorded by incrementing the corresponding counters in a cube grid. From this grid of counters, the electron density was calculated by normalization. The choice of normalization is not exact. In the chosen approach, cells with counter value of 1/4 or more of the global maximum value were regarded as plasma cells. The normalization factor was chosen such that the average density in these cells evaluated to unity.
+
+The coordinates of the electron endpoints corresponding to the ``loss zones'' mentioned earlier and the electron density distribution were stored to CSV data files.
 
 \subsection{Calculating the confinement time}
 
