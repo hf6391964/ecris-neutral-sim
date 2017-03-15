@@ -64,9 +64,9 @@ The bulk of the work in this project consisted of implementing a suitable plasma
 \section{Theoretical background}
 In a typical ECR ion source, a plasma is formed by injecting neutral gas particles into a vacuum chamber and coupling RF energy to it at the frequency of several $\si{\giga\hertz}$.
 
-The plasma in an ECR ion source is a typical example of a laboratory plasma, with an electron density of $\sim\SI{e11}{\per\centi\metre}$. Due to the electron cyclotron resonance heating, there is a population of electrons with a high temperature of $\sim\SI{10}{\kilo\electronvolt}$. Outside the region where the cyclotron resonance heating takes place, there is also a population of colder neutrals at xx eV. The total electron energy distribution is thus often approximated by a ``double Maxwell'' distribution. GELLER
+The plasma in an ECR ion source is a typical example of a laboratory plasma, with an electron density of $\sim\SI{e11}{\per\centi\metre}$. Due to the electron cyclotron resonance heating, there is a population of electrons with a high average energy of several $\si{\kilo\electronvolt}$. However, there is another population of electrons with lower energies. Thus, the electron energy distribution isn't strictly Maxwell.~\cite{geller:ecr}
 
-Given that the ion confinement time in the magnetic bottle is long enough to achieve thermalization, the ion energy distribution can also be assumed as Maxwellian. Typical ion temperatures are in the range of xx-yy eV GELLER
+Given that the ion confinement time in the magnetic bottle is long enough to achieve thermalization, the ion energy distribution can also be assumed as Maxwellian with a temperature of a few electronvolts~\cite{geller:ecr}.
 
 \subsection{Plasma processes}
 
@@ -95,7 +95,7 @@ Electron (impact) ionization is a process where an energetic electron positively
 \]
 where $X$ is the original atom ($n=0$) or ion and $e$ is an electron.
 
-There have been many approximations of the electron ionization cross sections, most famously the Lotz equation~CITATION. A more convenient approximation was found in~\cite{recommended_ionization} and is given in the form of a fit function
+There have been many approximations of the electron ionization cross sections, most famously the Lotz equation~\cite{lotz}. A more convenient approximation was found in~\cite{recommended_ionization} and is given in the form of a fit function
 \begin{equation}
     \label{eq:ionization_fit}
     \sigma(E) = \frac{1}{IE} \left[ A \ln \left(\frac{E}{I}\right) + \sum\limits_{i=1}^N
