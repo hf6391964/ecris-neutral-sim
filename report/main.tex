@@ -118,6 +118,8 @@ For example, the fit parameters for argon neutrals are listed in table~\ref{tabl
     \end{tabular}
 \end{table}
 
+In the context of the simulation, the electron ionization reaction converts neutrals to ions.
+
 \subsubsection{Charge exchange}
 Charge exchange is a process where an ion $X$ exchanges an electron with another ion or an atom $X$:
 \[
@@ -148,11 +150,24 @@ This process is called dielectronic recombination.~\cite{nist:recombination}
 
 Precalculated rate coefficients for these two processes at various different electron temperatures were found at~\cite{iaea:flychk}. The rate coefficients of the two processes were summed to yield a total recombination rate coefficient.
 
-\subsection{Ion confinement}
+Recombination provides a neutralization channel for ions.
+
+\subsection{Ion loss}
+In addition to recombination, a remarkable neutralization channel is the loss of ions from the magnetic bottle. When an ion is no longer confined by the magnetic bottle, it eventually hits a wall of the vacuum chamber. Inelastic collision reactions with the wall material neutralize the ion and it will be desorbed.
 
 \subsection{Knudsen's cosine law}
+The desorption of neutrals from walls of the vacuum chamber is assumed to be governed by Knudsen's cosine law~\cite{knudsen:cosine}:
+\begin{equation}
+    \mathrm{d}n = \frac{n}{\pi}\cos\theta \,\mathrm{d}\omega,
+\end{equation}
+where $n$ is the flux of particles desorbing into the solid angle element $\mathrm{d}\omega$.
 
 \subsection{Thermal accommodation}
+When a particle is adsorbed onto a wall, it may be only partially thermalized with the wall before desorption. The efficiency of this thermalization process is characterized by the \emph{accommodation coefficient} $\alpha$, which depends on the surface material, surface finish and the element of the incoming particles. It is defined according to the equation
+\begin{equation}
+    \alpha = \frac{E_\text{in} - E_\text{re}}{E_\text{in} - E_\text{w}},
+\end{equation}
+where $E_\text{in}$ is the incoming energy flux, $E_\text{re}$ the reflected flux and $E_\text{w}$ the emitted energy flux in the case of full thermalization.~\cite{sandia:accom}
 
 \section{Numerical methods and tools}
 
