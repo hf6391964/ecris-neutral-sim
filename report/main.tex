@@ -23,7 +23,7 @@
 %\usepackage[sorting=none]{biblatex}
 
 \begin{document}
-\onehalfspacing%
+%\onehalfspacing%
 \thispagestyle{empty}
 \begin{flushleft}
  \underline{Sakari} Matias Kapanen\hfill
@@ -307,7 +307,7 @@ One of the main observations from the plots is the accumulation of neutrals near
     \label{fig:stationary_x}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[t]
     \centering
     \begin{subfigure}{0.5\textwidth}
         \centering
@@ -330,6 +330,29 @@ The neutral density in the middle of the chamber (in the plasma region) seems to
 From the reaction statistics, it is additionally seen that only a negligible number of the neutralizations happen through recombination.
 
 \subsection{Convergence test}
+To observe the convergence of the stationary neutral density distribution, the calculation was performed with several different numbers of test particles. The largest number was $N = 10^{7}$ and this result was taken as the ``correct'' distribution. The global error of the distributions obtained with lower number of statistics was then calculated using the $\ell^2$ norm:
+\begin{equation}
+    \delta = \sqrt{\sum\limits_{i \in \text{grid cells}} (n_i - \hat{n}_i)^2},
+\end{equation}
+where $\hat{n}_i$ is the neutral density in cell $i$ in the reference distribution ($N = 10^{7}$) and $n_i$ is the neutral density in the distribution whose error is being calculated.
+
+The resulting data points and a line fit in $(\log N, \log \delta)$ coordinates are shown in figure~\ref{fig:convergence}. The slope of the fitted line is $-0.44 \pm 0.03$ and tells that the power law governing the convergence rate is
+\[
+    \delta \propto N^{-0.44},
+\]
+which coincides well with the known result that the convergence rate of a Monte Carlo integration method should be~\cite{kapanen:bsc}
+\[
+    \delta \propto \frac{1}{\sqrt{N}}.
+\]
+
+\begin{figure}[t]
+    \centering
+    \includegraphics{images/convergence_plot.png}
+    \caption{Convergence plot}
+    \label{fig:convergence}
+\end{figure}
+
+The power law is not exactly $-0.5$ but pretty close --- this is due to the probabilistic nature of the Monte Carlo simulation. Therefore the convergence rate can be regarded as sensible.
 
 \subsection{Time dependent density distribution}
 
