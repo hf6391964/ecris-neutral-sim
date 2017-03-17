@@ -257,7 +257,7 @@ void SimulationModel::simulationThread(
                 size_t arrIndex;
                 if (grid.arrayIndex(particle.getPosition(), arrIndex)) {
                     size_t frameIndex = stationary ? 0 : sampleIndex;
-                    Sample &sample = frames[frameIndex][arrIndex];
+                    Sample &sample = frames.at(frameIndex).at(arrIndex);
                     std::lock_guard<std::mutex> writeGuard(writeMutex);
                     sample.count++;
                     Vector lastVelocityAverage = sample.velocity;
