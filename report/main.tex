@@ -91,7 +91,7 @@ where $m$ is the projectile particle mass, $k$ is the Boltzmann constant and $T$
 \subsubsection{Electron ionization}
 Electron (impact) ionization is a process where an energetic electron positively ionizes an atom or an ion by knocking off an electron bound to a shell:
 \[
-    X^{+n} + e \rightarrow A^{+(n+1)} + 2e,
+    X^{n+} + e \rightarrow A^{(n+1)+} + 2e,
 \]
 where $X$ is the original atom ($n=0$) or ion and $e$ is an electron.
 
@@ -123,11 +123,11 @@ In the context of the simulation, the electron ionization reaction converts neut
 \subsubsection{Charge exchange}
 Charge exchange is a process where an ion $X$ exchanges an electron with another ion or an atom $X$:
 \[
-    X^{+m} + Y^{+n} \rightarrow X^{+(m-1)} + Y^{+(n+1)}.
+    X^{m+} + Y^{n+} \rightarrow X^{(m-1)+} + Y^{(n+1)+}.
 \]
 For example, $X$ being a $+1$ ion and $Y$ an atom:
 \[
-    X^{+1} + Y^0 \rightarrow X^{0} + Y^{+1}.
+    X^{1+} + Y^0 \rightarrow X^{0} + Y^{1+}.
 \]
 
 A famous approximation for the single charge exchange cross section is the one proposed by Salzborn et al. and used in~\cite{cex} as
@@ -140,11 +140,11 @@ where $q$ is the initial charge of the projectile and $I$ is the ionization pote
 \subsubsection{Recombination}
 In recombination, a free electron is bound onto a shell of an ion and the excess energy is released as a photon $\gamma$. If the release of energy happens ``directly'', the process is called radiative recombination:
 \[
-    X^{+n} + e \rightarrow X^{+(n-1)} + \gamma.
+    X^{n+} + e \rightarrow X^{(n-1)+} + \gamma.
 \]
 The released energy can also excite another bound electron which then de-excites and emits a photon:
 \[
-    X^{+n} + e \rightarrow X^{+(n-1)**} \rightarrow X^{+(n-1)} + \gamma.
+    X^{n+} + e \rightarrow X^{(n-1)+**} \rightarrow X^{(n-1)+} + \gamma.
 \]
 This process is called dielectronic recombination.~\cite{nist:recombination}
 
@@ -267,28 +267,69 @@ The coordinates of the electron endpoints corresponding to the ``loss zones'' me
 \label{sec:confinement}
 Lastly, the confinement time of ions in the magnetic bottle had to be estimated. Geller~\cite{geller:ecr} gives an equation for ions of charge state $q+$:
 \begin{equation}
+    \label{eq:confinement_time}
     I_q \simeq \frac{1}{2} \frac{n_q q e \mathrm{Vol}}{\tau_q},
 \end{equation}
 where $I_q$ is the extracted ion current, $n_q$ is the ion density, $e$ is the elementary charge, $\tau_q$ the confinement time and Vol is the volume bounded by the magnetic field lines which lead to the extraction hole.
 
-This equation can be solved for the $\tau_q$ using data measured from existing ion sources. However, the volume Vol had to be estimated. A simple Monte Carlo approach was used here: $N$ random positions were uniformly sampled on the extraction hole. The magnetic field lines starting from these points were traced backwards until the chamber wall was intersected, flagging the cells of a cube grid through which the field line passed. The volume Vol was the calculated as the sum of the volumes of these cells.
+This equation can be solved for the $\tau_q$ using measured extraction current. However, the volume Vol had to be estimated. A simple Monte Carlo approach was used here: $N$ random positions were uniformly sampled on the extraction hole. The magnetic field lines starting from these points were traced backwards until the chamber wall was intersected, flagging the cells of a cube grid through which the field line passed. The volume Vol was the calculated as the sum of the volumes of these cells.
 
 \subsection{Software design}
 One of the major challenges in the software design was efficiently calculating intersections of neutral paths with a CAD geometry with a non-trivial number of vertices and faces (given as STL files). The Computational Geometry Algorithms Library (\textsc{CGAL})~\cite{cgal} was chosen as the provider of algorithms related to manipulation of triangulated meshes. This choice implied the usage of \textsc{C++} as the programming language, which also made sense in terms of performance optimization.
 
 The GNU Scientific Library (\textsc{GSL})~\cite{gsl} was used for the computation of the rate coefficient integrals~\eqref{eq:ratecoeff} and tracing the magnetic field lines as described in section~\ref{sec:confinement}.
 
-The software library was designed with extensibility in mind. There are programming interfaces for moderately easy addition of new collision reactions and neutralization channels. Features of the modern \textsc{C++14} standard such as smart pointers were used for safe handling of memory.
+The software library was designed with extensibility in mind. There are programming interfaces for moderately easy addition of new collision reactions and neutralization channels. Features of the modern \textsc{C++14} standard such as smart pointers were used for safe handling of memory. This is a subject that could still be improved upon, especially regarding read and write access of the \texttt{std::vector}s storing the density distribution.
 
 The neutrals were tracked individually one by one, sampling the particle position and incrementing the respective counter in a cube grid at fixed intervals. The implementation uses multiple threads allowing many neutrals to be traced simultaneously and increasing performance on multicore systems.
 
 The output data was stored as CSV files for postprocessing and plotting.
 
 \section{Results}
+Time-dependent and stationary simulations were run to test the simulation code. A simplified solid CAD model of the upcoming JYFL ECRIS HIISI was produced using OpenSCAD~\cite{openscad} and used as the target geometry. Originally an STL exported from the full CAD model was tried. However, the intersection calculation was found to be too expensive probably due to spatially imbalanced distribution and the great number of primitives.
 
-\subsection{Convergence test}
+\subsection{Simulation parameters}
+Because as of writing this report there are no measurement of HIISI plasma parameters, some parameters from the JYFL 14 GHz ECRIS~\cite{jyfl:ecris14} were used. In particular, measured values of the extraction ion current of different charge states were used to obtain the charge state distribution. Additionally, the extraction current of 8+ ions was used to calculate the confinement time $\tau_{8+}$ from equation~\eqref{eq:confinement_time}. This confinement time was used as an approximation for all charge states. The calculation yielded a value of $\tau \approx \SI{1.9}{\milli\second}$.
+
+The average electron density was assumed to be $\SI{e11}{\per\centi\meter\cubed}$. The electron energy distribution was taken to be Maxwellian, $T = \SI{10}{\kilo\electronvolt}$. This approximation neglects the cold electron distribution.
+
+The element chosen for the gas feed was argon. Gas was fed to the chamber from the injection tube. The injection and extraction holes were configured as pumps with pumping efficiencies of 1 and 0.1, respectively.
 
 \subsection{Stationary density distribution}
+A stationary density distriution was calculated using the argon feed rate of $\SI{1}{\centi\metre\cubed\per\hour}$ which is typical during plasma production. Ten million test particles were used. Slices of the neutral density distribution on different axes were plotted.
+
+One of the main observations from the plots is the accumulation of neutrals near the loss zones in the grooves of the vacuum chamber and the injection and extraction ends. This corresponds to the loss of ions from the magnetic confinement and neutralization on the wall. The accumulation can be seen in figures~\ref{fig:stationary_x} and~\ref{fig:stationary_z}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{images/stationary_x_middle.png}
+    \caption{A slice of the stationary neutral density distribution in the middle of the $X$ axis.}
+    \label{fig:stationary_x}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/stationary_injection_end.png}
+    \end{subfigure}%
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/stationary_extraction_end.png}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/stationary_z_middle.png}
+    \end{subfigure}
+    \caption{Slices of the stationary neutral density distribution along the $Z$ axis at the injection end, extraction end and the middle of the chamber.}
+    \label{fig:stationary_z}
+\end{figure}
+
+The neutral density in the middle of the chamber (in the plasma region) seems to be at least an order of magnitude lower than the surrounding one, below $\SI{e10}{\per\centi\metre\cubed}$. This is due to the internal pumping effect caused mainly by the electron ionization process. The internal pumping makes it possible to meet the criterion for multiply charged ion production, $n_e / n_0 \gg 1$.
+
+From the reaction statistics, it is additionally seen that only a negligible number of the neutralizations happen through recombination.
+
+\subsection{Convergence test}
 
 \subsection{Time dependent density distribution}
 
