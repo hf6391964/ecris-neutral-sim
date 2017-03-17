@@ -274,6 +274,12 @@ where $I_q$ is the extracted ion current, $n_q$ is the ion density, $e$ is the e
 
 This equation can be solved for the $\tau_q$ using measured extraction current. However, the volume Vol had to be estimated. A simple Monte Carlo approach was used here: $N$ random positions were uniformly sampled on the extraction hole. The magnetic field lines starting from these points were traced backwards until the chamber wall was intersected, flagging the cells of a cube grid through which the field line passed. The volume Vol was the calculated as the sum of the volumes of these cells.
 
+The magnetic field line backward tracing is implemented by numerically solving the differential equation
+\begin{equation}
+    \frac{\mathrm{d}\mathbf{s}(t)}{\mathrm{d}t} = -\mathbf{B}(\mathbf{s}(t)),
+\end{equation}
+where $\mathbf{s}(t)$ is the field line parametrized by the parameter $t$ and $\mathbf{B}$ is the total magnetic flux density.
+
 \subsection{Software design}
 One of the major challenges in the software design was efficiently calculating intersections of neutral paths with a CAD geometry with a non-trivial number of vertices and faces (given as STL files). The Computational Geometry Algorithms Library (\textsc{CGAL})~\cite{cgal} was chosen as the provider of algorithms related to manipulation of triangulated meshes. This choice implied the usage of \textsc{C++} as the programming language, which also made sense in terms of performance optimization.
 
