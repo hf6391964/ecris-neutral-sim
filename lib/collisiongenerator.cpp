@@ -28,8 +28,8 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
         Point p;
         if (!grid_.getCellMidpoint(i, p)) continue;
         for (size_t ir = 0; ir < nReactions_; ++ir) {
-            densityMaxima[ir] = std::max(densityMaxima[ir],
-                collisionReactions_[ir]->getPopulation()->getDensityAt(p));
+            densityMaxima.at(ir) = std::max(densityMaxima.at(ir),
+                collisionReactions_.at(ir)->getPopulation()->getDensityAt(p));
         }
     }
 
@@ -37,15 +37,16 @@ void CollisionGenerator::precomputeReactionRates(double maxSpeed,
     mc_integrate_resources mc_res(seed);
     for (size_t iv = 0; iv < nSpeedSteps_; ++iv) {
         double particleSpeed = speedStepSize_ * iv;
-        rateCoefficients_[iv] = std::vector<double>(nReactions_);
+        rateCoefficients_.at(iv) = std::vector<double>(nReactions_);
 
         // Calculate rate coefficients separately for each reaction
         // Find the majorant reaction rate at the given velocity
-        majorantReactionRate_[iv] = 0.0;
+        majorantReactionRate_.at(iv) = 0.0;
         for (size_t ir = 0; ir < nReactions_; ++ir) {
-            rateCoefficients_[iv][ir] =
-                collisionReactions_[ir]->getRateCoefficient(particleSpeed, mc_res);
-            majorantReactionRate_[iv] += densityMaxima[ir] * rateCoefficients_[iv][ir];
+            rateCoefficients_.at(iv).at(ir) =
+                collisionReactions_.at(ir)->getRateCoefficient(particleSpeed, mc_res);
+            majorantReactionRate_.at(iv) += densityMaxima.at(ir) *
+                rateCoefficients_.at(iv).at(ir);
         }
     }
 
@@ -61,8 +62,8 @@ double CollisionGenerator::getMeanFreeTime(double particleSpeed) const {
     }
 
     double t = (particleSpeed - velIndex * speedStepSize_) / speedStepSize_;
-    double interpolatedRate = (1.0 - t) * majorantReactionRate_[velIndex] +
-        t * majorantReactionRate_[velIndex + 1];
+    double interpolatedRate = (1.0 - t) * majorantReactionRate_.at(velIndex) +
+        t * majorantReactionRate_.at(velIndex + 1);
 
     return 1.0 / interpolatedRate;
 }
@@ -72,20 +73,20 @@ CollisionReaction *CollisionGenerator::sampleCollision(Rng &rng,
     size_t velIndex = particleSpeed / speedStepSize_;
     size_t spatialIndex;
     if (velIndex >= nSpeedSteps_ - 1 || !grid_.arrayIndex(p, spatialIndex)) {
-        return NULL;
+        return nullptr;
     }
 
     double totalReactionRate1 = 0.0, totalReactionRate2 = 0.0;
     std::vector<double> cumulativeReactionRate1(nReactions_),
         cumulativeReactionRate2(nReactions_);
     for (size_t ir = 0; ir < nReactions_; ++ir) {
-        double density = collisionReactions_[ir]->getPopulation()->getDensityAt(p);
-        double rate1 = density * rateCoefficients_[velIndex][ir],
-            rate2 = density * rateCoefficients_[velIndex+1][ir];
+        double density = collisionReactions_.at(ir)->getPopulation()->getDensityAt(p);
+        double rate1 = density * rateCoefficients_.at(velIndex).at(ir),
+            rate2 = density * rateCoefficients_.at(velIndex+1).at(ir);
         totalReactionRate1 += rate1;
         totalReactionRate2 += rate2;
-        cumulativeReactionRate1[ir] = totalReactionRate1;
-        cumulativeReactionRate2[ir] = totalReactionRate2;
+        cumulativeReactionRate1.at(ir) = totalReactionRate1;
+        cumulativeReactionRate2.at(ir) = totalReactionRate2;
     }
 
     double t = (particleSpeed - velIndex * speedStepSize_) / speedStepSize_;
@@ -96,14 +97,14 @@ CollisionReaction *CollisionGenerator::sampleCollision(Rng &rng,
         double y = uni01(rng) * totalRate;
         size_t iReaction;
         for (iReaction = 0; iReaction < nReactions_; ++iReaction) {
-            double probability = (1.0 - t) * cumulativeReactionRate1[iReaction] +
-                t * cumulativeReactionRate2[iReaction];
+            double probability = (1.0 - t) * cumulativeReactionRate1.at(iReaction) +
+                t * cumulativeReactionRate2.at(iReaction);
             if (y < probability) {
                 break;
             }
         }
-        collisionReactions_[iReaction]->incrementReactionCounter();
-        return collisionReactions_[iReaction].get();
+        collisionReactions_.at(iReaction)->incrementReactionCounter();
+        return collisionReactions_.at(iReaction).get();
     }
 
     return nullptr;

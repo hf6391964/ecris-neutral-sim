@@ -113,10 +113,10 @@ bool FlychkParser::getRateCoefficient(double T, int chargeState,
 
     ptrdiff_t idx = temp_it - dset.temperatures.begin();
 
-    double tempLow = dset.temperatures[idx - 1],
-        tempHigh = dset.temperatures[idx],
-        rcoeffLow = dset.rateCoefficients[idx - 1][chargeState - 1],
-        rcoeffHigh = dset.rateCoefficients[idx][chargeState - 1];
+    double tempLow = dset.temperatures.at(idx - 1),
+        tempHigh = dset.temperatures.at(idx),
+        rcoeffLow = dset.rateCoefficients.at(idx - 1).at(chargeState - 1),
+        rcoeffHigh = dset.rateCoefficients.at(idx).at(chargeState - 1);
 
     if (logInterp) {
         tempLow = std::log(tempLow);

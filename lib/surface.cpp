@@ -121,11 +121,11 @@ void Surface::computeAreaCDF() {
         double faceArea = CGAL::Polygon_mesh_processing::face_area(fd, mesh_,
             CGAL::Polygon_mesh_processing::parameters::vertex_point_map(mesh_.points()));
         cdfValue += faceArea;
-        areaCDF_[fd] = cdfValue;
+        areaCDF_.at(fd) = cdfValue;
     }
 
     for (face_descriptor fd : mesh_.faces()) {
-        areaCDF_[fd] /= cdfValue;
+        areaCDF_.at(fd) /= cdfValue;
     }
 }
 
@@ -162,9 +162,9 @@ bool Surface::loadFromSTL(std::string filename, double scale,
     for (std::vector<std::array<int, 3>>::iterator it = facets.begin();
         it < facets.end(); ) {
         size_t i0 = (*it)[0], i1 = (*it)[1], i2 = (*it)[2];
-        Point p0(points[i0][0], points[i0][1], points[i0][2]);
-        Point p1(points[i1][0], points[i1][1], points[i1][2]);
-        Point p2(points[i2][0], points[i2][1], points[i2][2]);
+        Point p0(points.at(i0)[0], points.at(i0)[1], points.at(i0)[2]);
+        Point p1(points.at(i1)[0], points.at(i1)[1], points.at(i1)[2]);
+        Point p2(points.at(i2)[0], points.at(i2)[1], points.at(i2)[2]);
         Triangle t(p0, p1, p2);
         if (t.is_degenerate()) {
             facets.erase(it);
@@ -240,7 +240,7 @@ std::tuple<Point, face_descriptor> Surface::getRandomPoint(Rng& rng) const {
     face_descriptor fd(faceIndex);
 #ifdef DEBUG
     std::cout << "Found index: " << fd << std::endl <<
-        "Corresponding areaCDF value: " << areaCDF_[fd] << std::endl;
+        "Corresponding areaCDF value: " << areaCDF_.at(fd) << std::endl;
 #endif
 
     halfedge_descriptor i = mesh_.halfedge(fd), i2 = mesh_.next(i);

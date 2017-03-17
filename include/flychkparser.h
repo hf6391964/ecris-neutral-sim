@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <string>
-#include <unordered_map>
+#include <map>
 
 struct FlychkDataset {
     std::vector<double> temperatures;
@@ -16,7 +16,7 @@ struct FlychkDataset {
 // Compute total recombination rate coefficients by logarithmically
 // interpolating and summing these.
 
-typedef std::unordered_map<std::string, FlychkDataset> DatasetMap;
+typedef std::map<std::string, FlychkDataset> DatasetMap;
 
 class FlychkParser {
     std::vector<std::string> datasetHeaders_;
