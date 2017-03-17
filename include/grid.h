@@ -6,6 +6,8 @@
 #include "cgal_and_typedefs.h"
 #include "util.h"
 
+typedef std::tuple<unsigned int, unsigned int, unsigned int> Index3D;
+
 class Grid {
     Bbox bbox_;
     unsigned int intervalsX_, intervalsY_, intervalsZ_;
@@ -23,6 +25,9 @@ class Grid {
         double cellVolume() const;
         double cellSideLength() const;
         size_t arraySize() const;
+        bool arrayIndex3D(const Point &p, Index3D &i) const;
+        bool arrayIndex3D(const double &x, const double &y, const double &z,
+            Index3D &i) const;
         bool arrayIndex(const Point &p, size_t& i) const;
         bool arrayIndex(const double &x, const double &y, const double &z,
             size_t& i) const;
@@ -39,3 +44,4 @@ class Grid {
         // Removes the current coordinate transformation.
         void removeCoordinateTransformation();
 };
+

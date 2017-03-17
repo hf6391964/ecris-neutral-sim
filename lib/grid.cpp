@@ -77,6 +77,11 @@ bool Grid::arrayIndex(const double &x, const double &y, const double &z,
     return arrayIndex(Point(x, y, z), i);
 }
 
+bool Grid::arrayIndex3D(const double &x, const double &y, const double &z,
+    Index3D &i) const {
+    return arrayIndex3D(Point(x, y, z), i);
+}
+
 void Grid::writeDimensions(std::ostream& os) const {
     os << "# No. of X intervals" << CSV_SEP << " Y intervals" <<
         CSV_SEP << " Z intervals" << std::endl;
@@ -111,6 +116,21 @@ bool Grid::arrayIndex(const Point &p, size_t& i) const {
 
     if (ix < intervalsX_ && iy < intervalsY_ && iz < intervalsZ_) {
         i = ix + intervalsX_ * (iy + intervalsY_ * iz);
+        return true;
+    }
+
+    return false;
+}
+
+bool Grid::arrayIndex3D(const Point &p, Index3D &i) const {
+    const Point &pTransformed = doTransform_ ?
+        coordTransformation_.transform(p) : p;
+    unsigned int ix = Util::fastFloor((pTransformed.x() - xmin_) * gridSizeInverse_);
+    unsigned int iy = Util::fastFloor((pTransformed.y() - ymin_) * gridSizeInverse_);
+    unsigned int iz = Util::fastFloor((pTransformed.z() - zmin_) * gridSizeInverse_);
+
+    if (ix < intervalsX_ && iy < intervalsY_ && iz < intervalsZ_) {
+        i = std::make_tuple(ix, iy, iz);
         return true;
     }
 

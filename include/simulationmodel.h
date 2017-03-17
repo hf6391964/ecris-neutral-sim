@@ -15,13 +15,16 @@
 #include "util.h"
 #include "collisiongenerator.h"
 #include "neutralizationgenerator.h"
+#include "vector3d.h"
 
 struct Sample {
+#ifdef LOG_VELOCITY
     Vector velocity = Vector(0.0, 0.0, 0.0);
+#endif
     unsigned long count = 0;
 };
 
-typedef std::vector<Sample> SampleFrame;
+typedef Vector3D<Sample> SampleFrame;
 
 class SimulationModel {
     std::vector<std::unique_ptr<NeutralSource>> sources_;

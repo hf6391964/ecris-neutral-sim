@@ -50,7 +50,7 @@ void SimulationModel::runSimulation(
         sseq.generate(seeds.begin(), seeds.end());
 
         std::vector<SampleFrame> frames(stationary ? 1 : nTimeSamples,
-            SampleFrame(arraySize, Sample()));
+            SampleFrame(grid, Sample()));
 
         std::cout << "Running source " << pSource->getLabel() <<
             " with " << nThreads << " thread(s)..." << std::endl;
@@ -254,15 +254,17 @@ void SimulationModel::simulationThread(
             if (sampleIndex >= nextSampleIndex) {
                 nextSampleIndex = sampleIndex + 1;
                 logger << "Sampled particle at t = " << particle.getTime() << '\n';
-                size_t arrIndex;
-                if (grid.arrayIndex(particle.getPosition(), arrIndex)) {
+                Index3D arrIndex;
+                if (grid.arrayIndex3D(particle.getPosition(), arrIndex)) {
                     size_t frameIndex = stationary ? 0 : sampleIndex;
                     Sample &sample = frames.at(frameIndex).at(arrIndex);
                     std::lock_guard<std::mutex> writeGuard(writeMutex);
                     sample.count++;
+#ifdef LOG_VELOCITY
                     Vector lastVelocityAverage = sample.velocity;
                     sample.velocity = sample.velocity +
                         (particle.getVelocity() - lastVelocityAverage) / sample.count;
+#endif
                 }
             }
         }
@@ -281,12 +283,17 @@ void SimulationModel::writeResults(std::string prefix,
         "count" << std::endl;
     f << "t = " << t << std::endl;
 
-    size_t nxyz = nx*ny*nz;
-    for (size_t j = 0; j < nxyz; ++j) {
-        Vector v = frame[j].velocity;
-        double count = static_cast<double>(frame[j].count) * densityCoefficient;
-        f << v.x() << CSV_SEP << v.y() << CSV_SEP << v.z() << CSV_SEP <<
-            count << '\n';
+    for (size_t iz = 0; iz < nz; ++iz) {
+        for (size_t iy = 0; iy < ny; ++iy) {
+            for (size_t ix = 0; ix < nx; ++ix) {
+#ifdef LOG_VELOCITY
+                Vector v = frame.at(ix, iy, iz).velocity;
+                f << v.x() << CSV_SEP << v.y() << CSV_SEP << v.z();
+#endif
+                double count = static_cast<double>(frame.at(ix, iy, iz).count) * densityCoefficient;
+                f << count << '\n';
+            }
+        }
     }
 
     f.close();
