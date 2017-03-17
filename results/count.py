@@ -4,6 +4,8 @@ from os import makedirs, path
 import numpy as np
 import numpy.ma as ma
 from matplotlib import pyplot as plt
+from matplotlib.colors import LogNorm
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import myparser
 
@@ -21,8 +23,7 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
     if not path.isdir(plotdir):
         makedirs(plotdir)
 
-    slices = ma.masked_values(slices, 0)
-    slices = np.log10(slices)
+    slices = ma.masked_values(slices, 0) * 1e-6
 
     cMin = np.min(slices[:, :, :, 3])
     cMax = np.max(slices[:, :, :, 3])
@@ -49,29 +50,32 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
                           axes=[dimidx[sliceAx], dimidx[ax2], dimidx[ax1], 3])
     axvalues = axValuesArr[sliceAx]
 
-    X = np.linspace(xyzMin[ax1], xyzMax[ax1], nIntervals[ax1] + 1)
-    Y = np.linspace(xyzMin[ax2], xyzMax[ax2], nIntervals[ax2] + 1)
+    X = np.linspace(xyzMin[ax1], xyzMax[ax1], nIntervals[ax1] + 1) * 1000
+    Y = np.linspace(xyzMin[ax2], xyzMax[ax2], nIntervals[ax2] + 1) * 1000
     XX, YY = np.meshgrid(X, Y)
 
-    for i, z in enumerate(axvalues):
+    for i, z in list(enumerate(axvalues))[1::2]:
         countPath = path.join(plotdir,
             '{0}_count_{1}_{2}.png'.format(prefix, axNames[sliceAx], nums[i])
         )
         data = slices[i, :, :, 3]
 
-        heatmap = plt.pcolormesh(XX, YY, data, edgecolor='face', vmin=cMin,
-                                 vmax=cMax, cmap=plt.get_cmap('inferno'))
+        heatmap = plt.pcolormesh(XX, YY, data,
+                                 norm=LogNorm(vmin=cMin, vmax=cMax),
+                                 cmap=plt.get_cmap('inferno'))
 
-        plt.xlabel('${0}$ [m]'.format(axNames[ax1]))
-        plt.ylabel('${0}$ [m]'.format(axNames[ax2]))
-        plt.xlim(xyzMin[ax1], xyzMax[ax1])
-        plt.ylim(xyzMin[ax2], xyzMax[ax2])
+        plt.xlabel('${0}$ (mm)'.format(axNames[ax1]))
+        plt.ylabel('${0}$ (mm)'.format(axNames[ax2]))
+        plt.xlim(xyzMin[ax1] * 1000, xyzMax[ax1] * 1000)
+        plt.ylim(xyzMin[ax2] * 1000, xyzMax[ax2] * 1000)
         plt.gca().set_aspect('equal')
         plt.gca().set_facecolor((0, 0, 0))
-        plt.title('{0} = {1:.3f}'.format(axNames[sliceAx], z))
-        cb = plt.colorbar(heatmap, drawedges=False)
-        cb.set_label('Total particle hit count')
-        plt.savefig(countPath, bbox_inches='tight', dpi=300)
+        plt.title('{0} = {1:.0f} mm'.format(axNames[sliceAx], z * 1000))
+        divider = make_axes_locatable(plt.gca())
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        cb = plt.colorbar(heatmap, drawedges=False, cax=cax)
+        cb.set_label('Neutral density ($\\mathrm{cm}^{-3}$)')
+        plt.savefig(countPath, bbox_inches='tight', dpi=150)
         plt.clf()
 
 if __name__ == '__main__':
@@ -89,9 +93,9 @@ if __name__ == '__main__':
     sliceAx = sliceAxes[ax]
     if sliceAx == 3:
         print('plotting all axes')
+        dimensions = myparser.readDimensions(prefix)
+        parsedData = myparser.parseData(prefix, dimensions)
         for x in range(0, 3):
-            dimensions = myparser.readDimensions(prefix)
-            parsedData = myparser.parseData(prefix, dimensions)
             makePlots(prefix, dimensions, parsedData, x)
     else:
         dimensions = myparser.readDimensions(prefix)
