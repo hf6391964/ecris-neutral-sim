@@ -31,7 +31,7 @@
 \end{flushleft}
 \vfill
 \begin{center}
-\textsc{\LARGE A Monte Carlo method for simulating the neutral density profile in an ECR ion source}
+\textsc{\LARGE A Monte Carlo code for simulating the neutral density profile in an ECR ion source}
 \end{center}
 \vfill
 % Palautuspvm
@@ -309,7 +309,10 @@ One of the main observations from the plots is the accumulation of neutrals near
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{images/stationary_x_middle.png}
-    \caption{A slice of the stationary neutral density distribution in the middle of the $X$ axis.}
+    \caption{A slice of the stationary neutral density distribution in the
+    middle of the $X$ axis. The injection end is on the left, extraction end is
+    on the right. Accumulation of neutrals can be seen on both ends and the
+    cylinder walls in the middle.}
     \label{fig:stationary_x}
 \end{figure}
 
@@ -327,7 +330,9 @@ One of the main observations from the plots is the accumulation of neutrals near
         \centering
         \includegraphics[width=\linewidth]{images/stationary_z_middle.png}
     \end{subfigure}
-    \caption{Slices of the stationary neutral density distribution along the $Z$ axis at the injection end, extraction end and the middle of the chamber.}
+    \caption{Slices of the stationary neutral density distribution along the
+    $Z$ axis at the injection end, extraction end and the middle of the
+    chamber, showing the accumulation zones of the neutrals.}
     \label{fig:stationary_z}
 \end{figure}
 
@@ -354,13 +359,17 @@ which coincides well with the known result that the convergence rate of a Monte 
 \begin{figure}[t]
     \centering
     \includegraphics{images/convergence_plot.png}
-    \caption{Convergence plot}
+    \caption{Global error plotted as the function of total test particle
+    number and a line fit to the data points. In the $\log-\log$ coordinates,
+    the slope of the line equals to the convergence power law.}
     \label{fig:convergence}
 \end{figure}
 
 The power law is not exactly $-0.5$ but pretty close --- this is due to the probabilistic nature of the Monte Carlo simulation. Therefore the convergence rate can be regarded as sensible.
 
 \subsection{Time dependent density distribution}
+
+
 
 \section{Conclusions}
 
