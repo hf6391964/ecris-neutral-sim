@@ -20,10 +20,7 @@
 \usepackage{hyperref}
 \usepackage{subcaption}
 
-%\usepackage[sorting=none]{biblatex}
-
 \begin{document}
-%\onehalfspacing%
 \thispagestyle{empty}
 \begin{flushleft}
  \underline{Sakari} Matias Kapanen\hfill
@@ -39,7 +36,14 @@ Supervisor: Taneli Kalvas\\
 \vfill
 \begin{abstract}
  \noindent
-    Lorem ipsum
+    In this research training project work, a Monte Carlo code was developed in
+    order to estimate the spatial distribution of neutrals in the vacuum
+    chamber of an ECR ion source. The ECR plasma was treated as a stationary
+    collection of ion and electron populations, allowing to effectively reduce
+    the computational complexity of the simulation and not having to simulate
+    individual plasma particles. Despite the approximations, qualitative
+    results corresponding to experimental observation were seen. For example,
+    accumulation of neutrals in the ion loss zones was observed.
 \end{abstract}
 \clearpage%
 
@@ -168,7 +172,9 @@ When a particle is adsorbed onto a wall, it may be only partially thermalized wi
 where $E_\text{in}$ is the incoming energy flux, $E_\text{re}$ the reflected flux and $E_\text{w}$ the emitted energy flux in the case of full thermalization.~\cite{sandia:accom}
 
 \section{Numerical methods and tools}
-Several numerical methods and software packages were used to implement the calculation of the neutral density distribution.
+Several numerical methods and software packages were used to implement the
+calculation of the neutral density distribution. The actual implementation code
+can be found in the Git repository~\cite{kapanen:git}.
 
 \subsection{Monte Carlo test particle simulation}
 The basis of the simulation is the test particle Monte Carlo method. A limited set of test particles is chosen to represent the real particles and given a corresponding statistical weight in the simulation. Their phase space coordinates are randomly drawn from the corresponding probability distributions and propagated through the target geometry. On wall collisions, a new direction and velocity are calculated according to Knudsen's cosine law and the thermal accommodation law. The test particle simulation of neutrals without plasma is covered in detail in~\cite{kapanen:bsc}.
