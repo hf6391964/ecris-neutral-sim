@@ -24,7 +24,7 @@ def readDimensions(prefix):
         return nIntervals, xyzMin, xyzMax
 
 
-def parseData(prefix, dimensions):
+def parseData(csvFilename, dimensions):
     nIntervals, xyzMin, xyzMax = dimensions
     nx = nIntervals[0]
     ny = nIntervals[1]
@@ -37,16 +37,16 @@ def parseData(prefix, dimensions):
     nums = [str(iz).zfill(nDecimals) for iz in range(nz)]
     slices = np.empty((nxyz, 4))
 
-    csvFilename = prefix + '_stationary.csv'
     if not path.isfile(csvFilename):
         exit('File {0} not found, exiting'.format(csvFilename))
 
     with open(csvFilename, 'r') as f:
         f.readline()
-        f.readline()
+        t = f.readline()
+        t = float(t[t.find('=') + 1 : -1])
 
         for i in range(nxyz):
             slices[i] = readCsvLine(f)
 
     slices.shape = nz, ny, nx, 4
-    return xvalues, yvalues, zvalues, nums, slices
+    return xvalues, yvalues, zvalues, nums, t, slices

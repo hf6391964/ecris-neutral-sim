@@ -1,5 +1,5 @@
 from sys import argv, exit
-from os import makedirs, path
+from os import makedirs, path, listdir
 
 import numpy as np
 import numpy.ma as ma
@@ -13,11 +13,19 @@ import myparser
 PLOTDIR = 'plots'
 
 
-def makePlots(prefix, dimensions, parsedData, sliceAx):
+def minmax(parsedData):
+    _, _, _, _, _, slices = parsedData
+    slices = ma.masked_values(slices, 0) * 1e-6
+    return np.min(slices[:, :, :, 3]), np.max(slices[:, :, :, 3])
+
+
+def makePlots(filename, dimensions, parsedData, sliceAx, cMin=None, cMax=None):
     nIntervals, xyzMin, xyzMax = dimensions
-    xvalues, yvalues, zvalues, nums, slices = parsedData
+    xvalues, yvalues, zvalues, nums, t, slices = parsedData
     axValuesArr = [xvalues, yvalues, zvalues]
 
+    idx_ = filename.rfind('_')
+    prefix = filename[:idx_]
     plotdir = PLOTDIR + '_' + prefix
 
     if not path.isdir(plotdir):
@@ -25,8 +33,10 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
 
     slices = ma.masked_values(slices, 0) * 1e-6
 
-    cMin = np.min(slices[:, :, :, 3])
-    cMax = np.max(slices[:, :, :, 3])
+    if cMin == None:
+        cMin = np.min(slices[:, :, :, 3])
+    if cMax == None:
+        cMax = np.max(slices[:, :, :, 3])
 
     sliceAx = max(min(int(sliceAx), 2), 0)
 
@@ -54,9 +64,12 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
     Y = np.linspace(xyzMin[ax2], xyzMax[ax2], nIntervals[ax2] + 1) * 1000
     XX, YY = np.meshgrid(X, Y)
 
-    for i, z in list(enumerate(axvalues))[1::2]:
+    idxpoint = filename.rfind('.')
+    prefix1 = filename[:idxpoint]
+
+    for i, z in list(enumerate(axvalues))[57:58]:#[1::2]:
         countPath = path.join(plotdir,
-            '{0}_count_{1}_{2}.png'.format(prefix, axNames[sliceAx], nums[i])
+            '{0}_count_{1}_{2}.png'.format(prefix1, axNames[sliceAx], nums[i])
         )
         data = slices[i, :, :, 3]
 
@@ -70,7 +83,8 @@ def makePlots(prefix, dimensions, parsedData, sliceAx):
         plt.ylim(xyzMin[ax2] * 1000, xyzMax[ax2] * 1000)
         plt.gca().set_aspect('equal')
         plt.gca().set_facecolor((0, 0, 0))
-        plt.title('{0} = {1:.0f} mm'.format(axNames[sliceAx], z * 1000))
+        # plt.title('{0} = {1:.1f} mm'.format(axNames[sliceAx], z * 1000))
+        plt.title('t = {0:.0f} ms'.format(t * 1000))
         divider = make_axes_locatable(plt.gca())
         cax = divider.append_axes("right", size="5%", pad=0.05)
         cb = plt.colorbar(heatmap, drawedges=False, cax=cax)
@@ -91,14 +105,29 @@ if __name__ == '__main__':
         exit('usage: python count.py <prefix> <slice axis x/y/z/all>')
 
     sliceAx = sliceAxes[ax]
-    if sliceAx == 3:
-        print('plotting all axes')
-        dimensions = myparser.readDimensions(prefix)
-        parsedData = myparser.parseData(prefix, dimensions)
-        for x in range(0, 3):
-            makePlots(prefix, dimensions, parsedData, x)
-    else:
-        dimensions = myparser.readDimensions(prefix)
-        parsedData = myparser.parseData(prefix, dimensions)
-        makePlots(prefix, dimensions, parsedData, sliceAx)
+    dimensions = myparser.readDimensions(prefix)
+    parsedFiles = []
+    cMin = float('inf')
+    cMax = float('-inf')
+    for filename in listdir('.'):
+        if '_dimensions.csv' in filename or '.csv' not in filename:
+            continue
+
+        print('Parsing file ' + filename)
+        parsedData = myparser.parseData(filename, dimensions)
+        curMin, curMax = minmax(parsedData)
+        if curMin < cMin:
+            cMin = curMin
+        if curMax > cMax:
+            cMax = curMax
+        parsedFiles.append((filename, parsedData))
+        print('min = {0}, max = {1}'.format(cMin, cMax))
+
+    for filename, parsedData in parsedFiles:
+        if sliceAx == 3:
+            print('plotting all axes')
+            for x in range(3):
+                makePlots(filename, dimensions, parsedData, x, cMin, cMax)
+        else:
+            makePlots(filename, dimensions, parsedData, sliceAx, cMin, cMax)
 
