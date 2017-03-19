@@ -190,7 +190,7 @@ Taking the conservation of the plasma mass as a guiding principle, the following
     \item Elastic collisions between the neutrals and the plasma particles are neglected.
 \end{itemize}
 
-An ionizing collision reaction may result in excess mass accumulating in the plasma. Conservetion of mass is implemented here: the plasma must eventually emit a particle through some channel.
+An ionizing collision reaction may result in excess mass accumulating in the plasma. Conservation of mass is implemented here: the plasma must eventually emit a particle through some channel.
 
 In this simulation, the two collision processes involving neutrals are charge exchange and electron ionization. In charge exchange, the plasma mass offset is unchanged because an ion is neutralized but the plasma also receives a new ion. Thus there is no need to emit an additional neutral. In electron ionization, a neutral comes in and is ionized by an electron, thus the plasma gains an excess of one particle. The excess is compensated by statistically choosing a neutralization channel and the corresponding neutralization time.
 
@@ -308,7 +308,7 @@ The average electron density was assumed to be $\SI{e11}{\per\centi\meter\cubed}
 The element chosen for the gas feed was argon. Gas was fed to the chamber from the injection tube. The injection and extraction holes were configured as pumps with pumping efficiencies of 1 and 0.1, respectively.
 
 \subsection{Stationary density distribution}
-A stationary density distriution was calculated using the argon feed rate of $\SI{1}{\centi\metre\cubed\per\hour}$ which is typical during plasma production. Ten million test particles were used. Slices of the neutral density distribution on different axes were plotted.
+A stationary density distribution was calculated using the argon feed rate of $\SI{1}{\centi\metre\cubed\per\hour}$ which is typical during plasma production. Ten million test particles were used. Slices of the neutral density distribution on different axes were plotted.
 
 One of the main observations from the plots is the accumulation of neutrals near the loss zones in the grooves of the vacuum chamber and the injection and extraction ends. This corresponds to the loss of ions from the magnetic confinement and neutralization on the wall. The accumulation can be seen in figures~\ref{fig:stationary_x} and~\ref{fig:stationary_z}.
 
@@ -450,8 +450,8 @@ Developing a multiprocessor, extendable physics simulation code that handles
 large amounts of data in \textsc{C++} is not the easiest task one could tackle
 in a research training project like this. Not being in the know of various
 memory safety features introduced in the modern \textsc{C++11} and
-\textsc{C++14} beforehad, the author had to about learn these the hard way.
-After many fruitful \texttt{gdb} sessions and refactorings to embrace safer
+\textsc{C++14} beforehand, the author had to about learn these the hard way.
+After many fruitful \texttt{gdb} sessions and refactoring to embrace safer
 coding practices, the code works reasonably well and should be extensible with
 new processes (e.g. elastic collisions which were neglected so far) quite
 easily.
