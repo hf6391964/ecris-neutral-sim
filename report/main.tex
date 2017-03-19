@@ -369,9 +369,86 @@ The power law is not exactly $-0.5$ but pretty close --- this is due to the prob
 
 \subsection{Time dependent density distribution}
 
+Finally, a time dependent simulation with the same geometry and plasma
+parameters as the stationary one. A gas pulse lasting $\SI{1}{\milli\second}$
+consisting of $3 \times 10^{12}$ physical particles was injected into the
+geometry via the injection tube, corresponding to some typical parameters used
+in a particular light diagnostic setup~\cite{kronholm:ecr} developed at JYFL. $10^8$ simulation particles were used
+for the simulation. The propagation of the gas pulse was tracked for
+$\SI{10}{\milli\second}$ and sampled at $\SI{2}{\milli\second}$ intervals. Some
+frames are plotted in figure~\ref{fig:time_dependent}.
 
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.8\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/time_slice_00.png}
+    \end{subfigure}
+    \begin{subfigure}{0.8\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/time_slice_02.png}
+    \end{subfigure}
+    \begin{subfigure}{0.8\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/time_slice_04.png}
+    \end{subfigure}
+    \begin{subfigure}{0.8\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/time_slice_18.png}
+    \end{subfigure}
+    \caption{Results of the time dependent simulation.}
+    \label{fig:time_dependent}
+\end{figure}
+
+The main observation from the time series is how the gas pulse is quickly
+diffused by the plasma reactions and wall collisions. The neutral density
+distribution then seems to settle and the neutrals are accumulated in the loss
+zones. These results coincide well with the quick rise and the slow decay of
+the light signal in~\cite{kronholm:ecr}. If the simulation was continued
+further, all the particles would eventually be removed from the system through
+pumping channels.
 
 \section{Conclusions}
+
+There were many approximations made when implementing the plasma model.
+In particular, neglecting the cold electron population is a significant
+approximation and may have caused the negligible presence of
+recombination reactions compared to other plasma processes.
+
+It has been also observed in real ECR ion sources that the gas injection
+affects the plasma parameters remarkably. Thus the stationary plasma model used
+in this simulation may not hold valid especially in time-dependent simulations.
+In the stationary simulations the use of such a model is more justifiable, at
+least if the plasma parameters are measured from similar conditions (continuous
+gas feed).
+
+Many simulation parameters such as the extraction efficiency coefficient and
+accommodation coefficient were left to be guessed. Therefore one should not
+interpret the simulation results too strictly --- they are best taken as
+qualitative, order-of-magnitude descriptions of the distribution of neutrals in
+the vacuum chamber.
+
+Despite the approximations, the code managed to capture some interesting
+phenomena. First, the bombardment of ions on the loss zones seen
+in~\cite{kalvas:hiisi} is related to the localization of neutrals in the same
+zones in this simulation. Second, the quick rise and slow decay of the light
+signal waveform obtained in~\cite{kronholm:ecr} corresponds to the time
+dependent results from the simulation.
+
+Another strength of this simulation method is the scalability to multiprocessor
+systems. At least with the used HIISI geometry, the simulations could be run
+with sufficient statistics with reasonable durations, lasting 1-2 days per
+simulation run.
+
+Developing a multiprocessor, extendable physics simulation code that handles
+large amounts of data in \textsc{C++} is not the easiest task one could tackle
+in a research training project like this. Not being in the know of various
+memory safety features introduced in the modern \textsc{C++11} and
+\textsc{C++14} beforehad, the author had to about learn these the hard way.
+After many fruitful \texttt{gdb} sessions and refactorings to embrace safer
+coding practices, the code works reasonably well and should be extensible with
+new processes (e.g. elastic collisions which were neglected so far) quite
+easily.
 
 \clearpage
 
