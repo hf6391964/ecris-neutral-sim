@@ -42,7 +42,7 @@ Supervisor: Taneli Kalvas\\
     collection of ion and electron populations, allowing to effectively reduce
     the computational complexity of the simulation and not having to simulate
     individual plasma particles. Despite the approximations, qualitative
-    results corresponding to experimental observation were seen. For example,
+    results corresponding to experimental observations were seen. For example,
     accumulation of neutrals in the ion loss zones was observed.
 \end{abstract}
 \clearpage%
@@ -53,13 +53,19 @@ Supervisor: Taneli Kalvas\\
 \setcounter{page}{1}
 
 \section{Introduction}
+
 In electron cyclotron resonance ion sources (ECRIS), it is crucial to keep the neutral density low enough to achieve efficient production of high ion charge states. The removal of neutrals is usually realized using turbo vacuum pumps. There are usually vacuum gauges installed in some spots to monitor the pressure.
 
 The gauges, however, cannot capture local deviations in the neutral density. Therefore, the problem was approached by means of numerical simulation. The goal of this research training project was to produce a Monte Carlo code which could be used for that purpose.
 
 It was assumed that the flow of neutrals is in the molecular flow regime, i.e. there is no direct interaction between the neutrals. The groundwork for the free molecular flow simulation was laid earlier in the author's BSc thesis~\cite{kapanen:bsc}.
 
-There certainly have been similar simulation models developed earlier, typically based on the Particle-in-Cell method. Those simulations feature a dynamic model of the ECR plasma, which leads to great computational complexity.
+A self-consistent ECRIS Monte Carlo simulation code was recently developed by
+Mi\-ro\-nov~\cite{mironov:ecr}. That code is based on the Particle-in-Cell method
+and features a full dynamic model of the plasma ions and electrons. This kind
+of a model typically leads
+to great computational complexity, putting some requirements on the choice of
+simulation hardware.
 
 In this project the idea of a simpler, quasi-stationary plasma model was probed. Such a model has the advantage of lower complexity because one only has mutually non-interacting neutrals as test particles. The independence of the test particles also means that the computation is easily parallelizable and performance gains can be had from running on multiprocessor systems.
 
@@ -73,9 +79,10 @@ The plasma in an ECR ion source is a typical example of a laboratory plasma, wit
 Given that the ion confinement time in the magnetic bottle is long enough to achieve thermalization, the ion energy distribution can also be assumed as Maxwellian with a temperature of a few electronvolts~\cite{geller:ecr}.
 
 \subsection{Plasma processes}
-This section lists the collision processes where the plasma and neutrals are involved. The focus is purposely kept on reactions concerning the neutrals. lso, only the ``single'' versions of these processes are covered as these dominate over the multiple counterparts in most cases. The formulae for the respective cross sections or rate coefficients are also listed.
+This section lists the collision processes where the plasma and neutrals are
+involved. The focus is purposely kept on reactions concerning the neutrals. Also, only the ``single'' versions of these processes are covered as these dominate over the multiple counterparts in most cases. The formulae for the respective cross sections or rate coefficients are also listed.
 
-Using the cross section $\sigma$, the rate coefficient is then defined as $\langle \sigma(v_r) v_r \rangle$ where $v_r$ is the speed of the target particle relative to the bombarding particles. Considering a Maxwellian population of bombarding particles whose velocities have a uniform direction distribution, the relative speed can be written as
+Using the cross section $\sigma$, the rate coefficient is then defined as $\langle \sigma(v_r) v_r \rangle$ where $v_r$ is the speed of the target particle relative to the bombarding particles. Considering a population of bombarding particles whose velocities have a uniform direction distribution, the relative speed can be written as
 \begin{equation}
     v_r = \sqrt{v_x^2 + v_y^2 + (v_z - v_t)^2}
 \end{equation}
@@ -121,8 +128,6 @@ For example, the fit parameters for argon neutrals are listed in table~\ref{tabl
         \bottomrule
     \end{tabular}
 \end{table}
-
-In the context of the simulation, the electron ionization reaction converts neutrals to ions.
 
 \subsubsection{Charge exchange}
 Charge exchange is a process where an ion $X$ exchanges an electron with another ion or an atom $X$:
@@ -185,7 +190,9 @@ The plasma model implemented in this simulation describes the plasma electrons a
 Taking the conservation of the plasma mass as a guiding principle, the following approximations were made:
 \begin{itemize}
     \item Stationarity: the plasma population parameters (density, temperature) are not affected by collision reactions.
-    \item The spatial density distributions of the ion populations are proportional to the distribution of electrons. The code takes the global charge state distribution as a parameters.
+    \item The spatial density distributions of the ion populations are
+        proportional to the distribution of electrons. The code takes the
+        global charge state distribution as an input.
     \item The plasma consists of only one element.
     \item Elastic collisions between the neutrals and the plasma particles are neglected.
 \end{itemize}
@@ -260,7 +267,11 @@ Because the neutralization neutralization processes are independent from each ot
 
 Practically, recombination and loss of an ion from magnetic confinement are the two neutralization processes. In recombination, the position of the reaction is sampled from the 1+ ion density distribution. The velocity of the resulting neutral is sampled according to the 1+ energy distribution (Maxwell).
 
-The magnetic loss is a bit more complicated. Predefined ``loss zones'' calculated in an electron simulation are used. These are regions on the walls of the chamber where lost electrons have hit. The spatial behaviour of a plasma is usually dominated by the electrons (because they have the highest mobility) and thus the ion loss zones should roughly correspond to the electron loss zones. When an ion escapes through this channel, its position on the wall is chosen randomly according to the loss zones and it is assumed to be fully thermalized with the wall and neutralized due to recombination with wall electrons. Then a neutral is emitted from this position according to the cosine law.
+The magnetic loss is a bit more complicated. Predefined ``loss zones''
+calculated in an electron simulation are used. These are regions on the walls
+of the chamber where lost electrons have hit. The spatial behaviour of a plasma
+is usually dominated by the electrons and thus the ion loss zones should
+roughly correspond to the electron loss zones as seen in~\cite{kalvas:hiisi}. When an ion escapes through this channel, its position on the wall is chosen randomly according to the loss zones and it is assumed to be fully thermalized with the wall and neutralized due to recombination with wall electrons. Then a neutral is emitted from this position according to the cosine law.
 
 \subsection{Electron simulation}
 A simple, single electron simulation was used to calculate the electron distribution of the plasma. The electrons are simulated individually. Their trajectories are simulated in the target geometry which is approximated by a cylinder in the presence of a magnetic field. The magnetic field is given by the superposition of an axisymmetric expansion of the solenoid field and an ideal hexapole field. The single electron model is described in detail in~\cite{kalvas:hiisi}.
@@ -278,7 +289,7 @@ Lastly, the confinement time of ions in the magnetic bottle had to be estimated.
 \end{equation}
 where $I_q$ is the extracted ion current, $n_q$ is the ion density, $e$ is the elementary charge, $\tau_q$ the confinement time and Vol is the volume bounded by the magnetic field lines which lead to the extraction hole.
 
-This equation can be solved for the $\tau_q$ using measured extraction current. However, the volume Vol had to be estimated. A simple Monte Carlo approach was used here: $N$ random positions were uniformly sampled on the extraction hole. The magnetic field lines starting from these points were traced backwards until the chamber wall was intersected, flagging the cells of a cube grid through which the field line passed. The volume Vol was the calculated as the sum of the volumes of these cells.
+This equation can be solved for $\tau_q$ using measured extraction current. However, the volume Vol had to be estimated. A simple Monte Carlo approach was used here: $N$ random positions were uniformly sampled on the extraction hole. The magnetic field lines starting from these points were traced backwards until the chamber wall was intersected, flagging the cells of a cube grid through which the field line passed. The volume Vol was the calculated as the sum of the volumes of these cells.
 
 The magnetic field line backward tracing is implemented by numerically solving the differential equation
 \begin{equation}
@@ -434,6 +445,11 @@ interpret the simulation results too strictly --- they are best taken as
 qualitative, order-of-magnitude descriptions of the distribution of neutrals in
 the vacuum chamber.
 
+Comparing to a full PIC model like Mironov's~\cite{mironov:ecr}, a major
+disadvantage of this code besides the approximations mentioned above is the
+need for many input parameters like the charge state distribution. This is due
+to the fact that this code is not self-consistent.
+
 Despite the approximations, the code managed to capture some interesting
 phenomena. First, the bombardment of ions on the loss zones seen
 in~\cite{kalvas:hiisi} is related to the localization of neutrals in the same
@@ -444,17 +460,16 @@ dependent results from the simulation.
 Another strength of this simulation method is the scalability to multiprocessor
 systems. At least with the used HIISI geometry, the simulations could be run
 with sufficient statistics with reasonable durations, lasting 1-2 days per
-simulation run.
+simulation run on a multicore laptop processor.
 
-Developing a multiprocessor, extendable physics simulation code that handles
+Developing a multiprocessor physics simulation code that handles
 large amounts of data in \textsc{C++} is not the easiest task one could tackle
-in a research training project like this. Not being in the know of various
+in a research training project. Not being in the know of various
 memory safety features introduced in the modern \textsc{C++11} and
-\textsc{C++14} beforehand, the author had to about learn these the hard way.
+\textsc{C++14} standards beforehand, the author had to about learn these the hard way.
 After many fruitful \texttt{gdb} sessions and refactoring to embrace safer
-coding practices, the code works reasonably well and should be extensible with
-new processes (e.g. elastic collisions which were neglected so far) quite
-easily.
+coding practices, the code works well and should be extensible with
+new processes quite easily.
 
 \clearpage
 
