@@ -54,7 +54,10 @@ Supervisor: Taneli Kalvas\\
 
 \section{Introduction}
 
-In electron cyclotron resonance ion sources (ECRIS), it is crucial to keep the neutral density low enough to achieve efficient production of high ion charge states. The removal of neutrals is usually realized using turbo vacuum pumps. There are usually vacuum gauges installed in some spots to monitor the pressure.
+In electron cyclotron resonance ion sources (ECRIS), it is crucial to keep the
+neutral density low enough to achieve efficient production of high ion charge
+states. The removal of neutrals is usually realized using turbo vacuum pumps.
+There are usually vacuum gauges installed in some locations to monitor the pressure.
 
 The gauges, however, cannot capture local deviations in the neutral density. Therefore, the problem was approached by means of numerical simulation. The goal of this research training project was to produce a Monte Carlo code which could be used for that purpose.
 
@@ -64,7 +67,7 @@ A self-consistent ECRIS Monte Carlo simulation code was recently developed by
 Mi\-ro\-nov~\cite{mironov:ecr}. That code is based on the Particle-in-Cell method
 and features a full dynamic model of the plasma ions and electrons. This kind
 of a model typically leads
-to great computational complexity, putting some requirements on the choice of
+to great computational complexity, posing strong requirements on the choice of
 simulation hardware.
 
 In this project the idea of a simpler, quasi-stationary plasma model was probed. Such a model has the advantage of lower complexity because one only has mutually non-interacting neutrals as test particles. The independence of the test particles also means that the computation is easily parallelizable and performance gains can be had from running on multiprocessor systems.
@@ -74,7 +77,12 @@ The bulk of the work in this project consisted of implementing a suitable plasma
 \section{Theoretical background}
 In a typical ECR ion source, a plasma is formed by injecting neutral gas particles into a vacuum chamber and coupling RF energy to it at the frequency of several $\si{\giga\hertz}$.
 
-The plasma in an ECR ion source is a typical example of a laboratory plasma, with an electron density of $\sim\SI{e11}{\per\centi\metre}$. Due to the electron cyclotron resonance heating, there is a population of electrons with a high average energy of several $\si{\kilo\electronvolt}$. However, there is another population of electrons with lower energies. Thus, the electron energy distribution isn't strictly Maxwell.~\cite{geller:ecr}
+The plasma in an ECR ion source is a typical example of a laboratory plasma,
+with an electron density of $\sim\SI{e11}{\per\centi\metre}$. Due to the
+electron cyclotron resonance heating, there is a population of electrons with a
+high average energy of several $\si{\kilo\electronvolt}$. However, there is
+another population of electrons with lower energies. Thus, the electron energy
+distribution isn't strictly Maxwellian.~\cite{geller:ecr}
 
 Given that the ion confinement time in the magnetic bottle is long enough to achieve thermalization, the ion energy distribution can also be assumed as Maxwellian with a temperature of a few electronvolts~\cite{geller:ecr}.
 
@@ -100,11 +108,13 @@ where $f(v_x, v_y, v_z)$ is the velocity distribution of the projectile particle
 where $m$ is the projectile particle mass, $k$ is the Boltzmann constant and $T$ is the temperature of the projectile particle population.
 
 \subsubsection{Electron ionization}
-Electron (impact) ionization is a process where an energetic electron positively ionizes an atom or an ion by knocking off an electron bound to a shell:
+Electron (impact) ionization is a process where an energetic electron
+positively ionizes a neutral by knocking off an electron bound to a shell:
 \[
-    X^{n+} + e \rightarrow A^{(n+1)+} + 2e,
+    X^0 + e \rightarrow A^{(n+1)+} + 2e,
 \]
-where $X$ is the original atom ($n=0$) or ion and $e$ is an electron.
+where $X$ is the neutral and $e$ is an electron. Electron ionization of already
+positively charged ions is not considered here.
 
 There have been many approximations of the electron ionization cross sections, most famously the Lotz equation~\cite{lotz}. A more convenient approximation was found in~\cite{recommended_ionization} and is given in the form of a fit function
 \begin{equation}
@@ -112,7 +122,11 @@ There have been many approximations of the electron ionization cross sections, m
     \sigma(E) = \frac{1}{IE} \left[ A \ln \left(\frac{E}{I}\right) + \sum\limits_{i=1}^N
     B_i \left(1-\frac{I}{E}\right)^i \right]
 \end{equation}
-where $E$ is the electron energy, $I$ is the ionization potential of the atom or ion and $A$, $B_i$ are fit parameters depending on the atom or ion. The fit parameters are given in~\cite{recommended_ionization}. Notice that the cross section is given as a function of the electron energy instead of the relative velocity --- however, because the electron speed is undoubtedly much greater than the target particle speed, this is a perfectly valid approximation.
+where $E$ is the electron energy, $I$ is the ionization potential of the atom
+or ion and $A$, $B_i$ are fit parameters depending on the atom or ion. The fit
+parameters are given in~\cite{recommended_ionization}. Notice that the cross
+section is given as a function of the electron energy instead of the relative
+speed --- however, because the electron speed is undoubtedly much greater than the target particle speed, this is a perfectly valid approximation.
 
 For example, the fit parameters for argon neutrals are listed in table~\ref{table:argon_ionization}.
 \begin{table}
@@ -130,11 +144,12 @@ For example, the fit parameters for argon neutrals are listed in table~\ref{tabl
 \end{table}
 
 \subsubsection{Charge exchange}
-Charge exchange is a process where an ion $X$ exchanges an electron with another ion or an atom $X$:
+Charge exchange is a process where an ion $X$ exchanges an electron with
+another ion or a neutral $Y$:
 \[
     X^{m+} + Y^{n+} \rightarrow X^{(m-1)+} + Y^{(n+1)+}.
 \]
-For example, $X$ being a $+1$ ion and $Y$ an atom:
+For example, $X$ being a $+1$ ion and $Y$ a neutral:
 \[
     X^{1+} + Y^0 \rightarrow X^{0} + Y^{1+}.
 \]
@@ -160,7 +175,11 @@ This process is called dielectronic recombination.~\cite{nist:recombination}
 Precalculated rate coefficients for these two processes at various different electron temperatures were found at~\cite{iaea:flychk}. The rate coefficients of the two processes were summed to yield a total recombination rate coefficient.
 
 \subsection{Ion loss}
-In addition to recombination, a remarkable neutralization channel is the loss of ions from the magnetic bottle. When an ion is no longer confined by the magnetic bottle, it eventually hits a wall of the vacuum chamber. Inelastic collision reactions with the wall material eventually neutralize the ion and it will be desorbed.
+In addition to recombination, a remarkable neutralization channel is the loss
+of ions from the magnetic bottle. When an ion is no longer confined by the
+magnetic bottle, it eventually hits a wall of the vacuum chamber. Inelastic
+collision reactions with the wall material eventually neutralize the ion and it
+will be adsorbed.
 
 \subsection{Knudsen's cosine law}
 The desorption of neutrals from walls of the vacuum chamber is assumed to be governed by Knudsen's cosine law~\cite{knudsen:cosine}:
@@ -179,7 +198,7 @@ where $E_\text{in}$ is the incoming energy flux, $E_\text{re}$ the reflected flu
 \section{Numerical methods and tools}
 Several numerical methods and software packages were used to implement the
 calculation of the neutral density distribution. The actual implementation code
-can be found in the Git repository~\cite{kapanen:git}.
+can be found in a Git repository~\cite{kapanen:git}.
 
 \subsection{Monte Carlo test particle simulation}
 The basis of the simulation is the test particle Monte Carlo method. A limited set of test particles is chosen to represent the real particles and given a corresponding statistical weight in the simulation. Their phase space coordinates are randomly drawn from the corresponding probability distributions and propagated through the target geometry. On wall collisions, a new direction and velocity are calculated according to Knudsen's cosine law and the thermal accommodation law. The test particle simulation of neutrals without plasma is covered in detail in~\cite{kapanen:bsc}.
@@ -254,7 +273,8 @@ If the plasma mass offset is increased due to an ionizing reaction, a particle w
 \begin{equation}
     p_\text{neutralized}(t) = 1 - \exp(-t / \tau_i ),
 \end{equation}
-where $p_\text{neutralized}$ is the probability that the neutralization reaction has happened at time $t$ and $\tau_i$ is the time constant of the corresponding reaction. Given a pseudo-random number $x \in [0, 1[$, a random neutralization time can be sampled by conventional inverse transform sampling:
+where $p_\text{neutralized}$ is the probability that the neutralization
+reaction has happened withing time $t$ and $\tau_i$ is the time constant of the corresponding reaction. Given a pseudo-random number $x \in [0, 1[$, a random neutralization time can be sampled by conventional inverse transform sampling:
 \begin{equation}
     t = -\tau_i \ln x.
 \end{equation}
@@ -319,7 +339,9 @@ The average electron density was assumed to be $\SI{e11}{\per\centi\meter\cubed}
 The element chosen for the gas feed was argon. Gas was fed to the chamber from the injection tube. The injection and extraction holes were configured as pumps with pumping efficiencies of 1 and 0.1, respectively.
 
 \subsection{Stationary density distribution}
-A stationary density distribution was calculated using the argon feed rate of $\SI{1}{\centi\metre\cubed\per\hour}$ which is typical during plasma production. Ten million test particles were used. Slices of the neutral density distribution on different axes were plotted.
+A stationary density distribution was calculated using the argon feed rate of
+$\SI{1}{\centi\metre\cubed\per\hour}$ in NTP conditions which is a typical
+value~\cite{tarvainen:phd}. Ten million test particles were used. Slices of the neutral density distribution on different axes were plotted.
 
 One of the main observations from the plots is the accumulation of neutrals near the loss zones in the grooves of the vacuum chamber and the injection and extraction ends. This corresponds to the loss of ions from the magnetic confinement and neutralization on the wall. The accumulation can be seen in figures~\ref{fig:stationary_x} and~\ref{fig:stationary_z}.
 
@@ -433,22 +455,24 @@ approximation and may have caused the negligible presence of
 recombination reactions compared to other plasma processes.
 
 It has been also observed in real ECR ion sources that the gas injection
-affects the plasma parameters remarkably. Thus the stationary plasma model used
+remarkably affects the plasma parameters. Thus the stationary plasma model used
 in this simulation may not hold valid especially in time-dependent simulations.
 In the stationary simulations the use of such a model is more justifiable, at
-least if the plasma parameters are measured from similar conditions (continuous
+least if the plasma parameters are measured in similar conditions (continuous
 gas feed).
 
 Many simulation parameters such as the extraction efficiency coefficient and
-accommodation coefficient were left to be guessed. Therefore one should not
+accommodation coefficient were left to be guessed. Therefore one must not
 interpret the simulation results too strictly --- they are best taken as
 qualitative, order-of-magnitude descriptions of the distribution of neutrals in
 the vacuum chamber.
 
-Comparing to a full PIC model like Mironov's~\cite{mironov:ecr}, a major
+Comparing to a full-blown PIC model like Mironov's~\cite{mironov:ecr}, one
 disadvantage of this code besides the approximations mentioned above is the
 need for many input parameters like the charge state distribution. This is due
-to the fact that this code is not self-consistent.
+to the fact that this code is not self-consistent. On the other hand, the model
+proposed in this research project is computationally less complex than a PIC model
+and run times are most certainly shorter.
 
 Despite the approximations, the code managed to capture some interesting
 phenomena. First, the bombardment of ions on the loss zones seen
@@ -462,12 +486,26 @@ systems. At least with the used HIISI geometry, the simulations could be run
 with sufficient statistics with reasonable durations, lasting 1-2 days per
 simulation run on a multicore laptop processor.
 
+Due to the fact that the individual test particle histories are independent of
+each other in this model, the model can be considered linear: the net effect of
+several neutral sources can be found as the linear combination of the
+individual neutral density profiles. This means that, for example, the
+background neutral
+distribution caused by outgassing and leakage (see~\cite{kapanen:bsc} for some
+estimates) could be
+precomputed and combined with a profile caused by gas injection to acquire the
+total distribution. This makes it possible to obtain an overall, qualitative
+picture of the relationships between the neutral densities in various locations in the
+geometry. This information could be used to deduce and estimate the internal
+neutral density based on readings of the vacuum gauges located at injection and
+extraction.
+
 Developing a multiprocessor physics simulation code that handles
-large amounts of data in \textsc{C++} is not the easiest task one could tackle
+large amounts of memory in \textsc{C++} is not the easiest task one could tackle
 in a research training project. Not being in the know of various
 memory safety features introduced in the modern \textsc{C++11} and
 \textsc{C++14} standards beforehand, the author had to about learn these the hard way.
-After many fruitful \texttt{gdb} sessions and refactoring to embrace safer
+After many fruitful debugging sessions and refactoring to embrace safer
 coding practices, the code works well and should be extensible with
 new processes quite easily.
 
