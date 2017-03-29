@@ -102,7 +102,7 @@ void run_convergence_test() {
 }
 
 void run_time_dependent() {
-    doRun(100000000, 1.0e-3, 3e12 / 1.0e-3, 0.002, 10);
+    doRun(500000000, 1.0e-3, 3e12 / 1.0e-3, 0.0005, 20);
 }
 
 int main() {
