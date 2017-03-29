@@ -6,7 +6,7 @@ Create a directory for building. Let's call it `build_root` for now.
 Install the libraries `GMP`, `MPFR` and `Boost` on your system via the package manager.
 Boost >= 1.48 is recommended.
 Also install the tools `gcc (>= 5)`, `cmake (>= 2.8.11)` and `git`. Note that a version of GCC
-supporting the `C++14` standard is required. This should be 5, but hasn't
+supporting the `C++14` standard is required. This should be 5 or greater, but hasn't
 been tested.
 
 ### CGAL
