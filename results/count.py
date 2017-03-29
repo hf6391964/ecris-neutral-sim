@@ -110,7 +110,8 @@ if __name__ == '__main__':
     cMin = float('inf')
     cMax = float('-inf')
     for filename in listdir('.'):
-        if '_dimensions.csv' in filename or '.csv' not in filename:
+        if '_dimensions.csv' in filename or '.csv' not in filename or \
+                not filename.startswith(prefix):
             continue
 
         print('Parsing file ' + filename)
