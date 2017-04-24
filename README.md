@@ -10,17 +10,11 @@ supporting the `C++14` standard is required. This should be 5 or greater, but ha
 been tested.
 
 ### CGAL
-The latest CGAL release 4.9 (as of writing this) has a bug relevant to this
-code. Until a bugfix release (likely 4.9.1) is released, a checkout of the
-`releases/CGAL-4.9-branch` branch should be used. The bug is fixed in that
-branch.
-
-Obtain [a checkout of the
-branch](https://github.com/CGAL/cgal/archive/releases/CGAL-4.9-branch.zip) on
+Obtain [CGAL 4.9.1](https://github.com/CGAL/cgal/releases/download/releases%2FCGAL-4.9.1/CGAL-4.9.1.zip) on
 GitHub. Extract the zip file to `build_root`. There should now be a directory
-named `cgal-releases-CGAL-4.9-branch`. Execute the following commands:
+named `CGAL-4.9.1`. Execute the following commands:
 ```sh
-cd cgal-releases-CGAL-4.9-branch
+cd CGAL-4.9.1
 # Create a directory for building
 mkdir build
 cd build
