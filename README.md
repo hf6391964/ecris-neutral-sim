@@ -79,7 +79,7 @@ files into `app/hiisi_neutral_density/electron_data`.
 ### Coding practices
 If developing this code, please adhere to the following practices:
 
-* Never ever even consider manually managing memory. You will eventually fail. Miserably. Elaboration follows in the next bullets.
+* Don't manage memory manually, as doing that increases the chance of mistakes. Elaboration follows in the next bullets.
 * The use of `new` and `delete` is entirely prohibited. For arrays, use `std::vector`.
   For other heap allocated objects, use `std::make_unique` or
   `std::make_shared` depending on the desired object lifetime and resource
