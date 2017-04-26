@@ -67,7 +67,7 @@ def makePlots(filename, dimensions, parsedData, sliceAx, cMin=None, cMax=None):
     idxpoint = filename.rfind('.')
     prefix1 = filename[:idxpoint]
 
-    for i, z in list(enumerate(axvalues))[57:58]:#[1::2]:
+    for i, z in list(enumerate(axvalues))[1::2]:#[57:58]:  # Change this range to plot different slices
         countPath = path.join(plotdir,
             '{0}_count_{1}_{2}.png'.format(prefix1, axNames[sliceAx], nums[i])
         )
