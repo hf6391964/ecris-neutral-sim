@@ -108,7 +108,7 @@ void doRun(size_t N_PARTICLES, double PULSE_LENGTH = 1.0e-3,
         SAMPLING_INTERVAL,  // sampling interval (seconds)
         PULSE_LENGTH,  // the length of the injected gas pulse
         CUTOFF_TIME,
-        -1,  // number of threads. -1 for automatic: 1 + 2 * hardware concurrency
+        -1,  // number of threads. -1 for automatic: 1 + hardware concurrency
         seed  // random seed
     );
     clock_t end_clock = clock();
