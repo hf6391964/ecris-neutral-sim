@@ -57,6 +57,7 @@ CollisionProducts ChargeExchangeReaction::computeReactionProducts(
 
         Particle neutralProduct(population_->getElement(), target.getTime());
         neutralProduct.setVelocity(productVel);
+        neutralProduct.setPosition(target.getPosition());
 
         products.push_back(neutralProduct);
 
