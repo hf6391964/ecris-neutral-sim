@@ -27,7 +27,7 @@ void doRun(size_t N_PARTICLES, double PULSE_LENGTH = 1.0e-3,
     };
     const double GRID_SIZE = 0.001;  // metre
     const double CONFINEMENT_TIME = 1.9e-3;  // seconds
-    const double EXTRACTION_EFFICIENCY = 0.1;  // Extraction efficiency factor
+    const double EXTRACTION_EFFICIENCY = 0.1;  // Extraction efficiency factor, i.e. the pumping factor of the extraction surface
     const double CUTOFF_TIME = 5.0;  // A time at which the tracking of an individual particle is terminated
 
     // Create a vector of ion temperatures, the same value for every population
