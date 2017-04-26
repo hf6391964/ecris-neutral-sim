@@ -189,7 +189,7 @@ void SimulationModel::simulationThread(
                 if (reaction != nullptr) {
                     CollisionProducts products =
                         reaction->computeReactionProducts(thread_res.rng,
-                        p, particle);
+                        particle);
 
                     std::vector<Particle> neutralProducts =
                         products.first;

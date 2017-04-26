@@ -19,7 +19,7 @@ class ElectronIonizationReaction : public CollisionReaction {
             mc_integrate_resources &mc_res) const;
 
         CollisionProducts computeReactionProducts(Rng &rng,
-            const Point &p, const Particle &target) const;
+            const Particle &target) const;
 
         double getCrossSection(double speed) const;
 

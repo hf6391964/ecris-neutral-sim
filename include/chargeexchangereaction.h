@@ -20,7 +20,7 @@ class ChargeExchangeReaction : public CollisionReaction {
             mc_integrate_resources &mc_res) const;
 
         CollisionProducts computeReactionProducts(Rng &rng,
-            const Point &, const Particle &target) const;
+            const Particle &target) const;
 
         double getCrossSection(double) const;
 

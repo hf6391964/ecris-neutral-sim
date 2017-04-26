@@ -34,7 +34,7 @@ double ChargeExchangeReaction::crossSection(double, void *args) {
 }
 
 CollisionProducts ChargeExchangeReaction::computeReactionProducts(
-    Rng &rng, const Point &, const Particle &target) const {
+    Rng &rng, const Particle &target) const {
     std::vector<Particle> products;
     if (chargeState_ == 1) {
         // Elastic collision kinematics calculated in center of mass frame

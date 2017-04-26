@@ -23,7 +23,7 @@ double ElectronIonizationReaction::getRateCoefficient(
 }
 
 CollisionProducts ElectronIonizationReaction::computeReactionProducts(
-    Rng &, const Point &, const Particle &) const {
+    Rng &, const Particle &) const {
     return std::make_pair(std::vector<Particle>(), 1);
 }
 

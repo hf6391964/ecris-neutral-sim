@@ -52,7 +52,7 @@ class CollisionReaction {
         // computeReactionProducts returns a vector of neutral reaction
         // products and the number of ionized reaction products
         virtual CollisionProducts computeReactionProducts(Rng &rng,
-            const Point &p, const Particle &target) const = 0;
+            const Particle &target) const = 0;
 
         virtual double getCrossSection(double relativeSpeed) const = 0;
 
